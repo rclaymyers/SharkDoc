@@ -1,12 +1,18 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import MarkdownDisplay from './MarkdownDisplay.vue';
 
 defineProps<{ msg: string }>()
+
+const markdownText = "# test\n## test 2\n*italics*";
 
 const count = ref(0)
 </script>
 
 <template>
+
+  <MarkdownDisplay :markdown-text="markdownText"></MarkdownDisplay>
+
   <h1>{{ msg }}</h1>
 
   <div class="card">
