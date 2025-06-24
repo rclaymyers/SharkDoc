@@ -1,16 +1,15 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import MarkdownDisplay from './MarkdownDisplay.vue';
+import { ref } from "vue";
+import MarkdownDisplay from "./MarkdownDisplay.vue";
 
-defineProps<{ msg: string }>()
+defineProps<{ msg: string }>();
 
 const markdownText = "# test\n## test 2\n*italics*";
 
-const count = ref(0)
+const count = ref(0);
 </script>
 
 <template>
-
   <MarkdownDisplay :markdown-text="markdownText"></MarkdownDisplay>
 
   <h1>{{ msg }}</h1>
