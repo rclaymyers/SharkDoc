@@ -1,26 +1,32 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import MarkdownDisplay from "./MarkdownDisplay.vue";
+import MarkdownEditor from "./MarkdownEditor.vue";
 
 defineProps<{ msg: string }>();
 
-const markdownText = "# test\n## test 2\n*italics*";
+let markdownText = ref("# test\n## test 2\n*italics*");
 
-const count = ref(0);
+const updateMarkdownText = (newValue: string) => {
+  markdownText.value = newValue;
+};
+
+const showEditor = ref(false);
+const toggleEditor = () => {
+  showEditor.value = !showEditor.value;
+};
 </script>
 
 <template>
   <MarkdownDisplay :markdown-text="markdownText"></MarkdownDisplay>
+  <button @click="toggleEditor">Show Editor</button>
+  <MarkdownEditor
+    :markdown-text="markdownText"
+    @update:markdownText="updateMarkdownText"
+    v-if="showEditor"
+  ></MarkdownEditor>
 
   <h1>{{ msg }}</h1>
-
-  <div class="card">
-    <button type="button" @click="count++">count is {{ count }}</button>
-    <p>
-      Edit
-      <code>components/HelloWorld.vue</code> to test HMR
-    </p>
-  </div>
 
   <p>
     Check out
