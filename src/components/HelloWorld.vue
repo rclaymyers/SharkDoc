@@ -5,7 +5,7 @@ import MarkdownEditor from "./MarkdownEditor.vue";
 
 defineProps<{ msg: string }>();
 
-let markdownText = ref("# test\n## test 2\n*italics*");
+let markdownText = ref("# test\n## test 2\n*italics*\ngallery(testGallery)");
 
 const updateMarkdownText = (newValue: string) => {
   markdownText.value = newValue;
