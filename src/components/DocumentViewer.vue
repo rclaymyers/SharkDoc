@@ -1,14 +1,27 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, type Ref } from "vue";
 import MarkdownDisplay from "./MarkdownDisplay.vue";
 import MarkdownEditor from "./MarkdownEditor.vue";
 import ImageGallery from "./ImageGallery.vue";
+import type { MarkdownDocument } from "../models/MarkdownDocument";
+import { LocalStorageService } from "../services/localStorageService";
 
-const markdownText = ref(
-  "# test\n## test 2\n*italics*\n\ngallery(testGallery)"
+const allMarkdownDocuments = LocalStorageService.loadAllDocuments();
+const activeMarkdownDocument: Ref<MarkdownDocument> = ref<MarkdownDocument>(
+  allMarkdownDocuments?.length
+    ? allMarkdownDocuments[0]
+    : {
+        id: "12345",
+        pages: ["gallery(testGallery)\ntest"],
+        title: "Untitled",
+      }
 );
-const updateMarkdownText = (newValue: string) => {
-  markdownText.value = newValue;
+const updateMarkdownText = (payload: { pageNumber: number; text: string }) => {
+  activeMarkdownDocument.value.pages.splice(
+    payload.pageNumber,
+    1,
+    payload.text
+  );
 };
 
 const showEditor = ref(false);
@@ -30,13 +43,14 @@ const hideGallery = () => (galleryShowing.value = false);
   <div class="panes">
     <div class="pane" v-if="showEditor">
       <MarkdownEditor
-        :markdown-text="markdownText"
+        :markdown-document="activeMarkdownDocument"
+        :page-number="0"
         @update:markdownText="updateMarkdownText"
       ></MarkdownEditor>
     </div>
-    <div class="pane no-border">
+    <div class="pane no-border" v-if="!showEditor">
       <MarkdownDisplay
-        :markdown-text="markdownText"
+        :markdown-text="activeMarkdownDocument.pages[0]"
         @galleryClicked="showGallery"
       ></MarkdownDisplay>
     </div>

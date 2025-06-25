@@ -7,29 +7,40 @@ import { markdown } from "@codemirror/lang-markdown";
 import { EditorState } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
 import { basicSetup } from "codemirror";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, type Ref } from "vue";
+import type { MarkdownDocument } from "../models/MarkdownDocument";
+import { LocalStorageService } from "../services/localStorageService";
 
 const editorContainer = ref(null);
 let editorView: EditorView | null = null;
 
 const props = defineProps<{
-  markdownText: string;
+  markdownDocument: MarkdownDocument;
+  pageNumber: number;
 }>();
 
 const emit = defineEmits<{
-  (event: "update:markdownText", value: string): void;
+  (
+    event: "update:markdownText",
+    payload: { pageNumber: number; text: string }
+  ): void;
 }>();
 
 onMounted(() => {
+  console.log("markdown document:", props.markdownDocument);
   const editorState = EditorState.create({
-    doc: props.markdownText,
+    doc: props.markdownDocument.pages[props.pageNumber],
     extensions: [
       basicSetup,
       markdown(),
       EditorView.updateListener.of((update) => {
         if (update.docChanged) {
           const newDoc = update.state.doc.toString();
-          emit("update:markdownText", newDoc);
+          emit("update:markdownText", {
+            pageNumber: props.pageNumber,
+            text: newDoc,
+          });
+          LocalStorageService.saveDocument(props.markdownDocument);
         }
       }),
     ],
