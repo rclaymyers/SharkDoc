@@ -7,6 +7,7 @@ import { marked } from "marked";
 import { computed, onMounted, ref } from "vue";
 
 const props = defineProps<{ markdownText: string }>();
+const emit = defineEmits<{ (event: "galleryClicked", value: string): void }>();
 const galleryRegex = /gallery\(([\w-]+)\)/g;
 const markdownContainer = ref<HTMLElement | null>(null);
 
@@ -22,7 +23,7 @@ const handleGalleryClick = (event: Event) => {
   if (target.matches(".gallery-anchor")) {
     const name = target.getAttribute("data-name");
     if (name) {
-      //todo open gallery
+      emit("galleryClicked", name);
     }
     event.preventDefault();
   }
