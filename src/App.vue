@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import HelloWorld from "./components/HelloWorld.vue";
+import DocumentViewer from "./components/DocumentViewer.vue";
 </script>
 
 <template>
-  <HelloWorld />
+  <DocumentViewer />
 </template>
