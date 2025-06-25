@@ -34,3 +34,12 @@ onMounted(() => {
   }
 });
 </script>
+
+<style>
+a.gallery-anchor {
+  user-select: none;
+}
+a.gallery-anchor:hover {
+  cursor: pointer;
+}
+</style>
