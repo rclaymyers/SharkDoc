@@ -1,12 +1,36 @@
 <template>
-  <div v-html="compiledMarkdown"></div>
+  <div ref="markdownContainer" v-html="compiledMarkdown"></div>
 </template>
 
 <script setup lang="ts">
 import { marked } from "marked";
-import { computed } from "vue";
+import { computed, onMounted, ref } from "vue";
 
 const props = defineProps<{ markdownText: string }>();
+const galleryRegex = /gallery\(([\w-]+)\)/g;
+const markdownContainer = ref<HTMLElement | null>(null);
 
-const compiledMarkdown = computed(() => marked.parse(props.markdownText));
+const compiledMarkdown = computed(() => {
+  const processedText = props.markdownText.replace(galleryRegex, (_, name) => {
+    return `<a class="gallery-anchor" data-name="${name}">${name}</a>`;
+  });
+  return marked.parse(processedText);
+});
+
+const handleGalleryClick = (event: Event) => {
+  const target = event.target as HTMLElement;
+  if (target.matches(".gallery-anchor")) {
+    const name = target.getAttribute("data-name");
+    if (name) {
+      //todo open gallery
+    }
+    event.preventDefault();
+  }
+};
+
+onMounted(() => {
+  if (markdownContainer.value) {
+    markdownContainer.value.addEventListener("click", handleGalleryClick);
+  }
+});
 </script>

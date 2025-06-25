@@ -77,3 +77,10 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+a.gallery-anchor {
+  user-select: none;
+}
+a.gallery-anchor:hover {
+  cursor: pointer;
+}
