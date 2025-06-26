@@ -5,6 +5,7 @@ import MarkdownEditor from "./MarkdownEditor.vue";
 import ImageGallery from "./ImageGallery.vue";
 import type { MarkdownDocument } from "../models/MarkdownDocument";
 import { LocalStorageService } from "../services/localStorageService";
+import GalleryEditor from "./GalleryEditor.vue";
 
 const allMarkdownDocuments = LocalStorageService.loadAllDocuments();
 const activeMarkdownDocument: Ref<MarkdownDocument> = ref<MarkdownDocument>(
@@ -29,6 +30,11 @@ const toggleEditor = () => {
   showEditor.value = !showEditor.value;
 };
 
+const galleryAddEditPromptShowing = ref(false);
+const showGalleryPrompt = () => {
+  galleryAddEditPromptShowing.value = true;
+};
+
 const galleryShowing = ref(false);
 const showGallery = (galleryName: string) => {
   console.log("Toggle gallery called with:", galleryName);
@@ -40,24 +46,26 @@ const hideGallery = () => (galleryShowing.value = false);
 <template>
   <button @click="toggleEditor">Show Editor</button>
   <button @click="hideGallery" v-if="galleryShowing">Hide Gallery</button>
+  <button @click="showGalleryPrompt">Add/Edit Gallery</button>
   <div class="panes">
     <div class="pane" v-if="showEditor">
       <MarkdownEditor
         :markdown-document="activeMarkdownDocument"
         :page-number="0"
         @update:markdownText="updateMarkdownText"
-      ></MarkdownEditor>
+      />
     </div>
     <div class="pane no-border" v-if="!showEditor">
       <MarkdownDisplay
         :markdown-text="activeMarkdownDocument.pages[0]"
         @galleryClicked="showGallery"
-      ></MarkdownDisplay>
+      />
     </div>
     <div class="pane" v-if="galleryShowing">
-      <ImageGallery></ImageGallery>
+      <ImageGallery />
     </div>
   </div>
+  <GalleryEditor v-if="galleryAddEditPromptShowing" />
 </template>
 
 <style>
