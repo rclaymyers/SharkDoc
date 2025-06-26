@@ -37,7 +37,6 @@ const showGalleryPrompt = () => {
 
 const galleryShowing = ref(false);
 const showGallery = (galleryName: string) => {
-  console.log("Toggle gallery called with:", galleryName);
   galleryShowing.value = true;
 };
 const hideGallery = () => (galleryShowing.value = false);
