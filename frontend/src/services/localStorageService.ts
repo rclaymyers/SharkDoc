@@ -1,6 +1,6 @@
 import { toRaw } from "vue";
-import type { MarkdownDocument } from "../models/MarkdownDocument";
-import type { Gallery } from "../models/Gallery";
+import type { MarkdownDocument } from "../../../sharedModels/MarkdownDocument";
+import type { Gallery } from "../../../sharedModels/Gallery";
 
 export const LocalStorageService = {
   saveDocument: (documentToSave: MarkdownDocument): void => {

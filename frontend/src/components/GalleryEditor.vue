@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { ref, toRaw } from "vue";
-import type { Gallery } from "../models/Gallery";
+import type { Gallery } from "../../../sharedModels/Gallery";
 import { TrashIcon, XCircleIcon } from "@heroicons/vue/20/solid";
 import { LocalStorageService } from "../services/localStorageService";
+import { ApiService } from "../services/apiService";
 
 const fileInput = ref<HTMLInputElement | null>(null);
 
@@ -52,9 +53,18 @@ const onFileSelected = (event: Event) => {
     console.warn("File input event was invalid");
     return;
   }
-  const tempUrl = URL.createObjectURL(file);
-  gallerySelectedForEdit.value?.imagePaths.push(tempUrl);
   //todo upload image to server and replace imagepath with hosted value
+  ApiService.uploadImageFile(
+    file,
+    gallerySelectedForEdit.value?.id ?? null
+  ).then((res) => {
+    if (res) {
+      //todo env var for API url
+      gallerySelectedForEdit.value?.imagePaths.push(
+        `http://localhost:3000${res}`
+      );
+    }
+  });
 };
 </script>
 

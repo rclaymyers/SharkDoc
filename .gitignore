@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# backend persistent data
+backend/uploads/*
+backend/data.sqlite

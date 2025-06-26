@@ -3,7 +3,7 @@ import { ref, type Ref } from "vue";
 import MarkdownDisplay from "./MarkdownDisplay.vue";
 import MarkdownEditor from "./MarkdownEditor.vue";
 import ImageGallery from "./ImageGallery.vue";
-import type { MarkdownDocument } from "../models/MarkdownDocument";
+import type { MarkdownDocument } from "../../../sharedModels/MarkdownDocument";
 import { LocalStorageService } from "../services/localStorageService";
 import GalleryEditor from "./GalleryEditor.vue";
 

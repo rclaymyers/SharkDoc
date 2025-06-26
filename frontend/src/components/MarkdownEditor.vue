@@ -8,7 +8,7 @@ import { EditorState } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
 import { basicSetup } from "codemirror";
 import { onMounted, ref, type Ref } from "vue";
-import type { MarkdownDocument } from "../models/MarkdownDocument";
+import type { MarkdownDocument } from "../../../sharedModels/MarkdownDocument";
 import { LocalStorageService } from "../services/localStorageService";
 
 const editorContainer = ref(null);
