@@ -4,25 +4,35 @@ import MarkdownDisplay from "./MarkdownDisplay.vue";
 import MarkdownEditor from "./MarkdownEditor.vue";
 import ImageGallery from "./ImageGallery.vue";
 import type { MarkdownDocument } from "../../../sharedModels/MarkdownDocument";
-import { LocalStorageService } from "../services/localStorageService";
 import GalleryEditor from "./GalleryEditor.vue";
+import { useRoute } from "vue-router";
+import { ApiService } from "../services/apiService";
 
-const allMarkdownDocuments = LocalStorageService.loadAllDocuments();
-const activeMarkdownDocument: Ref<MarkdownDocument> = ref<MarkdownDocument>(
-  allMarkdownDocuments?.length
-    ? allMarkdownDocuments[0]
-    : {
-        id: "12345",
-        pages: ["gallery(testGallery)\ntest"],
-        title: "Untitled",
-      }
+const route = useRoute();
+const documentId = Number(route.params.id);
+
+const activeMarkdownDocument: Ref<MarkdownDocument | null> =
+  ref<MarkdownDocument | null>(null);
+
+ApiService.fetchMarkdownDocument(documentId).then(
+  (document: MarkdownDocument | null) => {
+    if (!document) {
+      console.warn("Got invalid document from API for id:", documentId, null);
+      return;
+    }
+    console.log("Got document:", document);
+    activeMarkdownDocument.value = document;
+  }
 );
+
 const updateMarkdownText = (payload: { pageNumber: number; text: string }) => {
-  activeMarkdownDocument.value.pages.splice(
-    payload.pageNumber,
-    1,
-    payload.text
-  );
+  if (!activeMarkdownDocument.value?.pages) {
+    console.warn(
+      "updateMarkdownText() was called, but the active document is invalid"
+    );
+    return;
+  }
+  activeMarkdownDocument.value.pages[payload.pageNumber].content = payload.text;
 };
 
 const showEditor = ref(false);
@@ -43,28 +53,33 @@ const hideGallery = () => (galleryShowing.value = false);
 </script>
 
 <template>
-  <button @click="toggleEditor">Show Editor</button>
-  <button @click="hideGallery" v-if="galleryShowing">Hide Gallery</button>
-  <button @click="showGalleryPrompt">Add/Edit Gallery</button>
-  <div class="panes">
-    <div class="pane" v-if="showEditor">
-      <MarkdownEditor
-        :markdown-document="activeMarkdownDocument"
-        :page-number="0"
-        @update:markdownText="updateMarkdownText"
-      />
+  <template v-if="activeMarkdownDocument">
+    <button @click="toggleEditor">Show Editor</button>
+    <button @click="hideGallery" v-if="galleryShowing">Hide Gallery</button>
+    <button @click="showGalleryPrompt">Add/Edit Gallery</button>
+    <div class="panes">
+      <div class="pane" v-if="showEditor">
+        <MarkdownEditor
+          :markdown-document="activeMarkdownDocument"
+          :page-number="0"
+          @update:markdownText="updateMarkdownText"
+        />
+      </div>
+      <div
+        class="pane no-border"
+        v-if="!showEditor && activeMarkdownDocument.pages.length > 0"
+      >
+        <MarkdownDisplay
+          :markdown-text="activeMarkdownDocument.pages[0]"
+          @galleryClicked="showGallery"
+        />
+      </div>
+      <div class="pane" v-if="galleryShowing">
+        <ImageGallery />
+      </div>
     </div>
-    <div class="pane no-border" v-if="!showEditor">
-      <MarkdownDisplay
-        :markdown-text="activeMarkdownDocument.pages[0]"
-        @galleryClicked="showGallery"
-      />
-    </div>
-    <div class="pane" v-if="galleryShowing">
-      <ImageGallery />
-    </div>
-  </div>
-  <GalleryEditor v-if="galleryAddEditPromptShowing" />
+    <GalleryEditor v-if="galleryAddEditPromptShowing" />
+  </template>
 </template>
 
 <style>

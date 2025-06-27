@@ -1,19 +1,140 @@
 import Database from "better-sqlite3";
 import path from "path";
 import { Queries } from "./constants";
-import { Gallery } from "../sharedModels/Gallery";
-import { MarkdownDocument } from "../sharedModels/MarkdownDocument";
+import { Gallery, GalleryCreationRequest } from "../sharedModels/Gallery";
+import {
+  MarkdownDocument,
+  MarkdownDocumentCreationRequest,
+  MarkdownDocumentPage,
+} from "../sharedModels/MarkdownDocument";
 
 const dbPath = path.resolve(__dirname, "data.sqlite");
 const db = new Database(dbPath);
 
 export const initDatabase = () => {
+  db.prepare(Queries.CreateMarkdownDocumentsTableIfNotExists).run();
+  db.prepare(Queries.CreatePagesTableIfNotExists).run();
   db.prepare(Queries.CreateGalleriesTableIfNotExists).run();
   db.prepare(Queries.CreateImagesTableIfNotExists).run();
 };
 
-export const createOrUpdateGallery = (gallery: Gallery) => {};
+export const createOrUpdateGallery = (
+  galleryRequest: Gallery | GalleryCreationRequest
+): Gallery => {
+  let galleryId: number | null = null;
+  if (Gallery.IsGallery(galleryRequest)) {
+    db.prepare(Queries.UpdateGallery).run(
+      galleryRequest.name,
+      galleryRequest.id
+    );
+    galleryId = galleryRequest.id;
+  } else {
+    const result = db.prepare(Queries.CreateGallery).run(galleryRequest.name);
+    console.log("Created new gallery");
+    galleryId = result.lastInsertRowid as number;
+    console.log("Got id:", galleryId);
+  }
 
-export const createOrUpdateMarkdownDocument = (
-  markdownDocument: MarkdownDocument
-) => {};
+  return retrieveGalleryWithImages(galleryId);
+};
+
+export const createOrUpdateDocument = (
+  documentRequest: MarkdownDocument | MarkdownDocumentCreationRequest
+): MarkdownDocument => {
+  let documentId: number | null = null;
+  if (MarkdownDocument.IsMarkdownDocument(documentRequest)) {
+    db.prepare(Queries.UpdateMarkdownDocument).run(
+      documentRequest.title,
+      documentRequest.id
+    );
+    documentId = documentRequest.id;
+  } else {
+    const result = db
+      .prepare(Queries.CreateMarkdownDocument)
+      .run(documentRequest.title);
+    documentId = result.lastInsertRowid as number;
+  }
+  return retrieveMarkdownDocumentWithPagesAndGalleries(documentId);
+};
+
+export const createPage = (
+  markdownDocumentId: number
+): MarkdownDocumentPage => {
+  const result = db.prepare(Queries.CreatePage).run("", markdownDocumentId);
+  return retrievePage(result.lastInsertRowid as number);
+};
+
+export const updatePage = (
+  page: MarkdownDocumentPage
+): MarkdownDocumentPage => {
+  db.prepare(Queries.UpdatePage).run(page.content, page.id);
+  return retrievePage(page.id);
+};
+
+export const retrievePage = (pageId: number): MarkdownDocumentPage => {
+  const result = db
+    .prepare(Queries.SelectPageByPageId)
+    .get(pageId) as unknown as MarkdownDocumentPage;
+  return result;
+};
+
+export const retrievePagesByDocumentId = (
+  markdownDocumentId: number
+): MarkdownDocumentPage[] => {
+  const result = db
+    .prepare(Queries.SelectPagesByMarkdownDocumentId)
+    .all(markdownDocumentId) as unknown as MarkdownDocumentPage[];
+  return result;
+};
+
+export const retrieveGalleryWithImages = (galleryId: number): Gallery => {
+  const gallery = selectGallery(galleryId);
+  gallery.imagePaths = selectGalleryImages(galleryId);
+  return gallery;
+};
+
+const selectGallery = (id: number): Gallery => {
+  const result = db
+    .prepare(Queries.SelectGalleryById)
+    .get(id) as unknown as Gallery;
+  return new Gallery(result.id, result.name, [], result.markdownDocumentId);
+};
+
+const selectMarkdownDocumentGalleries = (
+  markdownDocumentId: number
+): Gallery[] => {
+  const result = db
+    .prepare(Queries.SelectGalleriesByMarkdownDocumentId)
+    .all(markdownDocumentId) as Gallery[];
+  return result;
+};
+
+export const retrieveAllMarkdownDocuments = (): MarkdownDocument[] => {
+  return db
+    .prepare(Queries.SelectAllMarkdownDocuments)
+    .all() as unknown as MarkdownDocument[];
+};
+
+export const retrieveMarkdownDocumentWithPagesAndGalleries = (
+  markdownDocumentId: number
+): MarkdownDocument => {
+  const document = db
+    .prepare(Queries.SelectMarkdownDocumentById)
+    .get(markdownDocumentId) as unknown as MarkdownDocument;
+  console.log("Got document:", document);
+  const galleries: Gallery[] =
+    selectMarkdownDocumentGalleries(markdownDocumentId);
+  galleries.forEach((gallery: Gallery) => {
+    gallery.imagePaths = selectGalleryImages(gallery.id);
+  });
+  const pages: MarkdownDocumentPage[] =
+    retrievePagesByDocumentId(markdownDocumentId);
+  console.log("Got galleries:", galleries);
+  document.galleries = galleries;
+  document.pages = pages;
+  return document;
+};
+
+const selectGalleryImages = (galleryId: number): string[] => {
+  return db.prepare(Queries.SelectImagesByGalleryId).all(galleryId) as string[];
+};

@@ -1,7 +1,5 @@
-<script setup lang="ts">
-import DocumentViewer from "./components/DocumentViewer.vue";
-</script>
+<script setup lang="ts"></script>
 
 <template>
-  <DocumentViewer />
+  <RouterView />
 </template>

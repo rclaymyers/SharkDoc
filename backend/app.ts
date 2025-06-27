@@ -3,10 +3,25 @@ import multer, { FileFilterCallback } from "multer";
 import path from "path";
 import fs from "fs";
 import cors from "cors";
-import { initDatabase } from "./dbQueryExecutor";
+import {
+  initDatabase,
+  retrieveAllMarkdownDocuments,
+  retrieveGalleryWithImages,
+  retrieveMarkdownDocumentWithPagesAndGalleries,
+  createOrUpdateDocument,
+  createOrUpdateGallery,
+  createPage,
+} from "./dbQueryExecutor";
+import { Gallery } from "../sharedModels/Gallery";
+import { ApiEndpoints } from "../sharedModels/ApiEndpoints";
+import {
+  MarkdownDocument,
+  MarkdownDocumentPage,
+} from "../sharedModels/MarkdownDocument";
 
 const app = express();
 app.use(cors());
+app.use(express.json());
 const port = 3000;
 
 const uploadDir = path.join(__dirname, "uploads");
@@ -38,16 +53,83 @@ const imageFileFilter = (
 
 const upload = multer({ storage, fileFilter: imageFileFilter });
 
-app.post("/upload", upload.single("image"), (req: Request, res: Response) => {
-  console.log("Got image upload request");
-  if (!req.file) {
-    res.status(400).json({ error: "No file uploaded" });
+app.post(
+  ApiEndpoints.POST.Image,
+  upload.single("image"),
+  (req: Request, res: Response) => {
+    console.log("Got image upload request");
+    if (!req.file) {
+      res.status(400).json({ error: "No file uploaded" });
+      return;
+    }
+    const galleryId = req.body.galleryId;
+    console.log("Got gallery id in upload request:", galleryId);
+    res.status(200).json({
+      filename: req.file.filename,
+      imagePath: `/images/${req.file.filename}`,
+    });
+  }
+);
+
+app.post(ApiEndpoints.POST.Document, (req: Request, res: Response) => {
+  if (!req.body?.title) {
+    console.warn("document POST request body invalid");
+    res.status(400).json({ error: "Invalid request body" });
     return;
   }
-  res.status(200).json({
-    filename: req.file.filename,
-    imagePath: `/images/${req.file.filename}`,
-  });
+  const updatedDocument: MarkdownDocument = createOrUpdateDocument(req.body);
+  res.status(200).json(updatedDocument);
+});
+
+app.post(ApiEndpoints.POST.Gallery, (req: Request, res: Response) => {
+  if (!req.body) {
+    console.log("Request has no body");
+    res.status(400).json({ error: "No request body" });
+    return;
+  }
+  if (!req.body.name) {
+    res.status(400).json({ error: "Invalid name" });
+    return;
+  }
+  const updatedGallery: Gallery = createOrUpdateGallery(req.body);
+  res.status(200).json(updatedGallery);
+});
+
+app.post(ApiEndpoints.POST.CreatePage, (req: Request, res: Response) => {
+  if (!req.query?.markdownDocumentId) {
+    console.log("Page creation request is missing markdown document id");
+    res.status(400);
+    return;
+  }
+  const newPage: MarkdownDocumentPage = createPage(
+    +req.query.markdownDocumentId
+  );
+  res.status(200).json(newPage);
+});
+
+app.get(ApiEndpoints.GET.Gallery, (req: Request, res: Response) => {
+  if (!req.body?.id) {
+    res.status(400).json({ error: "Invalid or missing ID" });
+    return;
+  }
+  const gallery: Gallery = retrieveGalleryWithImages(req.body.id);
+  res.status(200).json(gallery);
+});
+
+app.get(ApiEndpoints.GET.AllDocuments, (_, res: Response) => {
+  const markdownDocuments = retrieveAllMarkdownDocuments();
+  res.status(200).json(markdownDocuments);
+});
+
+app.get(ApiEndpoints.GET.Document, (req: Request, res: Response) => {
+  if (!req.query?.id) {
+    res.status(400).json({ error: "Invalid or missing ID" });
+    return;
+  }
+  const markdownDocument: MarkdownDocument =
+    retrieveMarkdownDocumentWithPagesAndGalleries(+req.query.id);
+  console.log("returning document:", markdownDocument);
+  res.status(200).json(markdownDocument);
 });
 
 app.use("/images", express.static(uploadDir));

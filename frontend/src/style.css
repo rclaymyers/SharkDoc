@@ -78,3 +78,28 @@ button:focus-visible {
 .clickable {
   cursor: pointer;
 }
+
+.popup-form-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+.popup-form-panel {
+  background-color: #eee;
+  color: #333;
+  min-width: 50vw;
+  min-height: 70vh;
+  max-width: 90vw;
+  max-height: 90vh;
+  border-radius: 5px;
+  padding: 10px;
+  overflow: scroll;
+}

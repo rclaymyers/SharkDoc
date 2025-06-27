@@ -1,28 +1,22 @@
 <script setup lang="ts">
 import { ref, toRaw } from "vue";
-import type { Gallery } from "../../../sharedModels/Gallery";
+import {
+  GalleryCreationRequest,
+  type Gallery,
+} from "../../../sharedModels/Gallery";
 import { TrashIcon, XCircleIcon } from "@heroicons/vue/20/solid";
 import { LocalStorageService } from "../services/localStorageService";
 import { ApiService } from "../services/apiService";
+import { MarkdownDocument } from "../../../sharedModels/MarkdownDocument";
+
+const props = defineProps<{ markdownDocument: MarkdownDocument }>();
+const emit = defineEmits<{
+  (event: "gallery-updated", payload: Gallery): void;
+}>();
 
 const fileInput = ref<HTMLInputElement | null>(null);
 
-const galleries: Gallery[] = [
-  {
-    id: "0",
-    name: "gallery 1",
-    imagePaths: [
-      "testImage1.jpg",
-      "testImage2.jpg",
-      "testImage3.jpg",
-      "testImage4.jpg",
-      "testImage5.jpg",
-    ],
-  },
-  { id: "1", name: "gallery 2", imagePaths: [] },
-  { id: "2", name: "gallery 3", imagePaths: [] },
-];
-
+const galleryAddFormShowing = ref<boolean>(false);
 const gallerySelectedForEdit = ref<Gallery | null>();
 
 const openGalleryDetails = (gallery: Gallery) => {
@@ -53,37 +47,75 @@ const onFileSelected = (event: Event) => {
     console.warn("File input event was invalid");
     return;
   }
-  //todo upload image to server and replace imagepath with hosted value
-  ApiService.uploadImageFile(
-    file,
-    gallerySelectedForEdit.value?.id ?? null
-  ).then((res) => {
-    if (res) {
-      //todo env var for API url
-      gallerySelectedForEdit.value?.imagePaths.push(
-        `http://localhost:3000${res}`
+  const galleryId = gallerySelectedForEdit.value?.id;
+  if (!galleryId) {
+    console.warn(
+      "Selected gallery is not valid:",
+      gallerySelectedForEdit.value
+    );
+    return;
+  }
+  ApiService.uploadImageFile(file, galleryId).then((res) => {
+    if (!res) {
+      console.warn(
+        "Gallery editor tried to upload image, but response is invalid:",
+        res
       );
+      return;
+    }
+    ApiService.fetchGallery(galleryId).then((result) => {
+      if (result) emit("gallery-updated", result);
+    });
+  });
+};
+
+const newGalleryName = ref<string>("");
+const addGallery = () => {
+  galleryAddFormShowing.value = true;
+};
+const saveGallery = () => {
+  const galleryName = newGalleryName.value;
+  console.log("Saving gallery with name:", galleryName);
+  newGalleryName.value = "";
+  galleryAddFormShowing.value = false;
+  ApiService.saveGallery(
+    new GalleryCreationRequest(galleryName, props.markdownDocument.id)
+  ).then((response: Gallery | null) => {
+    console.log("Got new gallery from API:", response);
+    if (response) {
+      props.markdownDocument.galleries = [
+        ...props.markdownDocument.galleries,
+        response,
+      ];
     }
   });
 };
 </script>
 
 <template>
-  <div class="gallery-edit-popup-container">
-    <div class="gallery-edit-panel" v-if="!gallerySelectedForEdit">
+  <div class="popup-form-container">
+    <div
+      class="popup-form-panel"
+      v-if="!gallerySelectedForEdit && !galleryAddFormShowing"
+    >
       <p class="gallery-title">Add/Edit Gallery</p>
       <div class="gallery-selection">
         <div
           class="gallery-item"
-          v-for="gallery in galleries"
+          v-for="gallery in markdownDocument?.galleries"
           @click="openGalleryDetails(gallery)"
         >
           <p>{{ gallery.name }}</p>
           <p>edit</p>
         </div>
       </div>
+      <button @click="addGallery">Add gallery</button>
     </div>
-    <div class="gallery-edit-panel" v-if="gallerySelectedForEdit">
+    <div class="popup-form-panel" v-if="galleryAddFormShowing">
+      <input v-model="newGalleryName" />
+      <button @click="saveGallery">Save</button>
+    </div>
+    <div class="popup-form-panel" v-if="gallerySelectedForEdit">
       <div class="gallery-name-editor-prompt">
         <p>{{ gallerySelectedForEdit.name }}</p>
       </div>
@@ -114,30 +146,6 @@ const onFileSelected = (event: Event) => {
 </template>
 
 <style>
-.gallery-edit-popup-container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
-}
-.gallery-edit-panel {
-  background-color: #eee;
-  color: #333;
-  min-width: 50vw;
-  min-height: 70vh;
-  max-width: 90vw;
-  max-height: 90vh;
-  border-radius: 5px;
-  padding: 10px;
-  overflow: scroll;
-}
 .gallery-item {
   width: 100%;
   display: flex;
