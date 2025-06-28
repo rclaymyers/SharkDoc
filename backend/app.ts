@@ -117,7 +117,6 @@ app.post(ApiEndpoints.POST.UpdatePage, (req: Request, res: Response) => {
     return;
   }
   updatePage(req.body);
-  console.log("Returning 200 for page update");
   res.sendStatus(200);
 });
 

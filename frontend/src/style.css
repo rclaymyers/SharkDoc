@@ -103,3 +103,19 @@ button:focus-visible {
   padding: 10px;
   overflow: scroll;
 }
+
+.gallery-image-list {
+  position: relative;
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.gallery-image {
+  position: relative;
+  height: 30vh;
+  width: 30vh;
+}
+.max-width-one-third {
+  max-width: 33%;
+}

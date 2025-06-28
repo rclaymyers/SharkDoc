@@ -8,6 +8,7 @@ import GalleryEditor from "./GalleryEditor.vue";
 import { useRoute } from "vue-router";
 import { ApiService } from "../services/apiService";
 import { UtilitiesService } from "../services/utils";
+import type { Gallery } from "../../../sharedModels/Gallery";
 
 const route = useRoute();
 const documentId = Number(route.params.id);
@@ -87,40 +88,54 @@ const showGalleryPrompt = () => {
   galleryAddEditPromptShowing.value = true;
 };
 
-const galleryShowing = ref(false);
+const selectedGallery = ref<Gallery | null>(null);
 const showGallery = (galleryName: string) => {
-  galleryShowing.value = true;
+  const gallery = activeMarkdownDocument.value?.galleries.find(
+    (gallery: Gallery) => gallery.name === galleryName
+  );
+  if (gallery) {
+    selectedGallery.value = gallery;
+    console.log("Selected gallery set to:", selectedGallery);
+  }
 };
-const hideGallery = () => (galleryShowing.value = false);
+const hideGallery = () => (selectedGallery.value = null);
 </script>
 
 <template>
   <template v-if="activeMarkdownDocument">
     <button @click="toggleEditor">Show Editor</button>
     <button @click="addPage">Add Page</button>
-    <button @click="hideGallery" v-if="galleryShowing">Hide Gallery</button>
+    <button @click="hideGallery" v-if="selectedGallery">Hide Gallery</button>
     <button @click="showGalleryPrompt">Galleries</button>
-    <div class="panes" v-for="(page, index) in activeMarkdownDocument.pages">
-      <div class="pane" v-if="showEditor">
-        <MarkdownEditor
-          :markdown-document="activeMarkdownDocument"
-          :page-number="index"
-          @update:markdownText="onMarkdownTextChanged"
-        />
+    <div class="panes">
+      <div class="pane no-border">
+        <div
+          class="panes"
+          v-for="(page, index) in activeMarkdownDocument.pages"
+        >
+          <div class="pane" v-if="showEditor">
+            <MarkdownEditor
+              :markdown-document="activeMarkdownDocument"
+              :page-number="index"
+              @update:markdownText="onMarkdownTextChanged"
+            />
+          </div>
+          <div class="pane">
+            <MarkdownDisplay
+              :markdown-text="page.content"
+              @galleryClicked="showGallery"
+            />
+          </div>
+        </div>
       </div>
-      <div class="pane">
-        <MarkdownDisplay
-          :markdown-text="page.content"
-          @galleryClicked="showGallery"
-        />
-      </div>
-      <div class="pane" v-if="galleryShowing">
-        <ImageGallery />
+      <div class="pane max-width-one-third" v-if="selectedGallery">
+        <ImageGallery :gallery="selectedGallery" />
       </div>
     </div>
     <GalleryEditor
       v-if="galleryAddEditPromptShowing"
       :markdown-document="activeMarkdownDocument"
+      :allow-image-modification="true"
     />
   </template>
 </template>

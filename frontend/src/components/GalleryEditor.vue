@@ -10,7 +10,10 @@ import { ApiService } from "../services/apiService";
 import { MarkdownDocument } from "../../../sharedModels/MarkdownDocument";
 import { UtilitiesService } from "../services/utils";
 
-const props = defineProps<{ markdownDocument: MarkdownDocument }>();
+const props = defineProps<{
+  markdownDocument: MarkdownDocument;
+  allowImageModification: boolean;
+}>();
 const emit = defineEmits<{
   (event: "gallery-updated", payload: Gallery): void;
 }>();
@@ -125,7 +128,7 @@ const saveGallery = () => {
       </div>
       <div class="gallery-image-list">
         <div
-          class="deletable-gallery-image"
+          class="gallery-image"
           v-for="imagePath in gallerySelectedForEdit.imagePaths"
         >
           <img
@@ -138,7 +141,7 @@ const saveGallery = () => {
             @click="removeGalleryImage(imagePath)"
           />
         </div>
-        <div class="deletable-gallery-image clickable" @click="addImage">
+        <div class="gallery-image clickable" @click="addImage">
           <div class="gallery-item-contents">Click to add image</div>
           <input
             type="file"
@@ -174,18 +177,6 @@ div.gallery-item-contents {
   background-color: #fff;
 }
 
-.gallery-image-list {
-  position: relative;
-  display: flex;
-  justify-content: space-around;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-.deletable-gallery-image {
-  position: relative;
-  height: 30vh;
-  width: 30vh;
-}
 .delete-icon {
   width: 3vh;
   height: 3vh;
