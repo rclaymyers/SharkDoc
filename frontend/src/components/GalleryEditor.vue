@@ -8,6 +8,7 @@ import { TrashIcon, XCircleIcon } from "@heroicons/vue/20/solid";
 import { LocalStorageService } from "../services/localStorageService";
 import { ApiService } from "../services/apiService";
 import { MarkdownDocument } from "../../../sharedModels/MarkdownDocument";
+import { UtilitiesService } from "../services/utils";
 
 const props = defineProps<{ markdownDocument: MarkdownDocument }>();
 const emit = defineEmits<{
@@ -64,7 +65,10 @@ const onFileSelected = (event: Event) => {
       return;
     }
     ApiService.fetchGallery(galleryId).then((result) => {
-      if (result) emit("gallery-updated", result);
+      if (result) {
+        emit("gallery-updated", result);
+        gallerySelectedForEdit.value = result;
+      }
     });
   });
 };
@@ -124,7 +128,11 @@ const saveGallery = () => {
           class="deletable-gallery-image"
           v-for="imagePath in gallerySelectedForEdit.imagePaths"
         >
-          <img :src="imagePath" alt="" class="gallery-item-contents" />
+          <img
+            :src="UtilitiesService.prependApiDomain(imagePath)"
+            alt=""
+            class="gallery-item-contents"
+          />
           <TrashIcon
             class="delete-icon"
             @click="removeGalleryImage(imagePath)"

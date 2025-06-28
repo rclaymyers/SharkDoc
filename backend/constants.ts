@@ -17,7 +17,6 @@ export const Queries = {
   CREATE TABLE IF NOT EXISTS images (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     filename TEXT NOT NULL,
-    uploaded_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     gallery_id INTEGER NOT NULL,
     FOREIGN KEY (gallery_id) REFERENCES galleries(id) ON DELETE CASCADE
   )`,
@@ -32,13 +31,14 @@ export const Queries = {
   UpdateMarkdownDocument: `UPDATE markdownDocuments SET title = ? where id = ?`,
   SelectAllMarkdownDocuments: `SELECT * FROM markdownDocuments`,
   SelectMarkdownDocumentById: `Select id, title FROM markdownDocuments WHERE id = ?`,
-  CreateGallery: `INSERT INTO galleries (name) VALUES (?)`,
+  CreateGallery: `INSERT INTO galleries (name, markdown_document_id) VALUES (?, ?)`,
   UpdateGallery: `UPDATE galleries SET name = ? WHERE id = ?`,
   CreatePage: `INSERT INTO pages (content, markdown_document_id) VALUES (?, ?)`,
   UpdatePage: `UPDATE pages SET content = ? where id = ?`,
   SelectGalleryById: `SELECT id, name FROM galleries WHERE id = ?`,
   SelectGalleriesByMarkdownDocumentId: `SELECT id, name FROM galleries WHERE markdown_document_id = ?`,
-  SelectPagesByMarkdownDocumentId: `SELECT id, content FROM pages WHERE id = ?`,
+  SelectPagesByMarkdownDocumentId: `SELECT id, content FROM pages WHERE markdown_document_id = ?`,
   SelectPageByPageId: `SELECT id, content FROM pages WHERE id = ?`,
   SelectImagesByGalleryId: `SELECT filename FROM images where gallery_id = ?`,
+  InsertImage: `INSERT INTO images (filename, gallery_id) VALUES (?, ?)`,
 };

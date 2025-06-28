@@ -2,6 +2,7 @@ import { ApiEndpoints } from "../../../sharedModels/ApiEndpoints";
 import { Gallery, GalleryCreationRequest } from "../../../sharedModels/Gallery";
 import {
   MarkdownDocument,
+  MarkdownDocumentPage,
   type MarkdownDocumentCreationRequest,
 } from "../../../sharedModels/MarkdownDocument";
 
@@ -92,25 +93,66 @@ export const ApiService = {
       return responseDocument;
     }
   },
+  createPageAndFetchUpdatedDocument: async (
+    markdownDocumentId: number
+  ): Promise<MarkdownDocument | null> => {
+    const response = await fetch(
+      `http://localhost:3000${ApiEndpoints.POST.CreatePage}?markdownDocumentId=${markdownDocumentId}`,
+      { method: "POST" }
+    );
+    if (!response.ok) {
+      //todo just create/install an httpclient that'll handle this automatically
+      return null;
+    }
+    const updatedDocument =
+      await ApiService.fetchMarkdownDocument(markdownDocumentId);
+    return updatedDocument;
+  },
+  updatePageAndFetchUpdatedDocument: async (
+    markdownDocumentPage: MarkdownDocumentPage,
+    markdownDocumentId: number
+  ): Promise<MarkdownDocument | null> => {
+    console.log(
+      "Posting updated page with body:",
+      JSON.stringify(markdownDocumentPage)
+    );
+    const response = await fetch(
+      `http://localhost:3000${ApiEndpoints.POST.UpdatePage}`,
+      {
+        method: "POST",
+        body: JSON.stringify(markdownDocumentPage),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    console.log("Response:", response);
+    if (!response.ok) {
+      //todo httpclient
+      console.warn("Response was not ok");
+      return null;
+    }
+    const updatedDocument =
+      await ApiService.fetchMarkdownDocument(markdownDocumentId);
+    console.log("Updated document:", updatedDocument);
+    return updatedDocument;
+  },
   fetchGallery: async (galleryId: number): Promise<Gallery | null> => {
     const response = await fetch(
-      `http://localhost:3000${ApiEndpoints.GET.Gallery}`,
+      `http://localhost:3000${ApiEndpoints.GET.Gallery}?galleryId=${galleryId}`,
       {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          id: galleryId,
-        }),
       }
     );
     if (!response.ok) {
       console.warn("Response wasn't ok");
-      const error = response.json();
+      const error = await response.json();
       console.error(error);
       return null;
     }
-    const gallery = await response.json();
+    const gallery = (await response.json()) as unknown as Gallery;
     return gallery;
   },
   fetchMarkdownDocument: async (

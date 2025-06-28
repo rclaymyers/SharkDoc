@@ -11,6 +11,8 @@ import {
   createOrUpdateDocument,
   createOrUpdateGallery,
   createPage,
+  createImageInGallery,
+  updatePage,
 } from "./dbQueryExecutor";
 import { Gallery } from "../sharedModels/Gallery";
 import { ApiEndpoints } from "../sharedModels/ApiEndpoints";
@@ -63,7 +65,7 @@ app.post(
       return;
     }
     const galleryId = req.body.galleryId;
-    console.log("Got gallery id in upload request:", galleryId);
+    createImageInGallery(`/images/${req.file.filename}`, galleryId);
     res.status(200).json({
       filename: req.file.filename,
       imagePath: `/images/${req.file.filename}`,
@@ -107,12 +109,24 @@ app.post(ApiEndpoints.POST.CreatePage, (req: Request, res: Response) => {
   res.status(200).json(newPage);
 });
 
+app.post(ApiEndpoints.POST.UpdatePage, (req: Request, res: Response) => {
+  if (req.body?.content === undefined || req.body?.id === undefined) {
+    //todo write body validator
+    console.warn("Request body invalid:", req.body);
+    res.status(400);
+    return;
+  }
+  updatePage(req.body);
+  console.log("Returning 200 for page update");
+  res.sendStatus(200);
+});
+
 app.get(ApiEndpoints.GET.Gallery, (req: Request, res: Response) => {
-  if (!req.body?.id) {
+  if (!req.query?.galleryId) {
     res.status(400).json({ error: "Invalid or missing ID" });
     return;
   }
-  const gallery: Gallery = retrieveGalleryWithImages(req.body.id);
+  const gallery: Gallery = retrieveGalleryWithImages(+req.query.galleryId);
   res.status(200).json(gallery);
 });
 

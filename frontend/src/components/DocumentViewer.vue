@@ -7,6 +7,7 @@ import type { MarkdownDocument } from "../../../sharedModels/MarkdownDocument";
 import GalleryEditor from "./GalleryEditor.vue";
 import { useRoute } from "vue-router";
 import { ApiService } from "../services/apiService";
+import { UtilitiesService } from "../services/utils";
 
 const route = useRoute();
 const documentId = Number(route.params.id);
@@ -32,12 +33,53 @@ const updateMarkdownText = (payload: { pageNumber: number; text: string }) => {
     );
     return;
   }
+  console.log("Update markdown text called with payload:", payload);
   activeMarkdownDocument.value.pages[payload.pageNumber].content = payload.text;
+};
+
+const debouncedUpdateFn = UtilitiesService.buildDebouncedFn(
+  (payload: { pageNumber: number; text: string }) => {
+    if (!activeMarkdownDocument.value) {
+      return;
+    }
+    console.log("Updating page");
+    ApiService.updatePageAndFetchUpdatedDocument(
+      activeMarkdownDocument.value.pages[payload.pageNumber],
+      activeMarkdownDocument.value.id
+    ).then((document) => {
+      console.log("Got updated document:", document);
+      if (document) {
+        activeMarkdownDocument.value = document;
+      }
+    });
+  },
+  500
+);
+
+const onMarkdownTextChanged = (payload: {
+  pageNumber: number;
+  text: string;
+}) => {
+  updateMarkdownText(payload);
+  debouncedUpdateFn(payload);
 };
 
 const showEditor = ref(false);
 const toggleEditor = () => {
   showEditor.value = !showEditor.value;
+};
+
+const addPage = () => {
+  if (!activeMarkdownDocument.value?.id) {
+    return;
+  }
+  ApiService.createPageAndFetchUpdatedDocument(
+    activeMarkdownDocument.value?.id
+  ).then((updatedDocument) => {
+    if (updatedDocument) {
+      activeMarkdownDocument.value = updatedDocument;
+    }
+  });
 };
 
 const galleryAddEditPromptShowing = ref(false);
@@ -55,22 +97,20 @@ const hideGallery = () => (galleryShowing.value = false);
 <template>
   <template v-if="activeMarkdownDocument">
     <button @click="toggleEditor">Show Editor</button>
+    <button @click="addPage">Add Page</button>
     <button @click="hideGallery" v-if="galleryShowing">Hide Gallery</button>
-    <button @click="showGalleryPrompt">Add/Edit Gallery</button>
-    <div class="panes">
+    <button @click="showGalleryPrompt">Galleries</button>
+    <div class="panes" v-for="(page, index) in activeMarkdownDocument.pages">
       <div class="pane" v-if="showEditor">
         <MarkdownEditor
           :markdown-document="activeMarkdownDocument"
-          :page-number="0"
-          @update:markdownText="updateMarkdownText"
+          :page-number="index"
+          @update:markdownText="onMarkdownTextChanged"
         />
       </div>
-      <div
-        class="pane no-border"
-        v-if="!showEditor && activeMarkdownDocument.pages.length > 0"
-      >
+      <div class="pane">
         <MarkdownDisplay
-          :markdown-text="activeMarkdownDocument.pages[0]"
+          :markdown-text="page.content"
           @galleryClicked="showGallery"
         />
       </div>
@@ -78,7 +118,10 @@ const hideGallery = () => (galleryShowing.value = false);
         <ImageGallery />
       </div>
     </div>
-    <GalleryEditor v-if="galleryAddEditPromptShowing" />
+    <GalleryEditor
+      v-if="galleryAddEditPromptShowing"
+      :markdown-document="activeMarkdownDocument"
+    />
   </template>
 </template>
 

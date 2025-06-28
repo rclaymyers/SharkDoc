@@ -28,7 +28,7 @@ const emit = defineEmits<{
 
 onMounted(() => {
   const editorState = EditorState.create({
-    doc: props.markdownDocument.pages[props.pageNumber],
+    doc: props.markdownDocument.pages[props.pageNumber].content,
     extensions: [
       basicSetup,
       markdown(),
