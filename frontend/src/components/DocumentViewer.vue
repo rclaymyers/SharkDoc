@@ -115,14 +115,14 @@ const hideGallery = () => (selectedGallery.value = null);
           class="panes"
           v-for="(page, index) in activeMarkdownDocument.pages"
         >
-          <div class="pane" v-if="showEditor">
+          <div class="pane half-pane" v-if="showEditor">
             <MarkdownEditor
               :markdown-document="activeMarkdownDocument"
               :page-number="index"
               @update:markdownText="onMarkdownTextChanged"
             />
           </div>
-          <div class="pane">
+          <div :class="[showEditor ? 'half-pane' : '', 'pane']">
             <MarkdownDisplay
               :markdown-text="page.content"
               @galleryClicked="showGallery"
@@ -147,6 +147,9 @@ const hideGallery = () => (selectedGallery.value = null);
 <style>
 .panes {
   display: flex;
+}
+.half-pane {
+  width: 50%;
 }
 .pane {
   flex-grow: 1;
