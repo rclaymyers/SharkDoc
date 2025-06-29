@@ -1,18 +1,19 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue";
-import FsLightbox from "fslightbox-vue";
+import { Gallery } from "../../../sharedModels/Gallery";
+import { UtilitiesService } from "../services/utils";
 
+const props = defineProps<{ gallery: Gallery }>();
 const toggler = ref(false);
 </script>
 
 <template>
-  <button @click="toggler = !toggler">Open the lightbox.</button>
-  <FsLightbox
-    :toggler="toggler"
-    :sources="[
-      'https://i.imgur.com/fsyrScY.jpg',
-      'https://www.youtube.com/watch?v=3nQNiWdeH2Q',
-      'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-    ]"
-  />
+  <div class="gallery-image-list">
+    <div class="gallery-image" v-for="imagePath in gallery.imagePaths">
+      <img
+        :src="UtilitiesService.prependApiDomain(imagePath)"
+        class="gallery-item-contents"
+      />
+    </div>
+  </div>
 </template>

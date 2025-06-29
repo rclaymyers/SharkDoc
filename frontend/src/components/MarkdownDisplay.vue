@@ -5,6 +5,7 @@
 <script setup lang="ts">
 import { marked } from "marked";
 import { computed, onMounted, ref } from "vue";
+import type { Gallery } from "../../../sharedModels/Gallery";
 
 const props = defineProps<{ markdownText: string }>();
 const emit = defineEmits<{ (event: "galleryClicked", value: string): void }>();
