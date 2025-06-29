@@ -1,21 +1,28 @@
 import Database from "better-sqlite3";
 import path from "path";
-import { Queries } from "./constants";
 import { Gallery, GalleryCreationRequest } from "../sharedModels/Gallery";
 import {
   MarkdownDocument,
   MarkdownDocumentCreationRequest,
   MarkdownDocumentPage,
 } from "../sharedModels/MarkdownDocument";
+import {
+  GalleryQueries,
+  ImageQueries,
+  MarkdownDocumentPageQueries,
+  MarkdownDocumentQueries,
+} from "./constants/queries";
 
 const dbPath = path.resolve(__dirname, "data.sqlite");
 const db = new Database(dbPath);
 
 export const initDatabase = () => {
-  db.prepare(Queries.CreateMarkdownDocumentsTableIfNotExists).run();
-  db.prepare(Queries.CreatePagesTableIfNotExists).run();
-  db.prepare(Queries.CreateGalleriesTableIfNotExists).run();
-  db.prepare(Queries.CreateImagesTableIfNotExists).run();
+  db.prepare(
+    MarkdownDocumentQueries.CreateMarkdownDocumentsTableIfNotExists
+  ).run();
+  db.prepare(MarkdownDocumentPageQueries.CreatePagesTableIfNotExists).run();
+  db.prepare(GalleryQueries.CreateGalleriesTableIfNotExists).run();
+  db.prepare(ImageQueries.CreateImagesTableIfNotExists).run();
 };
 
 export const createOrUpdateGallery = (
@@ -23,14 +30,14 @@ export const createOrUpdateGallery = (
 ): Gallery => {
   let galleryId: number | null = null;
   if (Gallery.IsGallery(galleryRequest)) {
-    db.prepare(Queries.UpdateGallery).run(
+    db.prepare(GalleryQueries.UpdateGallery).run(
       galleryRequest.name,
       galleryRequest.id
     );
     galleryId = galleryRequest.id;
   } else {
     const result = db
-      .prepare(Queries.CreateGallery)
+      .prepare(GalleryQueries.CreateGallery)
       .run(galleryRequest.name, galleryRequest.markdownDocumentId);
     console.log("Created new gallery");
     galleryId = result.lastInsertRowid as number;
@@ -45,14 +52,14 @@ export const createOrUpdateDocument = (
 ): MarkdownDocument => {
   let documentId: number | null = null;
   if (MarkdownDocument.IsMarkdownDocument(documentRequest)) {
-    db.prepare(Queries.UpdateMarkdownDocument).run(
+    db.prepare(MarkdownDocumentQueries.UpdateMarkdownDocument).run(
       documentRequest.title,
       documentRequest.id
     );
     documentId = documentRequest.id;
   } else {
     const result = db
-      .prepare(Queries.CreateMarkdownDocument)
+      .prepare(MarkdownDocumentQueries.CreateMarkdownDocument)
       .run(documentRequest.title);
     documentId = result.lastInsertRowid as number;
     createPage(documentId);
@@ -64,12 +71,14 @@ export const createPage = (
   markdownDocumentId: number
 ): MarkdownDocumentPage => {
   const result = db
-    .prepare(Queries.CreatePage)
+    .prepare(MarkdownDocumentPageQueries.CreatePage)
     .run("New Page", markdownDocumentId);
   console.log("Created page, result records:", result.changes);
   console.log(
     "Pages for this document:",
-    db.prepare(Queries.SelectPagesByMarkdownDocumentId).all(markdownDocumentId)
+    db
+      .prepare(MarkdownDocumentPageQueries.SelectPagesByMarkdownDocumentId)
+      .all(markdownDocumentId)
   );
   return retrievePage(result.lastInsertRowid as number);
 };
@@ -77,13 +86,13 @@ export const createPage = (
 export const updatePage = (
   page: MarkdownDocumentPage
 ): MarkdownDocumentPage => {
-  db.prepare(Queries.UpdatePage).run(page.content, page.id);
+  db.prepare(MarkdownDocumentPageQueries.UpdatePage).run(page.content, page.id);
   return retrievePage(page.id);
 };
 
 export const retrievePage = (pageId: number): MarkdownDocumentPage => {
   const result = db
-    .prepare(Queries.SelectPageByPageId)
+    .prepare(MarkdownDocumentPageQueries.SelectPageByPageId)
     .get(pageId) as unknown as MarkdownDocumentPage;
   return result;
 };
@@ -92,7 +101,7 @@ export const retrievePagesByDocumentId = (
   markdownDocumentId: number
 ): MarkdownDocumentPage[] => {
   const result = db
-    .prepare(Queries.SelectPagesByMarkdownDocumentId)
+    .prepare(MarkdownDocumentPageQueries.SelectPagesByMarkdownDocumentId)
     .all(markdownDocumentId) as unknown as MarkdownDocumentPage[];
   return result;
 };
@@ -107,7 +116,7 @@ export const retrieveGalleryWithImages = (galleryId: number): Gallery => {
 
 const selectGallery = (id: number): Gallery => {
   const result = db
-    .prepare(Queries.SelectGalleryById)
+    .prepare(GalleryQueries.SelectGalleryById)
     .get(id) as unknown as Gallery;
   return new Gallery(result.id, result.name, [], result.markdownDocumentId);
 };
@@ -116,21 +125,21 @@ export const createImageInGallery = (
   imagePath: string,
   galleryId: number
 ): void => {
-  db.prepare(Queries.InsertImage).run(imagePath, galleryId);
+  db.prepare(ImageQueries.InsertImage).run(imagePath, galleryId);
 };
 
 const selectMarkdownDocumentGalleries = (
   markdownDocumentId: number
 ): Gallery[] => {
   const result = db
-    .prepare(Queries.SelectGalleriesByMarkdownDocumentId)
+    .prepare(GalleryQueries.SelectGalleriesByMarkdownDocumentId)
     .all(markdownDocumentId) as Gallery[];
   return result;
 };
 
 export const retrieveAllMarkdownDocuments = (): MarkdownDocument[] => {
   return db
-    .prepare(Queries.SelectAllMarkdownDocuments)
+    .prepare(MarkdownDocumentQueries.SelectAllMarkdownDocuments)
     .all() as unknown as MarkdownDocument[];
 };
 
@@ -138,7 +147,7 @@ export const retrieveMarkdownDocumentWithPagesAndGalleries = (
   markdownDocumentId: number
 ): MarkdownDocument => {
   const document = db
-    .prepare(Queries.SelectMarkdownDocumentById)
+    .prepare(MarkdownDocumentQueries.SelectMarkdownDocumentById)
     .get(markdownDocumentId) as unknown as MarkdownDocument;
   console.log("Got document:", document);
   const galleries: Gallery[] =
@@ -159,7 +168,7 @@ export const retrieveMarkdownDocumentWithPagesAndGalleries = (
 
 //todo create type
 const selectGalleryImages = (galleryId: number): { filename: string }[] => {
-  return db.prepare(Queries.SelectImagesByGalleryId).all(galleryId) as {
+  return db.prepare(ImageQueries.SelectImagesByGalleryId).all(galleryId) as {
     filename: string;
   }[];
 };
