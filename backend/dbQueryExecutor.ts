@@ -55,7 +55,7 @@ export const createOrUpdateDocument = (
       .prepare(Queries.CreateMarkdownDocument)
       .run(documentRequest.title);
     documentId = result.lastInsertRowid as number;
-    db.prepare(Queries.CreatePage).run(documentId);
+    createPage(documentId);
   }
   return retrieveMarkdownDocumentWithPagesAndGalleries(documentId);
 };
@@ -63,7 +63,9 @@ export const createOrUpdateDocument = (
 export const createPage = (
   markdownDocumentId: number
 ): MarkdownDocumentPage => {
-  const result = db.prepare(Queries.CreatePage).run("", markdownDocumentId);
+  const result = db
+    .prepare(Queries.CreatePage)
+    .run("New Page", markdownDocumentId);
   console.log("Created page, result records:", result.changes);
   console.log(
     "Pages for this document:",

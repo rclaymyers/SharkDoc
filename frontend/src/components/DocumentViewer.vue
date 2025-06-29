@@ -9,6 +9,7 @@ import { useRoute } from "vue-router";
 import { ApiService } from "../services/apiService";
 import { UtilitiesService } from "../services/utils";
 import type { Gallery } from "../../../sharedModels/Gallery";
+import { DocumentIcon } from "@heroicons/vue/24/outline";
 
 const route = useRoute();
 const documentId = Number(route.params.id);
@@ -103,6 +104,7 @@ const hideGallery = () => (selectedGallery.value = null);
 
 <template>
   <template v-if="activeMarkdownDocument">
+    <router-link to="/"> <DocumentIcon class="document-link" /></router-link>
     <button @click="toggleEditor">Show Editor</button>
     <button @click="addPage">Add Page</button>
     <button @click="hideGallery" v-if="selectedGallery">Hide Gallery</button>
@@ -136,8 +138,10 @@ const hideGallery = () => (selectedGallery.value = null);
       v-if="galleryAddEditPromptShowing"
       :markdown-document="activeMarkdownDocument"
       :allow-image-modification="true"
+      @gallery-close-requested="galleryAddEditPromptShowing = false"
     />
   </template>
+  <button @click="addPage()">Add Page</button>
 </template>
 
 <style>
@@ -153,5 +157,9 @@ const hideGallery = () => (selectedGallery.value = null);
 }
 .pane.no-border {
   border: none;
+}
+.document-link {
+  height: 5vh;
+  width: 5vh;
 }
 </style>

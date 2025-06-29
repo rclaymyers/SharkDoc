@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, toRaw } from "vue";
+import { onMounted, ref, toRaw } from "vue";
 import {
   GalleryCreationRequest,
   type Gallery,
@@ -9,6 +9,7 @@ import { LocalStorageService } from "../services/localStorageService";
 import { ApiService } from "../services/apiService";
 import { MarkdownDocument } from "../../../sharedModels/MarkdownDocument";
 import { UtilitiesService } from "../services/utils";
+import { XMarkIcon } from "@heroicons/vue/24/outline";
 
 const props = defineProps<{
   markdownDocument: MarkdownDocument;
@@ -16,14 +17,17 @@ const props = defineProps<{
 }>();
 const emit = defineEmits<{
   (event: "gallery-updated", payload: Gallery): void;
+  (event: "gallery-close-requested"): void;
 }>();
 
 const fileInput = ref<HTMLInputElement | null>(null);
+const popupFormPanel = ref<HTMLDivElement | null>(null);
 
 const galleryAddFormShowing = ref<boolean>(false);
 const gallerySelectedForEdit = ref<Gallery | null>();
 
 const openGalleryDetails = (gallery: Gallery) => {
+  console.log("open gallery details called:", gallery);
   gallerySelectedForEdit.value = gallery;
 };
 
@@ -100,12 +104,20 @@ const saveGallery = () => {
 </script>
 
 <template>
-  <div class="popup-form-container">
+  <div class="popup-form-container" @click="emit('gallery-close-requested')">
     <div
       class="popup-form-panel"
+      ref="popupFormPanel"
       v-if="!gallerySelectedForEdit && !galleryAddFormShowing"
+      @click.stop
     >
-      <p class="gallery-title">Add/Edit Gallery</p>
+      <div class="gallery-popup-header">
+        <p class="gallery-title">Add/Edit Gallery</p>
+        <XMarkIcon
+          class="close-icon"
+          @click="emit('gallery-close-requested')"
+        />
+      </div>
       <div class="gallery-selection">
         <div
           class="gallery-item"
@@ -186,5 +198,16 @@ div.gallery-item-contents {
   right: 0.5vh;
   z-index: 2;
   cursor: pointer;
+}
+
+.close-icon {
+  width: 5vh;
+  height: 5vh;
+}
+
+.gallery-popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 </style>
