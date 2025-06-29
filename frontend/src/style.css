@@ -1,3 +1,4 @@
+@import "tailwindcss";
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -118,4 +119,9 @@ button:focus-visible {
 }
 .max-width-one-third {
   max-width: 33%;
+}
+
+.p-overlay-mask {
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
 }

@@ -10,6 +10,7 @@ import { ApiService } from "../services/apiService";
 import { MarkdownDocument } from "../../../sharedModels/MarkdownDocument";
 import { UtilitiesService } from "../services/utils";
 import { XMarkIcon } from "@heroicons/vue/24/outline";
+import { InputText, Button } from "primevue";
 
 const props = defineProps<{
   markdownDocument: MarkdownDocument;
@@ -24,7 +25,7 @@ const fileInput = ref<HTMLInputElement | null>(null);
 const popupFormPanel = ref<HTMLDivElement | null>(null);
 
 const galleryAddFormShowing = ref<boolean>(false);
-const gallerySelectedForEdit = ref<Gallery | null>();
+const gallerySelectedForEdit = ref<Gallery | null>(null);
 
 const openGalleryDetails = (gallery: Gallery) => {
   console.log("open gallery details called:", gallery);
@@ -104,8 +105,51 @@ const saveGallery = () => {
 </script>
 
 <template>
-  <div class="popup-form-container" @click="emit('gallery-close-requested')">
-    <div
+  <Dialog
+    :visible="true"
+    modal
+    :header="`Galleries for ${props.markdownDocument.title}`"
+    :style="{ width: '25rem' }"
+  >
+    <template v-if="gallerySelectedForEdit === null">
+      <div class="gap-4 mb-4" v-if="gallerySelectedForEdit === null">
+        <div
+          v-for="gallery in markdownDocument?.galleries"
+          @click="openGalleryDetails(gallery)"
+          class="mb-2"
+        >
+          {{ gallery.name }}
+        </div>
+      </div>
+      <div class="flex justify-end gap-2">
+        <Button
+          type="button"
+          label="Add Gallery"
+          @click="galleryAddFormShowing = true"
+        ></Button>
+      </div>
+    </template>
+    <template v-if="gallerySelectedForEdit !== null">
+      <div class="flex items-center gap-4 mb-4">
+        <label for="name" class="font-semibold w-24">Name</label>
+        <InputText id="name" class="flex-auto" autocomplete="off" />
+      </div>
+      <div class="flex justify-end gap-2">
+        <Button
+          type="button"
+          label="Cancel"
+          severity="secondary"
+          @click="galleryAddFormShowing = false"
+        ></Button>
+        <Button
+          type="button"
+          label="Save"
+          @click="galleryAddFormShowing = false"
+        ></Button>
+      </div>
+    </template>
+  </Dialog>
+  <!--<div
       class="popup-form-panel"
       ref="popupFormPanel"
       v-if="!gallerySelectedForEdit && !galleryAddFormShowing"
@@ -129,8 +173,15 @@ const saveGallery = () => {
         </div>
       </div>
       <button @click="addGallery">Add gallery</button>
-    </div>
-    <div class="popup-form-panel" v-if="galleryAddFormShowing">
+    </div>-->
+  <Dialog
+    v-model:visible="galleryAddFormShowing"
+    modal
+    header="Add Gallery"
+    :style="{ width: '25rem' }"
+  >
+  </Dialog>
+  <!--<div class="popup-form-panel" v-if="galleryAddFormShowing">
       <input v-model="newGalleryName" />
       <button @click="saveGallery">Save</button>
     </div>
@@ -164,8 +215,7 @@ const saveGallery = () => {
           />
         </div>
       </div>
-    </div>
-  </div>
+    </div>-->
 </template>
 
 <style>
