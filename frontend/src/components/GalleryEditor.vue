@@ -12,6 +12,12 @@ import { UtilitiesService } from "../services/utils";
 import { XMarkIcon } from "@heroicons/vue/24/outline";
 import { InputText, Button } from "primevue";
 
+const FormStateEnum = {
+  GALLERY_LIST: 0,
+  ADD_GALLERY: 1,
+  EDIT_GALLERY: 2,
+};
+
 const props = defineProps<{
   markdownDocument: MarkdownDocument;
   allowImageModification: boolean;
@@ -22,14 +28,17 @@ const emit = defineEmits<{
 }>();
 
 const fileInput = ref<HTMLInputElement | null>(null);
-const popupFormPanel = ref<HTMLDivElement | null>(null);
+const dialogVisible = ref<boolean>(true);
 
-const galleryAddFormShowing = ref<boolean>(false);
+let formState = ref<number>(FormStateEnum.GALLERY_LIST);
+
 const gallerySelectedForEdit = ref<Gallery | null>(null);
 
 const openGalleryDetails = (gallery: Gallery) => {
   console.log("open gallery details called:", gallery);
   gallerySelectedForEdit.value = gallery;
+  newGalleryName.value = gallery.name;
+  formState.value = FormStateEnum.EDIT_GALLERY;
 };
 
 const removeGalleryImage = (imagePathToRemove: string) => {
@@ -83,20 +92,36 @@ const onFileSelected = (event: Event) => {
 
 const newGalleryName = ref<string>("");
 const addGallery = () => {
-  galleryAddFormShowing.value = true;
+  gallerySelectedForEdit.value = null;
+  formState.value = FormStateEnum.ADD_GALLERY;
 };
 const saveGallery = () => {
-  const galleryName = newGalleryName.value;
-  console.log("Saving gallery with name:", galleryName);
+  if (gallerySelectedForEdit.value) {
+    gallerySelectedForEdit.value.name = newGalleryName.value;
+  }
+  const galleryApiPayload: Gallery | GalleryCreationRequest | null =
+    formState.value === FormStateEnum.ADD_GALLERY
+      ? new GalleryCreationRequest(
+          newGalleryName.value,
+          props.markdownDocument.id
+        )
+      : gallerySelectedForEdit.value;
   newGalleryName.value = "";
-  galleryAddFormShowing.value = false;
-  ApiService.saveGallery(
-    new GalleryCreationRequest(galleryName, props.markdownDocument.id)
-  ).then((response: Gallery | null) => {
-    console.log("Got new gallery from API:", response);
+  formState.value = FormStateEnum.GALLERY_LIST;
+  gallerySelectedForEdit.value = null;
+  if (!galleryApiPayload) {
+    console.warn(
+      "Gallery selected for edit wasn't valid when saveGallery() was called"
+    );
+    return;
+  }
+  ApiService.saveGallery(galleryApiPayload).then((response: Gallery | null) => {
+    console.log("Got new/updated gallery from API:", response);
     if (response) {
       props.markdownDocument.galleries = [
-        ...props.markdownDocument.galleries,
+        ...props.markdownDocument.galleries.filter(
+          (gallery: Gallery) => gallery.id !== response.id
+        ),
         response,
       ];
     }
@@ -106,13 +131,15 @@ const saveGallery = () => {
 
 <template>
   <Dialog
-    :visible="true"
+    v-model:visible="dialogVisible"
     modal
+    dismissable-mask
     :header="`Galleries for ${props.markdownDocument.title}`"
-    :style="{ width: '25rem' }"
+    :style="{ maxWidth: '70vw' }"
+    @hide="emit('gallery-close-requested')"
   >
-    <template v-if="gallerySelectedForEdit === null">
-      <div class="gap-4 mb-4" v-if="gallerySelectedForEdit === null">
+    <template v-if="formState === FormStateEnum.GALLERY_LIST">
+      <div class="gap-4 mb-4">
         <div
           v-for="gallery in markdownDocument?.galleries"
           @click="openGalleryDetails(gallery)"
@@ -125,97 +152,65 @@ const saveGallery = () => {
         <Button
           type="button"
           label="Add Gallery"
-          @click="galleryAddFormShowing = true"
+          @click="addGallery()"
         ></Button>
       </div>
     </template>
-    <template v-if="gallerySelectedForEdit !== null">
+    <template
+      v-if="
+        formState === FormStateEnum.ADD_GALLERY ||
+        formState === FormStateEnum.EDIT_GALLERY
+      "
+    >
       <div class="flex items-center gap-4 mb-4">
         <label for="name" class="font-semibold w-24">Name</label>
-        <InputText id="name" class="flex-auto" autocomplete="off" />
-      </div>
-      <div class="flex justify-end gap-2">
-        <Button
-          type="button"
-          label="Cancel"
-          severity="secondary"
-          @click="galleryAddFormShowing = false"
-        ></Button>
-        <Button
-          type="button"
-          label="Save"
-          @click="galleryAddFormShowing = false"
-        ></Button>
-      </div>
-    </template>
-  </Dialog>
-  <!--<div
-      class="popup-form-panel"
-      ref="popupFormPanel"
-      v-if="!gallerySelectedForEdit && !galleryAddFormShowing"
-      @click.stop
-    >
-      <div class="gallery-popup-header">
-        <p class="gallery-title">Add/Edit Gallery</p>
-        <XMarkIcon
-          class="close-icon"
-          @click="emit('gallery-close-requested')"
+        <InputText
+          v-model:model-value="newGalleryName"
+          id="name"
+          class="flex-auto"
+          autocomplete="off"
         />
       </div>
-      <div class="gallery-selection">
-        <div
-          class="gallery-item"
-          v-for="gallery in markdownDocument?.galleries"
-          @click="openGalleryDetails(gallery)"
-        >
-          <p>{{ gallery.name }}</p>
-          <p>edit</p>
-        </div>
-      </div>
-      <button @click="addGallery">Add gallery</button>
-    </div>-->
-  <Dialog
-    v-model:visible="galleryAddFormShowing"
-    modal
-    header="Add Gallery"
-    :style="{ width: '25rem' }"
-  >
-  </Dialog>
-  <!--<div class="popup-form-panel" v-if="galleryAddFormShowing">
-      <input v-model="newGalleryName" />
-      <button @click="saveGallery">Save</button>
-    </div>
-    <div class="popup-form-panel" v-if="gallerySelectedForEdit">
-      <div class="gallery-name-editor-prompt">
-        <p>{{ gallerySelectedForEdit.name }}</p>
-      </div>
-      <div class="gallery-image-list">
+      <div
+        class="gallery-image-list overflow-scroll"
+        v-if="formState === FormStateEnum.EDIT_GALLERY"
+      >
         <div
           class="gallery-image"
-          v-for="imagePath in gallerySelectedForEdit.imagePaths"
+          v-for="imagePath in gallerySelectedForEdit?.imagePaths"
         >
           <img
-            :src="UtilitiesService.prependApiDomain(imagePath)"
-            alt=""
             class="gallery-item-contents"
+            :src="UtilitiesService.prependApiDomain(imagePath)"
           />
           <TrashIcon
             class="delete-icon"
             @click="removeGalleryImage(imagePath)"
           />
         </div>
-        <div class="gallery-image clickable" @click="addImage">
-          <div class="gallery-item-contents">Click to add image</div>
-          <input
-            type="file"
-            ref="fileInput"
-            @change="onFileSelected"
-            accept="image/*"
-            style="display: none"
-          />
+
+        <div class="gallery-item-contents">
+          <p @click="addImage">Add Image</p>
         </div>
+        <input
+          type="file"
+          ref="fileInput"
+          @change="onFileSelected"
+          accept="image/*"
+          style="display: none"
+        />
       </div>
-    </div>-->
+      <div class="flex justify-end gap-2">
+        <Button
+          type="button"
+          label="Cancel"
+          severity="secondary"
+          @click="formState = FormStateEnum.GALLERY_LIST"
+        ></Button>
+        <Button type="button" label="Save" @click="saveGallery()"></Button>
+      </div>
+    </template>
+  </Dialog>
 </template>
 
 <style>
