@@ -6,6 +6,60 @@ import {
   type MarkdownDocumentCreationRequest,
 } from "../../../sharedModels/MarkdownDocument";
 
+type HttpMethod = "POST" | "GET";
+
+class ApiRequest<T> {
+  public method: HttpMethod;
+  public url: string;
+  public body: string | FormData | null = null;
+  constructor(method: HttpMethod, url: string) {
+    this.method = method;
+    this.url = url;
+  }
+
+  withJsonBody(objectToStringify: any): ApiRequest<T> {
+    try {
+      this.body = JSON.stringify(objectToStringify);
+    } catch (e) {
+      console.log("Unable to stringify object:", objectToStringify);
+      console.error(e);
+    }
+    return this;
+  }
+
+  withFormDataBody(formData: FormData): ApiRequest<T> {
+    this.body = formData;
+    return this;
+  }
+
+  execute(): Promise<T | null> {
+    console.log("Fetching with body:", this.body);
+    const headers: HeadersInit =
+      this.body instanceof FormData
+        ? {}
+        : { "Content-Type": "application/json" };
+    return fetch(this.url, {
+      method: this.method,
+      body: this.body,
+      headers,
+    }).then(async (response: Response) => {
+      if (!response.ok) {
+        let error;
+        try {
+          error = await response.json();
+        } catch (e) {
+          console.warn("Unable to parse error from failed API call");
+          console.error(e);
+        }
+        console.error("API call failed:", this, error);
+        return null;
+      }
+      //todo validate type
+      return await response.json();
+    });
+  }
+}
+
 export const ApiService = {
   uploadImageFile: async (
     file: File,
@@ -16,178 +70,75 @@ export const ApiService = {
     if (galleryId) {
       formData.append("galleryId", `${galleryId}`);
     }
-    try {
-      const response = await fetch(
-        `http://localhost:3000${ApiEndpoints.POST.Image}`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Error uploading image:", errorData);
-        return null;
-      }
-      const data = (await response.json()) as unknown as { imagePath: string };
-      if (data.imagePath) {
-        return data.imagePath;
-      }
-      console.error("Response was ok, but didn't include an imagePath");
-      return null;
-    } catch (e) {
-      console.error("Error uploading image:", e);
-      return null;
-    }
+    console.log("Building api request with form data:", formData);
+    return new ApiRequest<string>(
+      "POST",
+      `http://localhost:3000${ApiEndpoints.POST.Image}`
+    )
+      .withFormDataBody(formData)
+      .execute();
   },
   saveGallery: async (
     gallery: Gallery | GalleryCreationRequest
   ): Promise<Gallery | null> => {
     console.log("Body:", JSON.stringify(gallery));
-    const response = await fetch(
-      `http://localhost:3000${ApiEndpoints.POST.Gallery}`,
-      {
-        method: "POST",
-        body: JSON.stringify(gallery),
-        headers: { "Content-Type": "application/json" },
-      }
-    );
-    if (!response.ok) {
-      response.json().then((error) => {
-        console.warn("There was an error saving the gallery:");
-        console.error(error);
-      });
-    }
-    const galleryResponseObject = await response.json();
-    if (!Gallery.IsGallery(galleryResponseObject)) {
-      console.warn(
-        "Received an ok response, but the gallery response is missing required data"
-      );
-      return null;
-    } else {
-      return galleryResponseObject;
-    }
+    return new ApiRequest<Gallery>(
+      "POST",
+      `http://localhost:3000${ApiEndpoints.POST.Gallery}`
+    )
+      .withJsonBody(gallery)
+      .execute();
   },
   saveDocument: async (
     document: MarkdownDocument | MarkdownDocumentCreationRequest
   ): Promise<MarkdownDocument | null> => {
-    const response = await fetch(
-      `http://localhost:3000${ApiEndpoints.POST.Document}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(document),
-      }
-    );
-    if (!response.ok) {
-      console.warn("Response not ok");
-      const error = response.json();
-      console.error(error);
-      return null;
-    }
-    const responseDocument: any = await response.json();
-    if (!MarkdownDocument.IsMarkdownDocument(responseDocument)) {
-      console.warn("Received invalid markdown document:", document);
-      return null;
-    } else {
-      return responseDocument;
-    }
+    console.log("refactored save document call");
+    return new ApiRequest<MarkdownDocument>(
+      "POST",
+      `http://localhost:3000${ApiEndpoints.POST.Document}`
+    )
+      .withJsonBody(document)
+      .execute();
   },
   createPageAndFetchUpdatedDocument: async (
     markdownDocumentId: number
   ): Promise<MarkdownDocument | null> => {
-    const response = await fetch(
-      `http://localhost:3000${ApiEndpoints.POST.CreatePage}?markdownDocumentId=${markdownDocumentId}`,
-      { method: "POST" }
-    );
-    if (!response.ok) {
-      //todo just create/install an httpclient that'll handle this automatically
-      return null;
-    }
-    const updatedDocument =
-      await ApiService.fetchMarkdownDocument(markdownDocumentId);
-    return updatedDocument;
+    await new ApiRequest<MarkdownDocument>(
+      "POST",
+      `http://localhost:3000${ApiEndpoints.POST.CreatePage}?markdownDocumentId=${markdownDocumentId}`
+    ).execute();
+    return ApiService.fetchMarkdownDocument(markdownDocumentId);
   },
   updatePageAndFetchUpdatedDocument: async (
     markdownDocumentPage: MarkdownDocumentPage,
     markdownDocumentId: number
   ): Promise<MarkdownDocument | null> => {
-    console.log(
-      "Posting updated page with body:",
-      JSON.stringify(markdownDocumentPage)
-    );
-    const response = await fetch(
-      `http://localhost:3000${ApiEndpoints.POST.UpdatePage}`,
-      {
-        method: "POST",
-        body: JSON.stringify(markdownDocumentPage),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    console.log("Response:", response);
-    if (!response.ok) {
-      //todo httpclient
-      console.warn("Response was not ok");
-      return null;
-    }
+    new ApiRequest(
+      "POST",
+      `http://localhost:3000${ApiEndpoints.POST.UpdatePage}`
+    ).withJsonBody(markdownDocumentPage);
     const updatedDocument =
       await ApiService.fetchMarkdownDocument(markdownDocumentId);
-    console.log("Updated document:", updatedDocument);
     return updatedDocument;
   },
   fetchGallery: async (galleryId: number): Promise<Gallery | null> => {
-    const response = await fetch(
-      `http://localhost:3000${ApiEndpoints.GET.Gallery}?galleryId=${galleryId}`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    if (!response.ok) {
-      console.warn("Response wasn't ok");
-      const error = await response.json();
-      console.error(error);
-      return null;
-    }
-    const gallery = (await response.json()) as unknown as Gallery;
-    return gallery;
+    return new ApiRequest<Gallery>(
+      "GET",
+      `http://localhost:3000${ApiEndpoints.GET.Gallery}?galleryId=${galleryId}`
+    ).execute();
   },
   fetchMarkdownDocument: async (
     markdownDocumentId: number
   ): Promise<MarkdownDocument | null> => {
-    const response = await fetch(
-      `http://localhost:3000${ApiEndpoints.GET.Document}?id=${markdownDocumentId}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    if (!response.ok) {
-      console.warn("Response wasn't ok");
-      const error = await response.json();
-      console.error(error);
-      return null;
-    }
-    const markdownDocument = await response.json();
-    return markdownDocument;
+    return new ApiRequest<MarkdownDocument>(
+      "GET",
+      `http://localhost:3000${ApiEndpoints.GET.Document}?id=${markdownDocumentId}`
+    ).execute();
   },
   fetchAllMarkdownDocuments: async (): Promise<MarkdownDocument[] | null> => {
-    const response = await fetch(
-      `http://localhost:3000${ApiEndpoints.GET.AllDocuments}`,
-      { headers: { "Content-Type": "application/json" } }
-    );
-    if (!response.ok) {
-      console.warn("Document list failed");
-      const error = response.json();
-      console.error(error);
-      return null;
-    }
-    const documentList = await response.json();
-    return documentList;
+    return new ApiRequest<MarkdownDocument[]>(
+      "GET",
+      `http://localhost:3000${ApiEndpoints.GET.AllDocuments}`
+    ).execute();
   },
 };

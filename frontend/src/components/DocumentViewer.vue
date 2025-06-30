@@ -91,6 +91,7 @@ const showGalleryPrompt = () => {
 
 const selectedGallery = ref<Gallery | null>(null);
 const showGallery = (galleryName: string) => {
+  console.log("Show gallery called with:", galleryName);
   const gallery = activeMarkdownDocument.value?.galleries.find(
     (gallery: Gallery) => gallery.name === galleryName
   );
