@@ -73,21 +73,23 @@ const onFileSelected = (event: Event) => {
     );
     return;
   }
-  ApiService.uploadImageFile(file, galleryId).then((res) => {
-    if (!res) {
-      console.warn(
-        "Gallery editor tried to upload image, but response is invalid:",
-        res
-      );
-      return;
-    }
-    ApiService.fetchGallery(galleryId).then((result) => {
+  ApiService.uploadImageFile(file, galleryId)
+    .then((res) => {
+      if (!res) {
+        console.warn(
+          "Gallery editor tried to upload image, but response is invalid:",
+          res
+        );
+        return Promise.resolve(null);
+      }
+      return ApiService.fetchGallery(galleryId);
+    })
+    .then((result: Gallery | null) => {
       if (result) {
         emit("gallery-updated", result);
         gallerySelectedForEdit.value = result;
       }
     });
-  });
 };
 
 const newGalleryName = ref<string>("");
