@@ -121,16 +121,28 @@ const showGalleryPrompt = () => {
 
 const selectedGallery = ref<Gallery | null>(null);
 const showGallery = (galleryName: string) => {
-  console.log("Show gallery called with:", galleryName);
   const gallery = activeMarkdownDocument.value?.galleries.find(
     (gallery: Gallery) => gallery.name === galleryName
   );
   if (gallery) {
     selectedGallery.value = gallery;
-    console.log("Selected gallery set to:", selectedGallery);
   }
 };
 const hideGallery = () => (selectedGallery.value = null);
+
+const deletePage = (pageId: number) => {
+  const documentId = activeMarkdownDocument.value?.id;
+  if (!documentId) {
+    return;
+  }
+  ApiService.deletePage(documentId, pageId).then((updatedDocument) => {
+    if (!updatedDocument) {
+      //todo show error
+      return;
+    }
+    activeMarkdownDocument.value = updatedDocument;
+  });
+};
 </script>
 
 <template>
@@ -172,7 +184,10 @@ const hideGallery = () => (selectedGallery.value = null);
           <div :class="[showEditor ? 'half-pane' : '', 'pane']">
             <MarkdownDisplay
               :markdown-text="page.content"
+              :document-id="activeMarkdownDocument.id"
+              :page-id="page.id"
               @galleryClicked="showGallery"
+              @page-deletion-requested="deletePage"
             />
           </div>
         </div>

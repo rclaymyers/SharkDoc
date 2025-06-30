@@ -13,6 +13,7 @@ import {
   createPage,
   createImageInGallery,
   updatePage,
+  deletePage,
 } from "./dbQueryExecutor";
 import { Gallery } from "../sharedModels/Gallery";
 import { ApiEndpoints } from "../sharedModels/ApiEndpoints";
@@ -107,6 +108,18 @@ app.post(ApiEndpoints.POST.CreatePage, (req: Request, res: Response) => {
     +req.query.markdownDocumentId
   );
   res.status(200).json(newPage);
+});
+
+app.post(ApiEndpoints.POST.DeletePage, (req: Request, res: Response) => {
+  if (!req.query?.markdownDocumentId || !req.query?.markdownPageId) {
+    res.status(400);
+    return;
+  }
+  const updatedDocument = deletePage(
+    +req.query.markdownDocumentId,
+    +req.query.markdownPageId
+  );
+  res.status(200).json(updatedDocument);
 });
 
 app.post(ApiEndpoints.POST.UpdatePage, (req: Request, res: Response) => {

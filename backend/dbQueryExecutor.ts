@@ -83,6 +83,16 @@ export const createPage = (
   return retrievePage(result.lastInsertRowid as number);
 };
 
+export const deletePage = (
+  documentId: number,
+  pageId: number
+): MarkdownDocument => {
+  const result = db
+    .prepare(MarkdownDocumentPageQueries.DeletePageByPageId)
+    .run(pageId);
+  return retrieveMarkdownDocumentWithPagesAndGalleries(documentId);
+};
+
 export const updatePage = (
   page: MarkdownDocumentPage
 ): MarkdownDocumentPage => {
@@ -149,7 +159,7 @@ export const retrieveMarkdownDocumentWithPagesAndGalleries = (
   const document = db
     .prepare(MarkdownDocumentQueries.SelectMarkdownDocumentById)
     .get(markdownDocumentId) as unknown as MarkdownDocument;
-  console.log("Got document:", document);
+  console.log("Got document using id:", document, markdownDocumentId);
   const galleries: Gallery[] =
     selectMarkdownDocumentGalleries(markdownDocumentId);
   galleries.forEach((gallery: Gallery) => {

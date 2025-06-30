@@ -109,6 +109,15 @@ export const ApiService = {
     ).execute();
     return ApiService.fetchMarkdownDocument(markdownDocumentId);
   },
+  deletePage: async (
+    markdownDocumentId: number,
+    pageId: number
+  ): Promise<MarkdownDocument | null> => {
+    return new ApiRequest<MarkdownDocument>(
+      "POST",
+      `http://localhost:3000${ApiEndpoints.POST.DeletePage}?markdownDocumentId=${markdownDocumentId}&markdownPageId=${pageId}`
+    ).execute();
+  },
   updatePageAndFetchUpdatedDocument: async (
     markdownDocumentPage: MarkdownDocumentPage,
     markdownDocumentId: number
