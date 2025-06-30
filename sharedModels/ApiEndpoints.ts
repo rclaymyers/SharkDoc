@@ -1,6 +1,7 @@
 export const ApiEndpoints = {
   POST: {
     Gallery: "/gallery",
+    DeleteGallery: "/gallery/delete",
     Image: "/upload",
     Document: "/document",
     CreatePage: "/page/create",

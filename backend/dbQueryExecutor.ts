@@ -47,6 +47,11 @@ export const createOrUpdateGallery = (
   return retrieveGalleryWithImages(galleryId);
 };
 
+export const deleteGallery = (galleryId: number): void => {
+  db.prepare(GalleryQueries.DeleteGallery).run(galleryId);
+  return;
+};
+
 export const createOrUpdateDocument = (
   documentRequest: MarkdownDocument | MarkdownDocumentCreationRequest
 ): MarkdownDocument => {

@@ -19,15 +19,20 @@ const activeMarkdownDocument: Ref<MarkdownDocument | null> =
 const editingTitle = ref<boolean>(false);
 const newTitle = ref<string>("");
 
-ApiService.fetchMarkdownDocument(documentId).then(
-  (document: MarkdownDocument | null) => {
-    if (!document) {
-      console.warn("Got invalid document from API for id:", documentId, null);
-      return;
+const loadDocument = () => {
+  console.log("Load document called");
+  ApiService.fetchMarkdownDocument(documentId).then(
+    (document: MarkdownDocument | null) => {
+      if (!document) {
+        console.warn("Got invalid document from API for id:", documentId, null);
+        return;
+      }
+      console.log("Document viewer set active document to:", document);
+      activeMarkdownDocument.value = document;
     }
-    activeMarkdownDocument.value = document;
-  }
-);
+  );
+};
+loadDocument();
 
 const beginEditingTitle = () => {
   editingTitle.value = true;
@@ -201,6 +206,7 @@ const deletePage = (pageId: number) => {
       :markdown-document="activeMarkdownDocument"
       :allow-image-modification="true"
       @gallery-close-requested="galleryAddEditPromptShowing = false"
+      @gallery-deleted="loadDocument"
     />
   </template>
   <button @click="addPage()">Add Page</button>
