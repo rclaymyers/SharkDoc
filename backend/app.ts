@@ -14,6 +14,7 @@ import {
   createImageInGallery,
   updatePage,
   deletePage,
+  deleteGallery,
 } from "./dbQueryExecutor";
 import { Gallery } from "../sharedModels/Gallery";
 import { ApiEndpoints } from "../sharedModels/ApiEndpoints";
@@ -96,6 +97,15 @@ app.post(ApiEndpoints.POST.Gallery, (req: Request, res: Response) => {
   }
   const updatedGallery: Gallery = createOrUpdateGallery(req.body);
   res.status(200).json(updatedGallery);
+});
+
+app.post(ApiEndpoints.POST.DeleteGallery, (req: Request, res: Response) => {
+  if (!req.query?.galleryId) {
+    res.status(400).json({ error: "Missing gallery id" });
+    return;
+  }
+  deleteGallery(+req.query.galleryId);
+  res.status(200).json("Success");
 });
 
 app.post(ApiEndpoints.POST.CreatePage, (req: Request, res: Response) => {

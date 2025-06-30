@@ -24,6 +24,7 @@ const props = defineProps<{
 }>();
 const emit = defineEmits<{
   (event: "gallery-updated", payload: Gallery): void;
+  (event: "gallery-deleted"): void;
   (event: "gallery-close-requested"): void;
 }>();
 
@@ -97,6 +98,13 @@ const addGallery = () => {
   gallerySelectedForEdit.value = null;
   formState.value = FormStateEnum.ADD_GALLERY;
 };
+const deleteGallery = (galleryId: number) => {
+  console.log("delete gallery called");
+  ApiService.deleteGallery(galleryId).then((_) => {
+    emit("gallery-deleted");
+    console.log("Emitted gallery deleted event");
+  });
+};
 const saveGallery = () => {
   if (gallerySelectedForEdit.value) {
     gallerySelectedForEdit.value.name = newGalleryName.value;
@@ -145,9 +153,15 @@ const saveGallery = () => {
         <div
           v-for="gallery in markdownDocument?.galleries"
           @click="openGalleryDetails(gallery)"
-          class="mb-2"
+          class="mb-2 relative"
         >
-          {{ gallery.name }}
+          <p>
+            {{ gallery.name }}
+          </p>
+          <TrashIcon
+            class="delete-icon"
+            @click.stop="deleteGallery(gallery.id)"
+          />
         </div>
       </div>
       <div class="flex justify-end gap-2">

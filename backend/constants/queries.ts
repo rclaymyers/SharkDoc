@@ -92,6 +92,10 @@ export const GalleryQueries = {
     INSERT INTO ${TableNames.galleries} 
     (${ColumnNames.galleries.name}, ${ColumnNames.galleries.markdownDocumentId}) 
     VALUES (?, ?)`,
+  DeleteGallery: `
+    DELETE FROM ${TableNames.galleries}
+    WHERE ${ColumnNames.galleries.id} = ?
+  `,
   UpdateGallery: `
     UPDATE ${TableNames.galleries} 
     SET ${ColumnNames.galleries.name} = ? 
