@@ -3,7 +3,7 @@ import { ref, type Ref } from "vue";
 import MarkdownDisplay from "./MarkdownDisplay.vue";
 import MarkdownEditor from "./MarkdownEditor.vue";
 import ImageGallery from "./ImageGallery.vue";
-import type { MarkdownDocument } from "../../../sharedModels/MarkdownDocument";
+import { MarkdownDocument } from "../../../sharedModels/MarkdownDocument";
 import GalleryEditor from "./GalleryEditor.vue";
 import { useRoute } from "vue-router";
 import { ApiService } from "../services/apiService";
@@ -16,6 +16,8 @@ const documentId = Number(route.params.id);
 
 const activeMarkdownDocument: Ref<MarkdownDocument | null> =
   ref<MarkdownDocument | null>(null);
+const editingTitle = ref<boolean>(false);
+const newTitle = ref<string>("");
 
 ApiService.fetchMarkdownDocument(documentId).then(
   (document: MarkdownDocument | null) => {
@@ -23,10 +25,38 @@ ApiService.fetchMarkdownDocument(documentId).then(
       console.warn("Got invalid document from API for id:", documentId, null);
       return;
     }
-    console.log("Got document:", document);
     activeMarkdownDocument.value = document;
   }
 );
+
+const beginEditingTitle = () => {
+  editingTitle.value = true;
+  newTitle.value = activeMarkdownDocument.value?.title ?? "";
+};
+
+const saveDocumentTitle = () => {
+  if (!activeMarkdownDocument.value || !newTitle.value) {
+    //todo show error
+    return;
+  }
+  const documentSavePayload = new MarkdownDocument(
+    activeMarkdownDocument.value.id,
+    newTitle.value,
+    [...activeMarkdownDocument.value.pages],
+    [...activeMarkdownDocument.value.galleries]
+  );
+  ApiService.saveDocument(documentSavePayload).then(
+    (updatedDocument: MarkdownDocument | null) => {
+      if (!updatedDocument) {
+        console.warn("Invalid response:", updatedDocument);
+        //todo show error
+      } else {
+        activeMarkdownDocument.value = updatedDocument;
+      }
+      editingTitle.value = false;
+    }
+  );
+};
 
 const updateMarkdownText = (payload: { pageNumber: number; text: string }) => {
   if (!activeMarkdownDocument.value?.pages) {
@@ -105,7 +135,23 @@ const hideGallery = () => (selectedGallery.value = null);
 
 <template>
   <template v-if="activeMarkdownDocument">
-    <router-link to="/"> <DocumentIcon class="document-link" /></router-link>
+    <div class="flex align-items-center">
+      <router-link to="/"> <DocumentIcon class="document-link" /></router-link>
+      <h1
+        class="cursor-pointer"
+        v-if="!editingTitle"
+        @click="beginEditingTitle()"
+      >
+        {{ activeMarkdownDocument.title }}
+      </h1>
+      <InputText
+        autofocus
+        v-if="editingTitle"
+        v-model="newTitle"
+        @keydown.enter="saveDocumentTitle()"
+        @keydown.esc="editingTitle = false"
+      />
+    </div>
     <button @click="toggleEditor">Show Editor</button>
     <button @click="addPage">Add Page</button>
     <button @click="hideGallery" v-if="selectedGallery">Hide Gallery</button>
