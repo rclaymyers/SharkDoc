@@ -73,6 +73,10 @@ export const MarkdownDocumentPageQueries = {
   SelectPageByPageId: `
   SELECT ${ColumnNames.markdownPages.id}, ${ColumnNames.markdownPages.content} 
   FROM ${TableNames.markdownPages} WHERE ${ColumnNames.markdownPages.id} = ?`,
+  DeletePageByPageId: `
+  DELETE FROM ${TableNames.markdownPages}
+  WHERE ${ColumnNames.markdownPages.id} = ?
+  `,
 };
 
 export const GalleryQueries = {

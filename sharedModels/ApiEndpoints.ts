@@ -5,6 +5,7 @@ export const ApiEndpoints = {
     Document: "/document",
     CreatePage: "/page/create",
     UpdatePage: "/page/update",
+    DeletePage: "/page/delete",
   },
   GET: {
     Gallery: "/gallery",
