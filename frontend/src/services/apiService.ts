@@ -5,6 +5,7 @@ import {
   MarkdownDocumentPage,
   type MarkdownDocumentCreationRequest,
 } from "../../../sharedModels/MarkdownDocument";
+import { UtilitiesService } from "./utils";
 
 type HttpMethod = "POST" | "GET";
 
@@ -75,7 +76,7 @@ export const ApiService = {
     console.log("Building api request with form data:", formData);
     return new ApiRequest<string>(
       "POST",
-      `http://localhost:3000${ApiEndpoints.POST.Image}`
+      UtilitiesService.prependApiDomain(ApiEndpoints.POST.Image)
     )
       .withFormDataBody(formData)
       .execute();
@@ -86,7 +87,7 @@ export const ApiService = {
     console.log("Body:", JSON.stringify(gallery));
     return new ApiRequest<Gallery>(
       "POST",
-      `http://localhost:3000${ApiEndpoints.POST.Gallery}`
+      UtilitiesService.prependApiDomain(ApiEndpoints.POST.Gallery)
     )
       .withJsonBody(gallery)
       .execute();
@@ -97,7 +98,7 @@ export const ApiService = {
     console.log("refactored save document call");
     return new ApiRequest<MarkdownDocument>(
       "POST",
-      `http://localhost:3000${ApiEndpoints.POST.Document}`
+      UtilitiesService.prependApiDomain(ApiEndpoints.POST.Document)
     )
       .withJsonBody(document)
       .execute();
@@ -105,7 +106,7 @@ export const ApiService = {
   deleteDocument: async (markdownDocumentId: number) => {
     return new ApiRequest<ApiResponse>(
       "POST",
-      `http://localhost:3000${ApiEndpoints.POST.DeleteDocument}?markdownDocumentId=${markdownDocumentId}`
+      `${UtilitiesService.prependApiDomain(ApiEndpoints.POST.DeleteDocument)}?markdownDocumentId=${markdownDocumentId}`
     ).execute();
   },
   createPageAndFetchUpdatedDocument: async (
@@ -113,7 +114,7 @@ export const ApiService = {
   ): Promise<MarkdownDocument | null> => {
     await new ApiRequest<MarkdownDocument>(
       "POST",
-      `http://localhost:3000${ApiEndpoints.POST.CreatePage}?markdownDocumentId=${markdownDocumentId}`
+      `${UtilitiesService.prependApiDomain(ApiEndpoints.POST.CreatePage)}?markdownDocumentId=${markdownDocumentId}`
     ).execute();
     return ApiService.fetchMarkdownDocument(markdownDocumentId);
   },
@@ -123,7 +124,7 @@ export const ApiService = {
   ): Promise<MarkdownDocument | null> => {
     return new ApiRequest<MarkdownDocument>(
       "POST",
-      `http://localhost:3000${ApiEndpoints.POST.DeletePage}?markdownDocumentId=${markdownDocumentId}&markdownPageId=${pageId}`
+      `${UtilitiesService.prependApiDomain(ApiEndpoints.POST.DeletePage)}?markdownDocumentId=${markdownDocumentId}&markdownPageId=${pageId}`
     ).execute();
   },
   updatePageAndFetchUpdatedDocument: async (
@@ -132,7 +133,7 @@ export const ApiService = {
   ): Promise<MarkdownDocument | null> => {
     await new ApiRequest(
       "POST",
-      `http://localhost:3000${ApiEndpoints.POST.UpdatePage}`
+      `${UtilitiesService.prependApiDomain(ApiEndpoints.POST.UpdatePage)}`
     )
       .withJsonBody(markdownDocumentPage)
       .execute();
@@ -143,13 +144,13 @@ export const ApiService = {
   fetchGallery: async (galleryId: number): Promise<Gallery | null> => {
     return new ApiRequest<Gallery>(
       "GET",
-      `http://localhost:3000${ApiEndpoints.GET.Gallery}?galleryId=${galleryId}`
+      `${UtilitiesService.prependApiDomain(ApiEndpoints.GET.Gallery)}?galleryId=${galleryId}`
     ).execute();
   },
   deleteGallery: async (galleryId: number): Promise<string | null> => {
     return new ApiRequest<string>(
       "POST",
-      `http://localhost:3000${ApiEndpoints.POST.DeleteGallery}?galleryId=${galleryId}`
+      `${UtilitiesService.prependApiDomain(ApiEndpoints.POST.DeleteGallery)}?galleryId=${galleryId}`
     ).execute();
   },
   fetchMarkdownDocument: async (
@@ -157,13 +158,13 @@ export const ApiService = {
   ): Promise<MarkdownDocument | null> => {
     return new ApiRequest<MarkdownDocument>(
       "GET",
-      `http://localhost:3000${ApiEndpoints.GET.Document}?id=${markdownDocumentId}`
+      `${UtilitiesService.prependApiDomain(ApiEndpoints.GET.Document)}?id=${markdownDocumentId}`
     ).execute();
   },
   fetchAllMarkdownDocuments: async (): Promise<MarkdownDocument[] | null> => {
     return new ApiRequest<MarkdownDocument[]>(
       "GET",
-      `http://localhost:3000${ApiEndpoints.GET.AllDocuments}`
+      `${UtilitiesService.prependApiDomain(ApiEndpoints.GET.AllDocuments)}`
     ).execute();
   },
 };
