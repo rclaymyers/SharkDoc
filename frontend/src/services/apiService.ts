@@ -55,6 +55,8 @@ class ApiRequest<T> {
         return null;
       }
       //todo validate type
+      console.log("Returning response:", response);
+      console.log("Unparsed body:", response.body);
       return await response.json();
     });
   }
@@ -122,10 +124,12 @@ export const ApiService = {
     markdownDocumentPage: MarkdownDocumentPage,
     markdownDocumentId: number
   ): Promise<MarkdownDocument | null> => {
-    new ApiRequest(
+    await new ApiRequest(
       "POST",
       `http://localhost:3000${ApiEndpoints.POST.UpdatePage}`
-    ).withJsonBody(markdownDocumentPage);
+    )
+      .withJsonBody(markdownDocumentPage)
+      .execute();
     const updatedDocument =
       await ApiService.fetchMarkdownDocument(markdownDocumentId);
     return updatedDocument;
