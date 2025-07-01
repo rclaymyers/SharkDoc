@@ -151,6 +151,10 @@ export const createImageInGallery = (
   db.prepare(ImageQueries.InsertImage).run(imagePath, galleryId);
 };
 
+export const deleteImage = (imagePath: string): void => {
+  db.prepare(ImageQueries.DeleteImage).run(imagePath);
+};
+
 const selectMarkdownDocumentGalleries = (
   markdownDocumentId: number
 ): Gallery[] => {

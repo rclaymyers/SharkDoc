@@ -3,6 +3,7 @@ export const ApiEndpoints = {
     Gallery: "/gallery",
     DeleteGallery: "/gallery/delete",
     Image: "/upload",
+    DeleteImage: "/image/delete",
     Document: "/document",
     DeleteDocument: "/document/delete",
     CreatePage: "/page/create",

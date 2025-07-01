@@ -127,4 +127,8 @@ export const ImageQueries = {
   InsertImage: `
   INSERT INTO ${TableNames.galleryImages}
   (${ColumnNames.images.filename}, ${ColumnNames.images.galleryId}) VALUES (?, ?)`,
+  DeleteImage: `
+  DELETE FROM ${TableNames.galleryImages}
+  WHERE ${ColumnNames.images.filename} = ?
+  `,
 };

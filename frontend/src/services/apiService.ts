@@ -81,6 +81,12 @@ export const ApiService = {
       .withFormDataBody(formData)
       .execute();
   },
+  deleteImage: async (imagePath: string): Promise<ApiResponse | null> => {
+    return new ApiRequest<ApiResponse>(
+      "POST",
+      `${UtilitiesService.prependApiDomain(ApiEndpoints.POST.DeleteImage)}?filename=${imagePath}`
+    ).execute();
+  },
   saveGallery: async (
     gallery: Gallery | GalleryCreationRequest
   ): Promise<Gallery | null> => {
