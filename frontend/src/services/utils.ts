@@ -1,6 +1,6 @@
 export const UtilitiesService = {
   prependApiDomain: (originalString: string): string => {
-    return `http://localhost:3000${originalString}`;
+    return `${import.meta.env.VITE_API_URL}${originalString}`;
   },
   buildDebouncedFn: (
     callback: (...args: any) => any,
