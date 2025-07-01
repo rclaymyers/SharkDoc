@@ -188,8 +188,9 @@ const deletePage = (pageId: number) => {
           </div>
           <div :class="[showEditor ? 'half-pane' : '', 'pane']">
             <MarkdownDisplay
-              :markdown-text="page.content"
+              :markdown-document="activeMarkdownDocument"
               :document-id="activeMarkdownDocument.id"
+              :page-index="index"
               :page-id="page.id"
               @galleryClicked="showGallery"
               @page-deletion-requested="deletePage"

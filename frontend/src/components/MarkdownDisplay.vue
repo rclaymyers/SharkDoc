@@ -14,9 +14,13 @@ import { computed, onMounted, ref } from "vue";
 import type { Gallery } from "../../../sharedModels/Gallery";
 import { XCircleIcon } from "@heroicons/vue/24/outline";
 import { ApiService } from "../services/apiService";
+import type { MarkdownDocument } from "../../../sharedModels/MarkdownDocument";
+
+const MISSING_GALLERY_MESSAGE = "Invalid gallery name";
 
 const props = defineProps<{
-  markdownText: string;
+  markdownDocument: MarkdownDocument;
+  pageIndex: number;
   pageId: number;
 }>();
 const emit = defineEmits<{
@@ -27,8 +31,29 @@ const galleryRegex = /gallery\(([\w-]+)\)/g;
 const markdownContainer = ref<HTMLElement | null>(null);
 
 const compiledMarkdown = computed(() => {
-  const processedText = props.markdownText.replace(galleryRegex, (_, name) => {
-    return `<a class="gallery-anchor" data-name="${name}">${name}</a>`;
+  console.log("Got props:", props);
+  if (!props.markdownDocument || !props.pageId) {
+    console.log(
+      "Markdown display: invalid props:",
+      props.markdownDocument,
+      props.pageId
+    );
+  }
+  console.log(
+    "Markdown document page:",
+    props.markdownDocument,
+    props.pageId,
+    props.markdownDocument.pages[props.pageId]
+  );
+  const processedText = props.markdownDocument.pages[
+    props.pageIndex
+  ].content.replace(galleryRegex, (_, name) => {
+    const gallery: Gallery | undefined = props.markdownDocument.galleries.find(
+      (gallery) => gallery.name === name
+    );
+    return gallery
+      ? `<a class="gallery-anchor" data-name="${name}">${name}</a>`
+      : `<p title="${MISSING_GALLERY_MESSAGE}" class="missing-gallery" title=>${name}</p>`;
   });
   return marked.parse(processedText);
 });
@@ -57,6 +82,11 @@ a.gallery-anchor {
 }
 a.gallery-anchor:hover {
   cursor: pointer;
+}
+p.missing-gallery {
+  color: #a44;
+  cursor: pointer;
+  text-decoration: underline;
 }
 .markdown-page {
   position: relative;
