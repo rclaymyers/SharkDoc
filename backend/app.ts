@@ -15,13 +15,15 @@ import {
   updatePage,
   deletePage,
   deleteGallery,
+  deleteDocument,
 } from "./dbQueryExecutor";
 import { Gallery } from "../sharedModels/Gallery";
-import { ApiEndpoints } from "../sharedModels/ApiEndpoints";
+import { ApiEndpoints } from "../sharedModels/ApiConstants";
 import {
   MarkdownDocument,
   MarkdownDocumentPage,
 } from "../sharedModels/MarkdownDocument";
+import { SuccessResponse } from "./constants/responseTemplates";
 
 const app = express();
 app.use(cors());
@@ -83,6 +85,15 @@ app.post(ApiEndpoints.POST.Document, (req: Request, res: Response) => {
   }
   const updatedDocument: MarkdownDocument = createOrUpdateDocument(req.body);
   res.status(200).json(updatedDocument);
+});
+
+app.post(ApiEndpoints.POST.DeleteDocument, (req: Request, res: Response) => {
+  if (!req.query?.markdownDocumentId) {
+    res.status(400).json({ error: "Invalid markdown document id" });
+    return;
+  }
+  deleteDocument(+req.query.markdownDocumentId);
+  res.status(200).json(SuccessResponse);
 });
 
 app.post(ApiEndpoints.POST.Gallery, (req: Request, res: Response) => {

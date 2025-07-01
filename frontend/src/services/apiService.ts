@@ -1,4 +1,4 @@
-import { ApiEndpoints } from "../../../sharedModels/ApiEndpoints";
+import { ApiEndpoints, ApiResponse } from "../../../sharedModels/ApiConstants";
 import { Gallery, GalleryCreationRequest } from "../../../sharedModels/Gallery";
 import {
   MarkdownDocument,
@@ -101,6 +101,12 @@ export const ApiService = {
     )
       .withJsonBody(document)
       .execute();
+  },
+  deleteDocument: async (markdownDocumentId: number) => {
+    return new ApiRequest<ApiResponse>(
+      "POST",
+      `http://localhost:3000${ApiEndpoints.POST.DeleteDocument}?markdownDocumentId=${markdownDocumentId}`
+    ).execute();
   },
   createPageAndFetchUpdatedDocument: async (
     markdownDocumentId: number

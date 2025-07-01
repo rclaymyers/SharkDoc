@@ -41,6 +41,10 @@ export const MarkdownDocumentQueries = {
     UPDATE ${TableNames.markdownDocuments} 
     SET ${ColumnNames.markdownDocuments.title} = ? 
     WHERE ${ColumnNames.markdownDocuments.id} = ?`,
+  DeleteMarkdownDocument: `
+  DELETE FROM ${TableNames.markdownDocuments}
+  WHERE ${ColumnNames.markdownDocuments.id} = ?
+  `,
   SelectAllMarkdownDocuments: `SELECT * FROM ${TableNames.markdownDocuments}`,
   SelectMarkdownDocumentById: `
     SELECT ${ColumnNames.markdownDocuments.id}, ${ColumnNames.markdownDocuments.title} 

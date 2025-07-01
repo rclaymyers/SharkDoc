@@ -7,6 +7,7 @@ import {
 import { ApiService } from "../services/apiService";
 import { useRouter } from "vue-router";
 import { Dialog, InputText, Button } from "primevue";
+import { TrashIcon } from "@heroicons/vue/24/outline";
 
 const router = useRouter();
 
@@ -48,13 +49,25 @@ const saveNewDocument = (): void => {
     markdownDocuments.value = [...markdownDocuments.value, result];
   });
 };
+const deleteDocument = (documentId: number): void => {
+  ApiService.deleteDocument(documentId)
+    .then((_) => {
+      return ApiService.fetchAllMarkdownDocuments();
+    })
+    .then((documents: MarkdownDocument[] | null) => {
+      if (documents) markdownDocuments.value = documents;
+    });
+};
 </script>
 
 <template>
   <h2>Your Documents</h2>
   <div class="markdownDocumentsList">
     <div class="document" v-for="document in markdownDocuments">
-      <p @click="openDocument(document.id)">{{ document.title }}</p>
+      <div class="flex align-items-center relative w-sm">
+        <p @click="openDocument(document.id)">{{ document.title }}</p>
+        <TrashIcon class="delete-icon" @click="deleteDocument(document.id)" />
+      </div>
     </div>
     <button @click="addDocument">Add Document</button>
   </div>
