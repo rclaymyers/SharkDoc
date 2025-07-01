@@ -140,7 +140,7 @@ app.post(ApiEndpoints.POST.UpdatePage, (req: Request, res: Response) => {
     return;
   }
   updatePage(req.body);
-  res.sendStatus(200);
+  res.status(200).json({ status: "success" });
 });
 
 app.get(ApiEndpoints.GET.Gallery, (req: Request, res: Response) => {
