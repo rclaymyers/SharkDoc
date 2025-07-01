@@ -7,7 +7,10 @@ import {
 import { TrashIcon, XCircleIcon } from "@heroicons/vue/20/solid";
 import { LocalStorageService } from "../services/localStorageService";
 import { ApiService } from "../services/apiService";
-import { MarkdownDocument } from "../../../sharedModels/MarkdownDocument";
+import {
+  MarkdownDocument,
+  MarkdownDocumentPage,
+} from "../../../sharedModels/MarkdownDocument";
 import { UtilitiesService } from "../services/utils";
 import { XMarkIcon } from "@heroicons/vue/24/outline";
 import { InputText, Button } from "primevue";
@@ -109,9 +112,11 @@ const deleteGallery = (galleryId: number) => {
   });
 };
 const saveGallery = () => {
-  if (gallerySelectedForEdit.value) {
-    gallerySelectedForEdit.value.name = newGalleryName.value;
+  if (!gallerySelectedForEdit.value) {
+    return;
   }
+  const oldName = gallerySelectedForEdit.value.name;
+  gallerySelectedForEdit.value.name = newGalleryName.value;
   const galleryApiPayload: Gallery | GalleryCreationRequest | null =
     formState.value === FormStateEnum.ADD_GALLERY
       ? new GalleryCreationRequest(
@@ -128,17 +133,37 @@ const saveGallery = () => {
     );
     return;
   }
-  ApiService.saveGallery(galleryApiPayload).then((response: Gallery | null) => {
-    console.log("Got new/updated gallery from API:", response);
-    if (response) {
-      props.markdownDocument.galleries = [
-        ...props.markdownDocument.galleries.filter(
-          (gallery: Gallery) => gallery.id !== response.id
-        ),
-        response,
-      ];
-    }
-  });
+  let updatedGallery: Gallery | null = null;
+  ApiService.saveGallery(galleryApiPayload)
+    .then((response: Gallery | null) => {
+      console.log("Got new/updated gallery from API:", response);
+      if (response) {
+        updatedGallery = response;
+        props.markdownDocument.galleries = [
+          ...props.markdownDocument.galleries.filter(
+            (gallery: Gallery) => gallery.id !== response.id
+          ),
+          response,
+        ];
+        const updatePromises: Promise<MarkdownDocument | null>[] = [];
+        props.markdownDocument.pages.forEach((page: MarkdownDocumentPage) => {
+          page.content = page.content.replace(
+            `gallery(${oldName})`,
+            `gallery(${response.name})`
+          );
+          updatePromises.push(
+            ApiService.updatePageAndFetchUpdatedDocument(
+              page,
+              props.markdownDocument.id
+            )
+          );
+        });
+        return Promise.all(updatePromises);
+      }
+    })
+    .then((_) => {
+      if (updatedGallery) emit("gallery-updated", updatedGallery);
+    });
 };
 </script>
 
