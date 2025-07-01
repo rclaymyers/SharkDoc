@@ -4,6 +4,7 @@ export const ApiEndpoints = {
     DeleteGallery: "/gallery/delete",
     Image: "/upload",
     Document: "/document",
+    DeleteDocument: "/document/delete",
     CreatePage: "/page/create",
     UpdatePage: "/page/update",
     DeletePage: "/page/delete",
@@ -14,3 +15,10 @@ export const ApiEndpoints = {
     Document: "/document",
   },
 };
+
+export class ApiResponse {
+  message: string;
+  constructor(message: string) {
+    this.message = message;
+  }
+}

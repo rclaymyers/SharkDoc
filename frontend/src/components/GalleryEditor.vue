@@ -250,17 +250,6 @@ div.gallery-item-contents {
   background-color: #fff;
 }
 
-.delete-icon {
-  width: 3vh;
-  height: 3vh;
-  color: red;
-  position: absolute;
-  top: 0.5vw;
-  right: 0.5vh;
-  z-index: 2;
-  cursor: pointer;
-}
-
 .close-icon {
   width: 5vh;
   height: 5vh;

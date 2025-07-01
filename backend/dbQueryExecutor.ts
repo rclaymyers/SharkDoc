@@ -72,6 +72,14 @@ export const createOrUpdateDocument = (
   return retrieveMarkdownDocumentWithPagesAndGalleries(documentId);
 };
 
+export const deleteDocument = (markdownDocumentId: number): void => {
+  const result = db
+    .prepare(MarkdownDocumentQueries.DeleteMarkdownDocument)
+    .run(markdownDocumentId);
+  console.log("id:", markdownDocumentId);
+  console.log("Delete document records affected:", result.changes);
+};
+
 export const createPage = (
   markdownDocumentId: number
 ): MarkdownDocumentPage => {

@@ -125,3 +125,14 @@ button:focus-visible {
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
 }
+
+.delete-icon {
+  width: 3vh;
+  height: 3vh;
+  color: red;
+  position: absolute;
+  top: 0.5vw;
+  right: 0.5vh;
+  z-index: 2;
+  cursor: pointer;
+}
