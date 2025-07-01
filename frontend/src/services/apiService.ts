@@ -140,7 +140,7 @@ export const ApiService = {
       `http://localhost:3000${ApiEndpoints.GET.Gallery}?galleryId=${galleryId}`
     ).execute();
   },
-  deleteGallery: async (galleryId: number): Promise<string> => {
+  deleteGallery: async (galleryId: number): Promise<string | null> => {
     return new ApiRequest<string>(
       "POST",
       `http://localhost:3000${ApiEndpoints.POST.DeleteGallery}?galleryId=${galleryId}`
