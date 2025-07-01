@@ -43,17 +43,20 @@ const openGalleryDetails = (gallery: Gallery) => {
 };
 
 const removeGalleryImage = (imagePathToRemove: string) => {
-  if (!gallerySelectedForEdit.value) {
+  const gallery = gallerySelectedForEdit.value;
+  if (!gallery) {
     console.warn(
       "An image deletion was requested, but no gallery is being edited."
     );
     return;
   }
-  gallerySelectedForEdit.value.imagePaths =
-    gallerySelectedForEdit.value.imagePaths.filter(
-      (imagePath) => imagePath !== imagePathToRemove
-    );
-  LocalStorageService.saveGallery(gallerySelectedForEdit.value);
+  gallery.imagePaths = gallery.imagePaths.filter(
+    (imagePath: string) => imagePath !== imagePathToRemove
+  );
+  ApiService.deleteImage(imagePathToRemove).then((_) => {
+    console.log("Deleted image");
+    emit("gallery-updated", gallery);
+  });
 };
 
 const addImage = () => {

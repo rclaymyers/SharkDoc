@@ -16,6 +16,7 @@ import {
   deletePage,
   deleteGallery,
   deleteDocument,
+  deleteImage,
 } from "./dbQueryExecutor";
 import { Gallery } from "../sharedModels/Gallery";
 import { ApiEndpoints } from "../sharedModels/ApiConstants";
@@ -23,7 +24,7 @@ import {
   MarkdownDocument,
   MarkdownDocumentPage,
 } from "../sharedModels/MarkdownDocument";
-import { SuccessResponse } from "./constants/responseTemplates";
+import { SuccessResponse as SuccessResponseTemplate } from "./constants/responseTemplates";
 
 const app = express();
 app.use(cors());
@@ -77,6 +78,15 @@ app.post(
   }
 );
 
+app.post(ApiEndpoints.POST.DeleteImage, (req: Request, res: Response) => {
+  if (!req.query?.filename || typeof req.query.filename !== "string") {
+    res.status(400).json({ error: "filename query param missing" });
+    return;
+  }
+  deleteImage(req.query.filename);
+  res.status(200).json(SuccessResponseTemplate);
+});
+
 app.post(ApiEndpoints.POST.Document, (req: Request, res: Response) => {
   if (!req.body?.title) {
     console.warn("document POST request body invalid");
@@ -93,7 +103,7 @@ app.post(ApiEndpoints.POST.DeleteDocument, (req: Request, res: Response) => {
     return;
   }
   deleteDocument(+req.query.markdownDocumentId);
-  res.status(200).json(SuccessResponse);
+  res.status(200).json(SuccessResponseTemplate);
 });
 
 app.post(ApiEndpoints.POST.Gallery, (req: Request, res: Response) => {

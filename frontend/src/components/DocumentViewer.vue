@@ -207,6 +207,7 @@ const deletePage = (pageId: number) => {
       :allow-image-modification="true"
       @gallery-close-requested="galleryAddEditPromptShowing = false"
       @gallery-deleted="loadDocument"
+      @gallery-updated="loadDocument"
     />
   </template>
   <button @click="addPage()">Add Page</button>
