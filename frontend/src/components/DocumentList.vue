@@ -6,11 +6,12 @@ import {
 } from "../../../sharedModels/MarkdownDocument";
 import { ApiService } from "../services/apiService";
 import { useRouter } from "vue-router";
+import { Dialog, InputText, Button } from "primevue";
 
 const router = useRouter();
 
 const markdownDocuments = ref<MarkdownDocument[]>([]);
-const showingDocumentAddForm = ref<boolean>(false);
+const dialogVisible = ref<boolean>(false);
 const newDocumentName = ref<string>("");
 
 ApiService.fetchAllMarkdownDocuments().then(
@@ -26,13 +27,14 @@ const openDocument = (markdownDocumentId: number): void => {
   router.push(`document/${markdownDocumentId}`);
 };
 const addDocument = (): void => {
-  showingDocumentAddForm.value = true;
+  dialogVisible.value = true;
+  newDocumentName.value = "";
 };
 const saveNewDocument = (): void => {
   const documentName = newDocumentName.value;
   console.log("Save new document called with name:", documentName);
   newDocumentName.value = "";
-  showingDocumentAddForm.value = false;
+  dialogVisible.value = false;
   ApiService.saveDocument(
     new MarkdownDocumentCreationRequest(documentName)
   ).then((result: MarkdownDocument | null) => {
@@ -56,12 +58,23 @@ const saveNewDocument = (): void => {
     </div>
     <button @click="addDocument">Add Document</button>
   </div>
-  <div class="popup-form-container" v-if="showingDocumentAddForm">
-    <div class="popup-form-panel">
-      <input v-model="newDocumentName" />
-      <button @click="saveNewDocument">Save Document</button>
-    </div>
-  </div>
+  <Dialog
+    v-model:visible="dialogVisible"
+    modal
+    dismissable-mask
+    :header="'Add Document'"
+    :style="{ maxWidth: '70vw' }"
+  >
+    <label for="name">Name</label>
+    <InputText
+      v-model:model-value="newDocumentName"
+      id="name"
+      class="flex-auto"
+      autocomplete="off"
+      @keydown.enter.stop.prevent="saveNewDocument"
+    ></InputText>
+    <Button type="button" label="Save" @click="saveNewDocument"></Button>
+  </Dialog>
 </template>
 
 <style></style>
