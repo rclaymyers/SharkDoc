@@ -9,6 +9,8 @@ export const ApiEndpoints = {
     CreatePage: "/page/create",
     UpdatePage: "/page/update",
     DeletePage: "/page/delete",
+    RegisterUser: "/user/register",
+    LoginUser: "/user/login",
   },
   GET: {
     Gallery: "/gallery",
@@ -21,5 +23,21 @@ export class ApiResponse {
   message: string;
   constructor(message: string) {
     this.message = message;
+  }
+}
+
+export class UserAuthRequest {
+  username: string;
+  unhashedPass: string;
+  constructor(username: string, unhashedPass: string) {
+    this.username = username;
+    this.unhashedPass = unhashedPass;
+  }
+}
+
+export class UserSignInResponse {
+  token: string;
+  constructor(token: string) {
+    this.token = token;
   }
 }

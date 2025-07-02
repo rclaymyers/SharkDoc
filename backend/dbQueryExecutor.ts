@@ -11,18 +11,31 @@ import {
   ImageQueries,
   MarkdownDocumentPageQueries,
   MarkdownDocumentQueries,
+  UserQueries,
 } from "./constants/queries";
+import { User } from "./auth";
 
 const dbPath = path.resolve(__dirname, "data.sqlite");
 const db = new Database(dbPath);
 
 export const initDatabase = () => {
+  db.prepare(UserQueries.CreateUsersTableIfNotExists).run();
   db.prepare(
     MarkdownDocumentQueries.CreateMarkdownDocumentsTableIfNotExists
   ).run();
   db.prepare(MarkdownDocumentPageQueries.CreatePagesTableIfNotExists).run();
   db.prepare(GalleryQueries.CreateGalleriesTableIfNotExists).run();
   db.prepare(ImageQueries.CreateImagesTableIfNotExists).run();
+};
+
+export const createUser = (username: string, hashedPass: string) => {
+  db.prepare(UserQueries.CreateUser).run(username, hashedPass);
+};
+
+export const selectUser = (username: string) => {
+  return db
+    .prepare(UserQueries.SelectUserByUsername)
+    .get(username) as unknown as User | undefined;
 };
 
 export const createOrUpdateGallery = (
@@ -53,7 +66,8 @@ export const deleteGallery = (galleryId: number): void => {
 };
 
 export const createOrUpdateDocument = (
-  documentRequest: MarkdownDocument | MarkdownDocumentCreationRequest
+  documentRequest: MarkdownDocument | MarkdownDocumentCreationRequest,
+  ownerId: number
 ): MarkdownDocument => {
   let documentId: number | null = null;
   if (MarkdownDocument.IsMarkdownDocument(documentRequest)) {
@@ -65,7 +79,7 @@ export const createOrUpdateDocument = (
   } else {
     const result = db
       .prepare(MarkdownDocumentQueries.CreateMarkdownDocument)
-      .run(documentRequest.title);
+      .run(documentRequest.title, ownerId);
     documentId = result.lastInsertRowid as number;
     createPage(documentId);
   }
@@ -164,10 +178,12 @@ const selectMarkdownDocumentGalleries = (
   return result;
 };
 
-export const retrieveAllMarkdownDocuments = (): MarkdownDocument[] => {
+export const retrieveAllMarkdownDocumentsForUser = (
+  userId: number
+): MarkdownDocument[] => {
   return db
-    .prepare(MarkdownDocumentQueries.SelectAllMarkdownDocuments)
-    .all() as unknown as MarkdownDocument[];
+    .prepare(MarkdownDocumentQueries.SelectAllMarkdownDocumentsForUser)
+    .all(userId) as unknown as MarkdownDocument[];
 };
 
 export const retrieveMarkdownDocumentWithPagesAndGalleries = (
