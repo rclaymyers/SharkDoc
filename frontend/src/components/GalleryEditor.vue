@@ -112,11 +112,11 @@ const deleteGallery = (galleryId: number) => {
   });
 };
 const saveGallery = () => {
-  if (!gallerySelectedForEdit.value) {
-    return;
+  console.log("Save gallery called:", gallerySelectedForEdit.value);
+  const oldGalleryNameToUpdate = gallerySelectedForEdit.value?.name;
+  if (gallerySelectedForEdit.value) {
+    gallerySelectedForEdit.value.name = newGalleryName.value;
   }
-  const oldName = gallerySelectedForEdit.value.name;
-  gallerySelectedForEdit.value.name = newGalleryName.value;
   const galleryApiPayload: Gallery | GalleryCreationRequest | null =
     formState.value === FormStateEnum.ADD_GALLERY
       ? new GalleryCreationRequest(
@@ -146,18 +146,20 @@ const saveGallery = () => {
           response,
         ];
         const updatePromises: Promise<MarkdownDocument | null>[] = [];
-        props.markdownDocument.pages.forEach((page: MarkdownDocumentPage) => {
-          page.content = page.content.replace(
-            `gallery(${oldName})`,
-            `gallery(${response.name})`
-          );
-          updatePromises.push(
-            ApiService.updatePageAndFetchUpdatedDocument(
-              page,
-              props.markdownDocument.id
-            )
-          );
-        });
+        if (oldGalleryNameToUpdate) {
+          props.markdownDocument.pages.forEach((page: MarkdownDocumentPage) => {
+            page.content = page.content.replace(
+              `gallery(${oldGalleryNameToUpdate})`,
+              `gallery(${response.name})`
+            );
+            updatePromises.push(
+              ApiService.updatePageAndFetchUpdatedDocument(
+                page,
+                props.markdownDocument.id
+              )
+            );
+          });
+        }
         return Promise.all(updatePromises);
       }
     })

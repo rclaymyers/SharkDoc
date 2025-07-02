@@ -5,17 +5,20 @@ export class MarkdownDocument {
   public title: string;
   public pages: MarkdownDocumentPage[];
   public galleries: Gallery[];
+  public ownerId: number;
 
   constructor(
     id: number,
     title: string,
     pages: MarkdownDocumentPage[],
-    galleries: Gallery[]
+    galleries: Gallery[],
+    ownerId: number
   ) {
     this.id = id;
     this.title = title;
     this.pages = pages;
     this.galleries = galleries;
+    this.ownerId = ownerId;
   }
 
   static IsMarkdownDocument(instance: any): instance is MarkdownDocument {

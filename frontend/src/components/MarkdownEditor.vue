@@ -39,7 +39,6 @@ onMounted(() => {
             pageNumber: props.pageNumber,
             text: newDoc,
           });
-          LocalStorageService.saveDocument(props.markdownDocument);
         }
       }),
     ],

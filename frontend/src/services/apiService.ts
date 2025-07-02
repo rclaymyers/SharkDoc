@@ -1,10 +1,16 @@
-import { ApiEndpoints, ApiResponse } from "../../../sharedModels/ApiConstants";
+import {
+  ApiEndpoints,
+  ApiResponse,
+  UserAuthRequest,
+  UserSignInResponse,
+} from "../../../sharedModels/ApiConstants";
 import { Gallery, GalleryCreationRequest } from "../../../sharedModels/Gallery";
 import {
   MarkdownDocument,
   MarkdownDocumentPage,
   type MarkdownDocumentCreationRequest,
 } from "../../../sharedModels/MarkdownDocument";
+import { LocalStorageService } from "./localStorageService";
 import { UtilitiesService } from "./utils";
 
 type HttpMethod = "POST" | "GET";
@@ -13,6 +19,7 @@ class ApiRequest<T> {
   public method: HttpMethod;
   public url: string;
   public body: string | FormData | null = null;
+  public authHeader: string | null = null;
   constructor(method: HttpMethod, url: string) {
     this.method = method;
     this.url = url;
@@ -33,12 +40,20 @@ class ApiRequest<T> {
     return this;
   }
 
+  withAuthToken(token: string): ApiRequest<T> {
+    this.authHeader = `Bearer ${token}`;
+    return this;
+  }
+
   execute(): Promise<T | null> {
     console.log("Fetching with body:", this.body);
     const headers: HeadersInit =
       this.body instanceof FormData
         ? {}
         : { "Content-Type": "application/json" };
+    if (this.authHeader) {
+      headers["authorization"] = this.authHeader;
+    }
     return fetch(this.url, {
       method: this.method,
       body: this.body,
@@ -101,12 +116,18 @@ export const ApiService = {
   saveDocument: async (
     document: MarkdownDocument | MarkdownDocumentCreationRequest
   ): Promise<MarkdownDocument | null> => {
+    const token = LocalStorageService.getJwt();
+    if (!token) {
+      //todo redirect to signin
+      return null;
+    }
     console.log("refactored save document call");
     return new ApiRequest<MarkdownDocument>(
       "POST",
       UtilitiesService.prependApiDomain(ApiEndpoints.POST.Document)
     )
       .withJsonBody(document)
+      .withAuthToken(token)
       .execute();
   },
   deleteDocument: async (markdownDocumentId: number) => {
@@ -168,9 +189,38 @@ export const ApiService = {
     ).execute();
   },
   fetchAllMarkdownDocuments: async (): Promise<MarkdownDocument[] | null> => {
+    const token = LocalStorageService.getJwt();
+    if (!token) {
+      console.warn("Token not found.");
+      return null;
+    }
     return new ApiRequest<MarkdownDocument[]>(
       "GET",
       `${UtilitiesService.prependApiDomain(ApiEndpoints.GET.AllDocuments)}`
-    ).execute();
+    )
+      .withAuthToken(token)
+      .execute();
+  },
+  registerUser: async (
+    username: string,
+    unhashedPass: string
+  ): Promise<ApiResponse | null> => {
+    return new ApiRequest<ApiResponse>(
+      "POST",
+      `${UtilitiesService.prependApiDomain(ApiEndpoints.POST.RegisterUser)}`
+    )
+      .withJsonBody(new UserAuthRequest(username, unhashedPass))
+      .execute();
+  },
+  signInUser: async (
+    username: string,
+    unhashedPass: string
+  ): Promise<UserSignInResponse | null> => {
+    return new ApiRequest<UserSignInResponse>(
+      "POST",
+      `${UtilitiesService.prependApiDomain(ApiEndpoints.POST.LoginUser)}`
+    )
+      .withJsonBody(new UserAuthRequest(username, unhashedPass))
+      .execute();
   },
 };

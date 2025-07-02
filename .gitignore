@@ -26,3 +26,6 @@ dist-ssr
 # backend persistent data
 backend/uploads/*
 backend/data.sqlite
+
+#backend secret
+backend/.env

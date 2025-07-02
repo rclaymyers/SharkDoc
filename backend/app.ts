@@ -1,11 +1,14 @@
-import express, { Request, Response } from "express";
+import express, { Express, Request, Response } from "express";
 import multer, { FileFilterCallback } from "multer";
 import path from "path";
 import fs from "fs";
 import cors from "cors";
+import bcrypt from "bcryptjs";
+import jwt, { JwtPayload } from "jsonwebtoken";
+import dotenv from "dotenv";
 import {
   initDatabase,
-  retrieveAllMarkdownDocuments,
+  retrieveAllMarkdownDocumentsForUser,
   retrieveGalleryWithImages,
   retrieveMarkdownDocumentWithPagesAndGalleries,
   createOrUpdateDocument,
@@ -25,11 +28,26 @@ import {
   MarkdownDocumentPage,
 } from "../sharedModels/MarkdownDocument";
 import { SuccessResponse as SuccessResponseTemplate } from "./constants/responseTemplates";
+import {
+  buildTokenVerificationMiddleware,
+  CREDENTIAL_VALIDATION_ERROR,
+  getTokenFromAuthHeader,
+  setupAuthEndpoints,
+} from "./auth";
 
-const app = express();
+dotenv.config();
+const JWT_SECRET = process.env.JWT_SECRET as string;
+
+console.log("JWT secret set to:", JWT_SECRET);
+
+const app: Express = express();
 app.use(cors());
 app.use(express.json());
 const port = 3000;
+
+setupAuthEndpoints(app, JWT_SECRET);
+const tokenVerificationMiddleware =
+  buildTokenVerificationMiddleware(JWT_SECRET);
 
 const uploadDir = path.join(__dirname, "uploads");
 
@@ -88,12 +106,17 @@ app.post(ApiEndpoints.POST.DeleteImage, (req: Request, res: Response) => {
 });
 
 app.post(ApiEndpoints.POST.Document, (req: Request, res: Response) => {
-  if (!req.body?.title) {
+  const token = getTokenFromAuthHeader(req, JWT_SECRET);
+  console.log("request body, token:", req.body, token);
+  if (!req.body?.title || !token?.userId) {
     console.warn("document POST request body invalid");
     res.status(400).json({ error: "Invalid request body" });
     return;
   }
-  const updatedDocument: MarkdownDocument = createOrUpdateDocument(req.body);
+  const updatedDocument: MarkdownDocument = createOrUpdateDocument(
+    req.body,
+    +token.userId
+  );
   res.status(200).json(updatedDocument);
 });
 
@@ -173,8 +196,14 @@ app.get(ApiEndpoints.GET.Gallery, (req: Request, res: Response) => {
   res.status(200).json(gallery);
 });
 
-app.get(ApiEndpoints.GET.AllDocuments, (_, res: Response) => {
-  const markdownDocuments = retrieveAllMarkdownDocuments();
+app.get(ApiEndpoints.GET.AllDocuments, (req: Request, res: Response) => {
+  const token = getTokenFromAuthHeader(req, JWT_SECRET);
+  if (!token?.userId) {
+    res.status(401).json(CREDENTIAL_VALIDATION_ERROR);
+    return;
+  }
+
+  const markdownDocuments = retrieveAllMarkdownDocumentsForUser(+token.userId);
   res.status(200).json(markdownDocuments);
 });
 

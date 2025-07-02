@@ -3,17 +3,20 @@ const TableNames = {
   markdownPages: "pages",
   galleryImages: "images",
   galleries: "galleries",
+  users: "users",
 };
 
 const ColumnNames = {
   markdownDocuments: {
     id: "id",
     title: "title",
+    ownerId: "ownerId",
   },
   markdownPages: {
     id: "id",
     content: "content",
     markdownDocumentId: "markdown_document_id",
+    ownerId: "ownerId",
   },
   images: {
     id: "id",
@@ -24,19 +27,49 @@ const ColumnNames = {
     id: "id",
     name: "name",
     markdownDocumentId: "markdown_document_id",
+    ownerId: "ownerId",
   },
+  users: {
+    id: "id",
+    username: "username",
+    hashedPassword: "hashedPassword",
+  },
+};
+
+export const UserQueries = {
+  CreateUsersTableIfNotExists: `
+  CREATE TABLE IF NOT EXISTS ${TableNames.users} (
+  ${ColumnNames.users.id} INTEGER PRIMARY KEY AUTOINCREMENT,
+  ${ColumnNames.users.username} TEXT NOT NULL,
+  ${ColumnNames.users.hashedPassword} TEXT NOT NULL
+  )
+  `,
+  CreateUser: `
+  INSERT INTO ${TableNames.users}
+  (${ColumnNames.users.username}, ${ColumnNames.users.hashedPassword})
+  VALUES (?, ?)
+  `,
+  SelectUserByUsername: `
+  SELECT * FROM ${TableNames.users}
+  WHERE ${ColumnNames.users.username} = ?
+  `,
 };
 
 export const MarkdownDocumentQueries = {
   CreateMarkdownDocumentsTableIfNotExists: `
     CREATE TABLE IF NOT EXISTS ${TableNames.markdownDocuments} (
     ${ColumnNames.markdownDocuments.id} INTEGER PRIMARY KEY AUTOINCREMENT,
-    ${ColumnNames.markdownDocuments.title} TEXT NOT NULL
+    ${ColumnNames.markdownDocuments.title} TEXT NOT NULL,
+    ${ColumnNames.markdownDocuments.ownerId} INTEGER NOT NULL,
+    FOREIGN KEY (${ColumnNames.markdownDocuments.ownerId})
+    REFERENCES ${TableNames.users}(${ColumnNames.users.id}) ON DELETE CASCADE
   )
   `,
   CreateMarkdownDocument: `
     INSERT INTO ${TableNames.markdownDocuments} 
-    (${ColumnNames.markdownDocuments.title}) VALUES (?)`,
+    (${ColumnNames.markdownDocuments.title}, ${ColumnNames.markdownDocuments.ownerId})
+    VALUES (?, ?)
+    `,
   UpdateMarkdownDocument: `
     UPDATE ${TableNames.markdownDocuments} 
     SET ${ColumnNames.markdownDocuments.title} = ? 
@@ -45,7 +78,10 @@ export const MarkdownDocumentQueries = {
   DELETE FROM ${TableNames.markdownDocuments}
   WHERE ${ColumnNames.markdownDocuments.id} = ?
   `,
-  SelectAllMarkdownDocuments: `SELECT * FROM ${TableNames.markdownDocuments}`,
+  SelectAllMarkdownDocumentsForUser: `
+  SELECT * FROM ${TableNames.markdownDocuments}
+  WHERE ${ColumnNames.markdownDocuments.ownerId} = ?
+  `,
   SelectMarkdownDocumentById: `
     SELECT ${ColumnNames.markdownDocuments.id}, ${ColumnNames.markdownDocuments.title} 
     FROM ${TableNames.markdownDocuments} 
