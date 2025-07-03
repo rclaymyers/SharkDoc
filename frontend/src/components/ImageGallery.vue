@@ -20,7 +20,7 @@ const openGalleria = (index: number): void => {
     <div class="gallery-image" v-for="(imagePath, index) in gallery.imagePaths">
       <img
         :src="UtilitiesService.prependApiDomain(imagePath)"
-        class="gallery-item-contents"
+        class="gallery-item-contents clickable"
         @click="openGalleria(index)"
       />
     </div>

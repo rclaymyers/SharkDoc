@@ -14,9 +14,11 @@ import {
   CodeBracketSquareIcon,
   DocumentIcon,
   DocumentPlusIcon,
+  EyeIcon,
   PencilIcon,
   PencilSquareIcon,
   PhotoIcon,
+  XMarkIcon,
 } from "@heroicons/vue/24/outline";
 
 const route = useRoute();
@@ -112,8 +114,8 @@ const onMarkdownTextChanged = (payload: {
 };
 
 const showEditor = ref(false);
-const toggleEditor = () => {
-  showEditor.value = !showEditor.value;
+const toggleEditor = (newValue: boolean) => {
+  showEditor.value = newValue;
 };
 
 const addPage = () => {
@@ -163,8 +165,10 @@ const deletePage = (pageId: number) => {
 
 <template>
   <template v-if="activeMarkdownDocument">
-    <div class="flex align-items-center">
-      <router-link to="/"> <DocumentIcon class="document-link" /></router-link>
+    <div class="flex align-items-center space-x-4">
+      <router-link to="/">
+        <DocumentIcon class="document-link" />
+      </router-link>
       <h1
         class="cursor-pointer"
         v-if="!editingTitle"
@@ -179,23 +183,31 @@ const deletePage = (pageId: number) => {
         @keydown.enter="saveDocumentTitle()"
         @keydown.esc="editingTitle = false"
       />
-      <PhotoIcon
-        class="editor-tool-icon"
-        @click="showGalleryPrompt"
-      ></PhotoIcon>
+      <div class="editor-toggle-buttons">
+        <EyeIcon
+          class="editor-tool-icon"
+          :class="{ active: !showEditor }"
+          @click="toggleEditor(false)"
+        ></EyeIcon>
+        <PencilIcon
+          class="editor-tool-icon"
+          :class="{ active: showEditor }"
+          @click="toggleEditor(true)"
+        ></PencilIcon>
+      </div>
+      <button @click="showGalleryPrompt">Manage Galleries</button>
     </div>
     <div class="document-page-container">
-      <div class="editor-toggle" @click="toggleEditor">
-        <PencilIcon class="editor-tool-icon"></PencilIcon>
-        <ChevronRightIcon class="editor-tool-icon"></ChevronRightIcon>
-      </div>
       <div class="panes">
-        <div :class="[showEditor ? 'pt-8' : '', 'pane no-border']">
+        <div class="pane no-border">
           <div
             class="panes"
             v-for="(page, index) in activeMarkdownDocument.pages"
           >
-            <div class="pane half-pane m-1 mb-4 bg-white" v-if="showEditor">
+            <div
+              class="pane half-pane m-1 mx-8 mb-4 bg-white"
+              v-if="showEditor"
+            >
               <MarkdownEditor
                 :markdown-document="activeMarkdownDocument"
                 :page-number="index"
@@ -218,14 +230,22 @@ const deletePage = (pageId: number) => {
               />
             </div>
           </div>
-          <div class="w-full flex justify-center">
+          <div class="w-full flex justify-around">
+            <!-- spacer -->
+            <div></div>
             <DocumentPlusIcon
               class="size-[2rem] clickable"
               @click="addPage"
             ></DocumentPlusIcon>
+            <!-- spacer -->
+            <div v-if="!showEditor"></div>
           </div>
         </div>
         <div class="pane max-width-one-third" v-if="selectedGallery">
+          <XMarkIcon
+            class="close-icon"
+            @click="selectedGallery = null"
+          ></XMarkIcon>
           <ImageGallery :gallery="selectedGallery" />
         </div>
       </div>
@@ -273,20 +293,21 @@ const deletePage = (pageId: number) => {
   width: 2rem;
   height: 2rem;
   cursor: pointer;
+  padding: 0.5rem;
 }
-.editor-tool-icon:hover {
+.editor-tool-icon.active {
   background-color: #eee;
 }
-.editor-toggle {
-  position: absolute;
-  top: 0;
-  left: 0;
+.editor-toggle-buttons {
   display: flex;
   align-items: center;
-  background-color: #fafafa;
-  height: 4rem;
+  justify-content: space-evenly;
+  border: 1px solid black;
+  border-radius: 5px;
 }
-.editor-toggle:hover {
-  background-color: #eee;
+.close-icon {
+  width: 3rem;
+  height: 3rem;
+  cursor: pointer;
 }
 </style>

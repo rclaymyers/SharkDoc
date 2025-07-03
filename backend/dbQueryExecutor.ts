@@ -99,7 +99,7 @@ export const createPage = (
 ): MarkdownDocumentPage => {
   const result = db
     .prepare(MarkdownDocumentPageQueries.CreatePage)
-    .run("New Page", markdownDocumentId);
+    .run("# New Page", markdownDocumentId);
   console.log("Created page, result records:", result.changes);
   console.log(
     "Pages for this document:",
