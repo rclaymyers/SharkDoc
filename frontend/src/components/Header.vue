@@ -12,8 +12,10 @@
   width: 100%;
   display: flex;
   justify-content: space-between;
+  align-items: center;
   background-color: #f8f8f8;
   font-size: 2rem;
   padding: 0 1rem;
+  height: var(--global-header-height);
 }
 </style>

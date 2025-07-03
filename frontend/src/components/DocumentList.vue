@@ -65,37 +65,39 @@ const deleteDocument = (documentId: number): void => {
 </script>
 
 <template>
-  <h1 class="p-2">Your Documents</h1>
-  <div class="document-card-list">
-    <div
-      @click="openDocument(document.id)"
-      class="document-card"
-      v-for="document in markdownDocuments"
+  <div class="document-list-container">
+    <h1 class="p-2 bg-white">Your Documents</h1>
+    <div class="document-card-list">
+      <div
+        @click="openDocument(document.id)"
+        class="document-card"
+        v-for="document in markdownDocuments"
+      >
+        <p>{{ document.title }}</p>
+        <TrashIcon class="delete-icon" @click="deleteDocument(document.id)" />
+      </div>
+      <div class="document-card" @click="addDocument">
+        <DocumentPlusIcon class="document-card-icon"></DocumentPlusIcon>
+      </div>
+    </div>
+    <Dialog
+      v-model:visible="dialogVisible"
+      modal
+      dismissable-mask
+      :header="'Add Document'"
+      :style="{ maxWidth: '70vw' }"
     >
-      <p>{{ document.title }}</p>
-      <TrashIcon class="delete-icon" @click="deleteDocument(document.id)" />
-    </div>
-    <div class="document-card" @click="addDocument">
-      <DocumentPlusIcon class="document-card-icon"></DocumentPlusIcon>
-    </div>
+      <label for="name">Name</label>
+      <InputText
+        v-model:model-value="newDocumentName"
+        id="name"
+        class="flex-auto"
+        autocomplete="off"
+        @keydown.enter.stop.prevent="saveNewDocument"
+      ></InputText>
+      <Button type="button" label="Save" @click="saveNewDocument"></Button>
+    </Dialog>
   </div>
-  <Dialog
-    v-model:visible="dialogVisible"
-    modal
-    dismissable-mask
-    :header="'Add Document'"
-    :style="{ maxWidth: '70vw' }"
-  >
-    <label for="name">Name</label>
-    <InputText
-      v-model:model-value="newDocumentName"
-      id="name"
-      class="flex-auto"
-      autocomplete="off"
-      @keydown.enter.stop.prevent="saveNewDocument"
-    ></InputText>
-    <Button type="button" label="Save" @click="saveNewDocument"></Button>
-  </Dialog>
 </template>
 
 <style>
@@ -105,7 +107,6 @@ const deleteDocument = (documentId: number): void => {
   max-width: 100vw;
   justify-content: space-around;
   flex-wrap: wrap;
-  background-color: #444;
 }
 .document-card {
   position: relative;
@@ -130,5 +131,10 @@ const deleteDocument = (documentId: number): void => {
 .document-card-icon {
   height: 5rem;
   width: 5rem;
+}
+.document-list-container {
+  height: 100%;
+  width: 100%;
+  background-color: #444;
 }
 </style>

@@ -164,8 +164,8 @@ const deletePage = (pageId: number) => {
 </script>
 
 <template>
-  <template v-if="activeMarkdownDocument">
-    <div class="flex align-items-center space-x-4">
+  <div class="document-viewer" v-if="activeMarkdownDocument">
+    <div class="flex align-items-center space-x-4 pl-2 bg-white">
       <router-link to="/">
         <DocumentIcon class="document-link" />
       </router-link>
@@ -212,7 +212,7 @@ const deletePage = (pageId: number) => {
                 :markdown-document="activeMarkdownDocument"
                 :page-number="index"
                 @update:markdownText="onMarkdownTextChanged"
-              />
+              ></MarkdownEditor>
             </div>
             <div
               :class="[
@@ -227,7 +227,7 @@ const deletePage = (pageId: number) => {
                 :page-id="page.id"
                 @galleryClicked="showGallery"
                 @page-deletion-requested="deletePage"
-              />
+              ></MarkdownDisplay>
             </div>
           </div>
           <div class="w-full flex justify-around">
@@ -257,8 +257,8 @@ const deletePage = (pageId: number) => {
       @gallery-close-requested="galleryAddEditPromptShowing = false"
       @gallery-deleted="loadDocument"
       @gallery-updated="loadDocument"
-    />
-  </template>
+    ></GalleryEditor>
+  </div>
 </template>
 
 <style>
@@ -266,7 +266,6 @@ const deletePage = (pageId: number) => {
   display: flex;
 }
 .document-page-container {
-  background-color: #eee;
   position: relative;
 }
 .half-pane {
@@ -309,5 +308,10 @@ const deletePage = (pageId: number) => {
   width: 3rem;
   height: 3rem;
   cursor: pointer;
+}
+.document-viewer {
+  height: 100%;
+  width: 100%;
+  background-color: #eee;
 }
 </style>

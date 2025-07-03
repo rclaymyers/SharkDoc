@@ -10,4 +10,8 @@ import UserLoginRegistration from "./components/UserLoginRegistration.vue";
   </div>
 </template>
 
-<style></style>
+<style>
+.content {
+  height: calc(100vh - var(--global-header-height));
+}
+</style>
