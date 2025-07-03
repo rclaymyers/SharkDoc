@@ -7,7 +7,11 @@ import {
 import { ApiService } from "../services/apiService";
 import { useRouter } from "vue-router";
 import { Dialog, InputText, Button } from "primevue";
-import { TrashIcon } from "@heroicons/vue/24/outline";
+import {
+  DocumentPlusIcon,
+  PlusIcon,
+  TrashIcon,
+} from "@heroicons/vue/24/outline";
 
 const router = useRouter();
 
@@ -61,15 +65,19 @@ const deleteDocument = (documentId: number): void => {
 </script>
 
 <template>
-  <h2>Your Documents</h2>
-  <div class="markdownDocumentsList">
-    <div class="document" v-for="document in markdownDocuments">
-      <div class="flex align-items-center relative w-sm">
-        <p @click="openDocument(document.id)">{{ document.title }}</p>
-        <TrashIcon class="delete-icon" @click="deleteDocument(document.id)" />
-      </div>
+  <h1 class="p-2">Your Documents</h1>
+  <div class="document-card-list">
+    <div
+      @click="openDocument(document.id)"
+      class="document-card"
+      v-for="document in markdownDocuments"
+    >
+      <p>{{ document.title }}</p>
+      <TrashIcon class="delete-icon" @click="deleteDocument(document.id)" />
     </div>
-    <button @click="addDocument">Add Document</button>
+    <div class="document-card" @click="addDocument">
+      <DocumentPlusIcon class="document-card-icon"></DocumentPlusIcon>
+    </div>
   </div>
   <Dialog
     v-model:visible="dialogVisible"
@@ -90,4 +98,37 @@ const deleteDocument = (documentId: number): void => {
   </Dialog>
 </template>
 
-<style></style>
+<style>
+.document-card-list {
+  display: flex;
+  width: 100vw;
+  max-width: 100vw;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  background-color: #444;
+}
+.document-card {
+  position: relative;
+  border-radius: 5px;
+  padding: 2rem;
+  margin: 2rem;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+
+  width: 20rem;
+  height: 10rem;
+  font-size: 2rem;
+  cursor: pointer;
+}
+.document-card:hover {
+  background-color: #d8d8d8;
+}
+.document-card-icon {
+  height: 5rem;
+  width: 5rem;
+}
+</style>
