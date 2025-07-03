@@ -10,8 +10,4 @@ import UserLoginRegistration from "./components/UserLoginRegistration.vue";
   </div>
 </template>
 
-<style>
-.content {
-  padding: 2rem;
-}
-</style>
+<style></style>

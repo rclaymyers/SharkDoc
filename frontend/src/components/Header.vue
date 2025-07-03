@@ -13,7 +13,7 @@
   display: flex;
   justify-content: space-between;
   background-color: #f8f8f8;
-  font-size: 2.5rem;
+  font-size: 2rem;
   padding: 0 1rem;
 }
 </style>

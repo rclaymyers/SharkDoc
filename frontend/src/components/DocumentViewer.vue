@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, type Ref } from "vue";
+import { nextTick, ref, type Ref } from "vue";
 import MarkdownDisplay from "./MarkdownDisplay.vue";
 import MarkdownEditor from "./MarkdownEditor.vue";
 import ImageGallery from "./ImageGallery.vue";
@@ -9,7 +9,15 @@ import { useRoute } from "vue-router";
 import { ApiService } from "../services/apiService";
 import { UtilitiesService } from "../services/utils";
 import type { Gallery } from "../../../sharedModels/Gallery";
-import { DocumentIcon } from "@heroicons/vue/24/outline";
+import {
+  ChevronRightIcon,
+  CodeBracketSquareIcon,
+  DocumentIcon,
+  DocumentPlusIcon,
+  PencilIcon,
+  PencilSquareIcon,
+  PhotoIcon,
+} from "@heroicons/vue/24/outline";
 
 const route = useRoute();
 const documentId = Number(route.params.id);
@@ -44,11 +52,13 @@ const saveDocumentTitle = () => {
     //todo show error
     return;
   }
+
   const documentSavePayload = new MarkdownDocument(
     activeMarkdownDocument.value.id,
     newTitle.value,
     [...activeMarkdownDocument.value.pages],
-    [...activeMarkdownDocument.value.galleries]
+    [...activeMarkdownDocument.value.galleries],
+    activeMarkdownDocument.value.ownerId
   );
   ApiService.saveDocument(documentSavePayload).then(
     (updatedDocument: MarkdownDocument | null) => {
@@ -115,6 +125,7 @@ const addPage = () => {
   ).then((updatedDocument) => {
     if (updatedDocument) {
       activeMarkdownDocument.value = updatedDocument;
+      nextTick().then((_) => window.scrollTo(0, document.body.scrollHeight));
     }
   });
 };
@@ -168,38 +179,55 @@ const deletePage = (pageId: number) => {
         @keydown.enter="saveDocumentTitle()"
         @keydown.esc="editingTitle = false"
       />
+      <PhotoIcon
+        class="editor-tool-icon"
+        @click="showGalleryPrompt"
+      ></PhotoIcon>
     </div>
-    <button @click="toggleEditor">Show Editor</button>
-    <button @click="addPage">Add Page</button>
-    <button @click="hideGallery" v-if="selectedGallery">Hide Gallery</button>
-    <button @click="showGalleryPrompt">Galleries</button>
-    <div class="panes">
-      <div class="pane no-border">
-        <div
-          class="panes"
-          v-for="(page, index) in activeMarkdownDocument.pages"
-        >
-          <div class="pane half-pane" v-if="showEditor">
-            <MarkdownEditor
-              :markdown-document="activeMarkdownDocument"
-              :page-number="index"
-              @update:markdownText="onMarkdownTextChanged"
-            />
+    <div class="document-page-container">
+      <div class="editor-toggle" @click="toggleEditor">
+        <PencilIcon class="editor-tool-icon"></PencilIcon>
+        <ChevronRightIcon class="editor-tool-icon"></ChevronRightIcon>
+      </div>
+      <div class="panes">
+        <div :class="[showEditor ? 'pt-8' : '', 'pane no-border']">
+          <div
+            class="panes"
+            v-for="(page, index) in activeMarkdownDocument.pages"
+          >
+            <div class="pane half-pane m-1 mb-4 bg-white" v-if="showEditor">
+              <MarkdownEditor
+                :markdown-document="activeMarkdownDocument"
+                :page-number="index"
+                @update:markdownText="onMarkdownTextChanged"
+              />
+            </div>
+            <div
+              :class="[
+                showEditor ? 'w-1/2' : '',
+                'drop-shadow-xl bg-white mx-8 mb-4 mt-1 p-3 document-page',
+              ]"
+            >
+              <MarkdownDisplay
+                :markdown-document="activeMarkdownDocument"
+                :document-id="activeMarkdownDocument.id"
+                :page-index="index"
+                :page-id="page.id"
+                @galleryClicked="showGallery"
+                @page-deletion-requested="deletePage"
+              />
+            </div>
           </div>
-          <div :class="[showEditor ? 'half-pane' : '', 'pane']">
-            <MarkdownDisplay
-              :markdown-document="activeMarkdownDocument"
-              :document-id="activeMarkdownDocument.id"
-              :page-index="index"
-              :page-id="page.id"
-              @galleryClicked="showGallery"
-              @page-deletion-requested="deletePage"
-            />
+          <div class="w-full flex justify-center">
+            <DocumentPlusIcon
+              class="size-[2rem] clickable"
+              @click="addPage"
+            ></DocumentPlusIcon>
           </div>
         </div>
-      </div>
-      <div class="pane max-width-one-third" v-if="selectedGallery">
-        <ImageGallery :gallery="selectedGallery" />
+        <div class="pane max-width-one-third" v-if="selectedGallery">
+          <ImageGallery :gallery="selectedGallery" />
+        </div>
       </div>
     </div>
     <GalleryEditor
@@ -211,12 +239,15 @@ const deletePage = (pageId: number) => {
       @gallery-updated="loadDocument"
     />
   </template>
-  <button @click="addPage()">Add Page</button>
 </template>
 
 <style>
 .panes {
   display: flex;
+}
+.document-page-container {
+  background-color: #eee;
+  position: relative;
 }
 .half-pane {
   width: 50%;
@@ -224,7 +255,6 @@ const deletePage = (pageId: number) => {
 .pane {
   flex-grow: 1;
   border: 1px solid gray;
-  margin: 0.5rem;
   padding: 1rem;
   border-radius: 0.5rem;
 }
@@ -234,5 +264,29 @@ const deletePage = (pageId: number) => {
 .document-link {
   height: 5vh;
   width: 5vh;
+}
+.document-page {
+  flex-grow: 1;
+  min-height: 20rem;
+}
+.editor-tool-icon {
+  width: 2rem;
+  height: 2rem;
+  cursor: pointer;
+}
+.editor-tool-icon:hover {
+  background-color: #eee;
+}
+.editor-toggle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  background-color: #fafafa;
+  height: 4rem;
+}
+.editor-toggle:hover {
+  background-color: #eee;
 }
 </style>
