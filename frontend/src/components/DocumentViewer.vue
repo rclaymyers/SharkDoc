@@ -270,7 +270,10 @@ const deletePage = (pageId: number) => {
   background-color: var(--secondary-background-color);
 
   --toolbar-element-size: 2.75rem;
-  --toolbar-element-margins: 1rem;
+}
+.document-viewer p,
+.document-viewer a {
+  font-size: 1.5rem;
 }
 .panes {
   display: flex;
@@ -335,10 +338,10 @@ const deletePage = (pageId: number) => {
   border-radius: 5px;
 }
 .toolbar {
-  padding-left: var(--toolbar-element-margins);
+  padding-left: var(--header-padding-and-margins);
 }
 .toolbar > * {
-  margin-right: var(--toolbar-element-margins);
+  margin-right: var(--header-padding-and-margins);
 }
 .interactive-toolbar-element {
   height: var(--toolbar-element-size);
@@ -347,5 +350,14 @@ const deletePage = (pageId: number) => {
   width: 3rem;
   height: 3rem;
   cursor: pointer;
+}
+li {
+  list-style-position: inside;
+}
+ul li {
+  list-style-type: disc;
+}
+ol li {
+  list-style-type: decimal;
 }
 </style>

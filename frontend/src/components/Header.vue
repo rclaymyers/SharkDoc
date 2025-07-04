@@ -16,7 +16,7 @@
   background-color: var(--secondary-accent-color);
   color: #ccc;
   font-size: 2rem;
-  padding: 0 1rem;
+  padding: 0 var(--header-padding-and-margins);
   height: var(--global-header-height);
 }
 </style>

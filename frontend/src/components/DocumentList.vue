@@ -66,7 +66,7 @@ const deleteDocument = (documentId: number): void => {
 
 <template>
   <div class="document-list-container">
-    <h1 class="p-2 subheader">Your Documents</h1>
+    <h1 class="subheader">Your Documents</h1>
     <div class="document-card-list content-under-subheader">
       <div
         @click="openDocument(document.id)"

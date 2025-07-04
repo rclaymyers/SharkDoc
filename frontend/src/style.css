@@ -19,14 +19,16 @@
   --subheader-height: 4.5rem;
   --accent-color: #007a39;
   --secondary-accent-color: #0f3325;
+  --accent-color-light: #008b41;
   --accent-text-color: white;
-  --highlight-color: #eee;
+  --header-padding-and-margins: 1rem;
 
   /* Light theme variables */
   --primary-text-color: #000;
   --primary-background-color: #fff;
   --secondary-background-color: #eee;
   --document-page-color: white;
+  --highlight-color: #ddd;
 }
 
 /* Dark theme variables */
@@ -45,6 +47,7 @@
   height: var(--subheader-height);
   background-color: var(--primary-background-color);
   color: var(--primary-text-color);
+  padding-left: var(--header-padding-and-margins);
 }
 
 .content-under-subheader {
@@ -56,7 +59,7 @@
 
 a {
   font-weight: 500;
-  color: var(--accent-color);
+  color: var(--accent-color-light);
   text-decoration: inherit;
 }
 
@@ -139,6 +142,13 @@ button:focus-visible {
 }
 
 /* CodeMirror Overrides */
+.cm-editor {
+  font-size: 1.2rem;
+}
+/* Highlighted syntax elements */
+.ͼ5 {
+  color: var(--accent-color-light) !important;
+}
 @media (prefers-color-scheme: dark) {
   .cm-gutters {
     background-color: var(--primary-background-color) !important;
@@ -147,5 +157,8 @@ button:focus-visible {
   .cm-activeLine,
   .cm-activeLineGutter {
     background-color: var(--editor-highlight-color) !important;
+  }
+  .ͼ4 .cm-line {
+    caret-color: white !important;
   }
 }
