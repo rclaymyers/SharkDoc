@@ -106,6 +106,7 @@ const deleteDocument = (documentId: number): void => {
 <style>
 .document-card-list {
   display: flex;
+  flex-direction: row;
   width: 100vw;
   max-width: 100vw;
   justify-content: space-around;

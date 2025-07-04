@@ -165,7 +165,7 @@ const deletePage = (pageId: number) => {
 
 <template>
   <div class="document-viewer" v-if="activeMarkdownDocument">
-    <div class="toolbar flex align-items-center subheader">
+    <div class="toolbar align-items-center subheader hidden md:flex">
       <router-link to="/">
         <DocumentIcon class="document-link" />
       </router-link>
@@ -343,8 +343,12 @@ const deletePage = (pageId: number) => {
 .toolbar > * {
   margin-right: var(--header-padding-and-margins);
 }
+.toolbar h1 {
+  font-size: 3.5rem;
+}
 .interactive-toolbar-element {
   height: var(--toolbar-element-size);
+  font-size: 1rem;
 }
 .close-icon {
   width: 3rem;

@@ -19,4 +19,9 @@
   padding: 0 var(--header-padding-and-margins);
   height: var(--global-header-height);
 }
+@media screen and (max-width: 768px) {
+  .global-header {
+    font-size: 1rem;
+  }
+}
 </style>

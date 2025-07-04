@@ -22,6 +22,7 @@
   --accent-color-light: #008b41;
   --accent-text-color: white;
   --header-padding-and-margins: 1rem;
+  --mobile-responsive-breakpoint: 768px;
 
   /* Light theme variables */
   --primary-text-color: #000;
@@ -42,12 +43,22 @@
     --editor-highlight-color: #333;
   }
 }
+/* Dark theme variables end */
 
 .subheader {
   height: var(--subheader-height);
   background-color: var(--primary-background-color);
   color: var(--primary-text-color);
   padding-left: var(--header-padding-and-margins);
+  font-size: 3.2rem;
+  display: flex;
+  align-items: center;
+}
+@media screen and (max-width: 768px) {
+  .subheader {
+    font-size: 2rem;
+    justify-content: center;
+  }
 }
 
 .content-under-subheader {
