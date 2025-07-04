@@ -13,7 +13,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #f8f8f8;
+  background-color: var(--secondary-accent-color);
+  color: #ccc;
   font-size: 2rem;
   padding: 0 1rem;
   height: var(--global-header-height);

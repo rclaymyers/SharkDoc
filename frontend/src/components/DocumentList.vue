@@ -66,15 +66,18 @@ const deleteDocument = (documentId: number): void => {
 
 <template>
   <div class="document-list-container">
-    <h1 class="p-2 bg-white">Your Documents</h1>
-    <div class="document-card-list">
+    <h1 class="p-2 subheader">Your Documents</h1>
+    <div class="document-card-list content-under-subheader">
       <div
         @click="openDocument(document.id)"
         class="document-card"
         v-for="document in markdownDocuments"
       >
         <p>{{ document.title }}</p>
-        <TrashIcon class="delete-icon" @click="deleteDocument(document.id)" />
+        <TrashIcon
+          class="delete-icon"
+          @click.stop="deleteDocument(document.id)"
+        />
       </div>
       <div class="document-card" @click="addDocument">
         <DocumentPlusIcon class="document-card-icon"></DocumentPlusIcon>
@@ -118,7 +121,8 @@ const deleteDocument = (documentId: number): void => {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: white;
+  background-color: var(--document-page-color);
+  color: var(--primary-text-color);
 
   width: 20rem;
   height: 10rem;
@@ -126,15 +130,16 @@ const deleteDocument = (documentId: number): void => {
   cursor: pointer;
 }
 .document-card:hover {
-  background-color: #d8d8d8;
+  background-color: var(--highlight-color);
 }
 .document-card-icon {
   height: 5rem;
   width: 5rem;
+  color: var(--accent-color);
 }
 .document-list-container {
   height: 100%;
   width: 100%;
-  background-color: #444;
+  background-color: var(--secondary-background-color);
 }
 </style>

@@ -165,7 +165,7 @@ const deletePage = (pageId: number) => {
 
 <template>
   <div class="document-viewer" v-if="activeMarkdownDocument">
-    <div class="flex align-items-center space-x-4 pl-2 bg-white">
+    <div class="toolbar flex align-items-center subheader">
       <router-link to="/">
         <DocumentIcon class="document-link" />
       </router-link>
@@ -183,7 +183,7 @@ const deletePage = (pageId: number) => {
         @keydown.enter="saveDocumentTitle()"
         @keydown.esc="editingTitle = false"
       />
-      <div class="editor-toggle-buttons">
+      <div class="editor-toggle-buttons interactive-toolbar-element">
         <EyeIcon
           class="editor-tool-icon"
           :class="{ active: !showEditor }"
@@ -195,9 +195,11 @@ const deletePage = (pageId: number) => {
           @click="toggleEditor(true)"
         ></PencilIcon>
       </div>
-      <button @click="showGalleryPrompt">Manage Galleries</button>
+      <button class="interactive-toolbar-element" @click="showGalleryPrompt">
+        Manage Galleries
+      </button>
     </div>
-    <div class="document-page-container">
+    <div class="document-page-container content-under-subheader">
       <div class="panes">
         <div class="pane no-border">
           <div
@@ -205,7 +207,7 @@ const deletePage = (pageId: number) => {
             v-for="(page, index) in activeMarkdownDocument.pages"
           >
             <div
-              class="pane half-pane m-1 mx-8 mb-4 bg-white"
+              class="pane half-pane m-1 mx-8 mb-4 document-editor-pane"
               v-if="showEditor"
             >
               <MarkdownEditor
@@ -217,7 +219,7 @@ const deletePage = (pageId: number) => {
             <div
               :class="[
                 showEditor ? 'w-1/2' : '',
-                'drop-shadow-xl bg-white mx-8 mb-4 mt-1 p-3 document-page',
+                'drop-shadow-xl mx-8 mb-4 mt-1 p-3 document-page',
               ]"
             >
               <MarkdownDisplay
@@ -262,6 +264,14 @@ const deletePage = (pageId: number) => {
 </template>
 
 <style>
+.document-viewer {
+  height: 100%;
+  width: 100%;
+  background-color: var(--secondary-background-color);
+
+  --toolbar-element-size: 2.75rem;
+  --toolbar-element-margins: 1rem;
+}
 .panes {
   display: flex;
 }
@@ -281,21 +291,41 @@ const deletePage = (pageId: number) => {
   border: none;
 }
 .document-link {
-  height: 5vh;
-  width: 5vh;
+  height: var(--toolbar-element-size);
+  width: var(--toolbar-element-size);
+}
+.document-editor-pane {
+  background-color: var(--document-page-color);
 }
 .document-page {
   flex-grow: 1;
   min-height: 20rem;
+  background-color: var(--document-page-color);
 }
 .editor-tool-icon {
-  width: 2rem;
-  height: 2rem;
+  width: var(--toolbar-element-size);
+  height: var(--toolbar-element-size);
   cursor: pointer;
   padding: 0.5rem;
+  border: inherit;
+  border-radius: inherit;
+}
+.editor-tool-icon:first-child {
+  border-right: none;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.editor-tool-icon:last-child {
+  border-left: none;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
 }
 .editor-tool-icon.active {
-  background-color: #eee;
+  background-color: var(--accent-color);
+  color: var(--accent-text-color);
+}
+.editor-tool-icon:not(.active):hover {
+  background-color: var(--highlight-color);
 }
 .editor-toggle-buttons {
   display: flex;
@@ -304,14 +334,18 @@ const deletePage = (pageId: number) => {
   border: 1px solid black;
   border-radius: 5px;
 }
+.toolbar {
+  padding-left: var(--toolbar-element-margins);
+}
+.toolbar > * {
+  margin-right: var(--toolbar-element-margins);
+}
+.interactive-toolbar-element {
+  height: var(--toolbar-element-size);
+}
 .close-icon {
   width: 3rem;
   height: 3rem;
   cursor: pointer;
-}
-.document-viewer {
-  height: 100%;
-  width: 100%;
-  background-color: #eee;
 }
 </style>
