@@ -31,12 +31,13 @@ const attemptRegistration = () => {
 const attemptSignIn = () => {
   ApiService.signInUser(username.value, password.value).then(
     (signInResponse: UserSignInResponse | null) => {
-      if (!signInResponse?.token) {
+      if (!signInResponse?.token || !signInResponse?.username) {
         //todo show registration error
         return;
       }
       console.log("Got token:", signInResponse.token);
       LocalStorageService.setJwt(signInResponse.token);
+      LocalStorageService.setUsername(signInResponse.username);
       router.push("/");
     }
   );

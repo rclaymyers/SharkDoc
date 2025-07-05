@@ -18,10 +18,13 @@ import {
   XMarkIcon,
 } from "@heroicons/vue/24/outline";
 import LightboxWrapper from "./LightboxWrapper.vue";
+import { useDialog } from "primevue";
+import { AuthService } from "../services/authService";
 
 const route = useRoute();
 const router = useRouter();
 const documentId = Number(route.params.id);
+const dialog = useDialog();
 
 const activeMarkdownDocument: Ref<MarkdownDocument | null> =
   ref<MarkdownDocument | null>(null);
@@ -175,7 +178,9 @@ const deletePage = (pageId: number) => {
 const onReturnToDocumentsClicked = () => {
   router.push("/");
 };
-const onSignOutClicked = () => {};
+const onSignOutClicked = () => {
+  AuthService.beginSignOutFlow(dialog);
+};
 const onEditTitleClicked = () => {
   newTitle.value = activeMarkdownDocument.value?.title ?? "";
   showDocumentRenameDialog.value = true;
