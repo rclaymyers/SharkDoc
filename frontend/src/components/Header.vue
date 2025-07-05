@@ -12,8 +12,16 @@
   width: 100%;
   display: flex;
   justify-content: space-between;
-  background-color: #f8f8f8;
-  font-size: 2.5rem;
-  padding: 0 1rem;
+  align-items: center;
+  background-color: var(--secondary-accent-color);
+  color: #ccc;
+  font-size: 2rem;
+  padding: 0 var(--header-padding-and-margins);
+  height: var(--global-header-height);
+}
+@media screen and (max-width: 768px) {
+  .global-header {
+    font-size: 1rem;
+  }
 }
 </style>

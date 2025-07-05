@@ -12,6 +12,6 @@ import UserLoginRegistration from "./components/UserLoginRegistration.vue";
 
 <style>
 .content {
-  padding: 2rem;
+  height: calc(100vh - var(--global-header-height));
 }
 </style>

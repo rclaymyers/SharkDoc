@@ -7,7 +7,11 @@ import {
 import { ApiService } from "../services/apiService";
 import { useRouter } from "vue-router";
 import { Dialog, InputText, Button } from "primevue";
-import { TrashIcon } from "@heroicons/vue/24/outline";
+import {
+  DocumentPlusIcon,
+  PlusIcon,
+  TrashIcon,
+} from "@heroicons/vue/24/outline";
 
 const router = useRouter();
 
@@ -61,33 +65,88 @@ const deleteDocument = (documentId: number): void => {
 </script>
 
 <template>
-  <h2>Your Documents</h2>
-  <div class="markdownDocumentsList">
-    <div class="document" v-for="document in markdownDocuments">
-      <div class="flex align-items-center relative w-sm">
-        <p @click="openDocument(document.id)">{{ document.title }}</p>
-        <TrashIcon class="delete-icon" @click="deleteDocument(document.id)" />
+  <div class="document-list-container">
+    <h1 class="subheader">Your Documents</h1>
+    <div class="document-card-list content-under-subheader">
+      <div
+        @click="openDocument(document.id)"
+        class="document-card"
+        v-for="document in markdownDocuments"
+      >
+        <p>{{ document.title }}</p>
+        <TrashIcon
+          class="delete-icon"
+          @click.stop="deleteDocument(document.id)"
+        />
+      </div>
+      <div class="document-card" @click="addDocument">
+        <DocumentPlusIcon class="document-card-icon"></DocumentPlusIcon>
       </div>
     </div>
-    <button @click="addDocument">Add Document</button>
+    <Dialog
+      v-model:visible="dialogVisible"
+      modal
+      dismissable-mask
+      :header="'Add Document'"
+      class="max-height-20vh"
+    >
+      <div class="flex w-full justify-center">
+        <InputText
+          v-model:model-value="newDocumentName"
+          id="name"
+          class="flex-auto"
+          autocomplete="off"
+          @keydown.enter.stop.prevent="saveNewDocument"
+          placeholder="Name"
+        ></InputText>
+      </div>
+      <template #footer>
+        <div class="flex w-full justify-center">
+          <Button type="button" label="Save" @click="saveNewDocument"></Button>
+        </div>
+      </template>
+    </Dialog>
   </div>
-  <Dialog
-    v-model:visible="dialogVisible"
-    modal
-    dismissable-mask
-    :header="'Add Document'"
-    :style="{ maxWidth: '70vw' }"
-  >
-    <label for="name">Name</label>
-    <InputText
-      v-model:model-value="newDocumentName"
-      id="name"
-      class="flex-auto"
-      autocomplete="off"
-      @keydown.enter.stop.prevent="saveNewDocument"
-    ></InputText>
-    <Button type="button" label="Save" @click="saveNewDocument"></Button>
-  </Dialog>
 </template>
 
-<style></style>
+<style>
+.document-card-list {
+  display: flex;
+  flex-direction: row;
+  width: 100vw;
+  max-width: 100vw;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+.document-card {
+  position: relative;
+  border-radius: 5px;
+  padding: 2rem;
+  margin: 2rem;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--document-page-color);
+  color: var(--primary-text-color);
+
+  width: 20rem;
+  height: 10rem;
+  font-size: 2rem;
+  cursor: pointer;
+}
+.document-card:hover {
+  background-color: var(--highlight-color);
+}
+.document-card-icon {
+  height: 5rem;
+  width: 5rem;
+  color: var(--accent-color);
+}
+.document-list-container {
+  height: 100%;
+  width: 100%;
+  background-color: var(--secondary-background-color);
+}
+</style>

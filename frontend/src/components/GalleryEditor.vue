@@ -175,7 +175,6 @@ const saveGallery = () => {
     modal
     dismissable-mask
     :header="`Galleries for ${props.markdownDocument.title}`"
-    :style="{ maxWidth: '70vw' }"
     @hide="emit('gallery-close-requested')"
   >
     <template v-if="formState === FormStateEnum.GALLERY_LIST">
@@ -193,13 +192,6 @@ const saveGallery = () => {
             @click.stop="deleteGallery(gallery.id)"
           />
         </div>
-      </div>
-      <div class="flex justify-end gap-2">
-        <Button
-          type="button"
-          label="Add Gallery"
-          @click="addGallery()"
-        ></Button>
       </div>
     </template>
     <template
@@ -246,7 +238,25 @@ const saveGallery = () => {
           style="display: none"
         />
       </div>
-      <div class="flex justify-end gap-2">
+    </template>
+    <template #footer
+      ><div
+        v-if="formState === FormStateEnum.GALLERY_LIST"
+        class="flex justify-end gap-2"
+      >
+        <Button
+          type="button"
+          label="Add Gallery"
+          @click="addGallery()"
+        ></Button>
+      </div>
+      <div
+        v-if="
+          formState === FormStateEnum.EDIT_GALLERY ||
+          formState === FormStateEnum.ADD_GALLERY
+        "
+        class="flex justify-end gap-2"
+      >
         <Button
           type="button"
           label="Cancel"

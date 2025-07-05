@@ -5,22 +5,73 @@
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  /* Light theme */
+  color: var(--primary-text-color);
+  background-color: var(--primary-background-color);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* Global style variables */
+  --global-header-height: 3rem;
+  --subheader-height: 4.5rem;
+  --accent-color: #007a39;
+  --secondary-accent-color: #0f3325;
+  --accent-color-light: #008b41;
+  --accent-text-color: white;
+  --header-padding-and-margins: 1rem;
+  --mobile-responsive-breakpoint: 768px;
+
+  /* Light theme variables */
+  --primary-text-color: #000;
+  --primary-background-color: #fff;
+  --secondary-background-color: #eee;
+  --document-page-color: white;
+  --highlight-color: #ddd;
+}
+
+/* Dark theme variables */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary-text-color: #fff;
+    --primary-background-color: #404040;
+    --secondary-background-color: #333;
+    --document-page-color: #404040;
+    --highlight-color: #5f5f5f;
+    --editor-highlight-color: #333;
+  }
+}
+/* Dark theme variables end */
+
+.subheader {
+  height: var(--subheader-height);
+  background-color: var(--primary-background-color);
+  color: var(--primary-text-color);
+  padding-left: var(--header-padding-and-margins);
+  font-size: 3.2rem;
+  display: flex;
+  align-items: center;
+}
+@media screen and (max-width: 768px) {
+  .subheader {
+    font-size: 2rem;
+    justify-content: center;
+  }
+}
+
+.content-under-subheader {
+  height: calc(
+    calc(100vh - (var(--global-header-height)) - var(--subheader-height))
+  );
+  overflow: scroll;
 }
 
 a {
   font-weight: 500;
-  color: #646cff;
+  color: var(--accent-color-light);
   text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
 }
 
 body {
@@ -42,7 +93,8 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: var(--accent-color);
+  color: white;
   cursor: pointer;
   transition: border-color 0.25s;
 }
@@ -54,55 +106,13 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-.card {
-  padding: 2em;
-}
-
 #app {
   width: 100%;
   padding: 0;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
-}
-
 .clickable {
   cursor: pointer;
-}
-
-.popup-form-container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
-}
-.popup-form-panel {
-  background-color: #eee;
-  color: #333;
-  min-width: 50vw;
-  min-height: 70vh;
-  max-width: 90vw;
-  max-height: 90vh;
-  border-radius: 5px;
-  padding: 10px;
-  overflow: scroll;
 }
 
 .gallery-image-list {
@@ -135,4 +145,52 @@ button:focus-visible {
   right: 0.5vh;
   z-index: 2;
   cursor: pointer;
+}
+
+/* PrimeUI overrides */
+:root {
+  --p-button-primary-background: var(--accent-color) !important;
+  --p-button-primary-color: var(--accent-text-color) !important;
+}
+.p-dialog-content {
+  min-width: 50vw;
+  min-height: 50vh;
+  width: auto;
+  max-width: 70vw;
+  max-height: 100%;
+}
+.max-height-20vh .p-dialog-content {
+  min-height: 0;
+  max-height: 20vh !important;
+}
+@media screen and (max-width: 768px) {
+  .p-dialog-content {
+    width: 80vw;
+    max-width: 80vw;
+  }
+}
+.p-galleria {
+  max-width: 90% !important;
+}
+
+/* CodeMirror Overrides */
+.cm-editor {
+  font-size: 1.2rem;
+}
+/* Highlighted syntax elements */
+.ͼ5 {
+  color: var(--accent-color-light) !important;
+}
+@media (prefers-color-scheme: dark) {
+  .cm-gutters {
+    background-color: var(--primary-background-color) !important;
+    color: var(--primary-text-color) !important;
+  }
+  .cm-activeLine,
+  .cm-activeLineGutter {
+    background-color: var(--editor-highlight-color) !important;
+  }
+  .ͼ4 .cm-line {
+    caret-color: white !important;
+  }
 }
