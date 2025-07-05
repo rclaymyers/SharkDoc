@@ -1,24 +1,37 @@
 <script setup lang="ts">
 import { useDialog } from "primevue";
 import SignOut from "./dynamicDialogs/SignOut.vue";
+import {
+  LocalStorageKeys,
+  LocalStorageService,
+} from "../services/localStorageService";
+import { ref } from "vue";
+import { AuthService } from "../services/authService";
 
 const dialog = useDialog();
+const firstInitial = ref<string>("");
 
 const onSignOutClicked = () => {
-  dialog.open(SignOut, {
-    props: {
-      header: "Sign Out",
-      modal: true,
-      dismissableMask: true,
-    },
-  });
+  AuthService.beginSignOutFlow(dialog);
 };
+
+const updateFirstInitial = (newValue: string | null) => {
+  firstInitial.value = newValue?.length
+    ? newValue.charAt(0).toLocaleUpperCase()
+    : "";
+};
+
+updateFirstInitial(LocalStorageService.getUsername());
+LocalStorageService.subscribeToKeyChange(
+  LocalStorageKeys.Username,
+  updateFirstInitial
+);
 </script>
 
 <template>
   <div class="global-header">
     <p>Paged Markdown with Galleries</p>
-    <p @click="onSignOutClicked">C</p>
+    <p class="clickable" @click="onSignOutClicked">{{ firstInitial }}</p>
   </div>
 </template>
 

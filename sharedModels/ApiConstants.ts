@@ -37,7 +37,9 @@ export class UserAuthRequest {
 
 export class UserSignInResponse {
   token: string;
-  constructor(token: string) {
+  username: string;
+  constructor(token: string, username: string) {
     this.token = token;
+    this.username = username;
   }
 }

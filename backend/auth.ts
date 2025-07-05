@@ -45,7 +45,7 @@ export const setupAuthEndpoints = (app: Express, JWT_SECRET: string): void => {
     const token = jwt.sign({ userId: user.id }, JWT_SECRET, {
       expiresIn: TOKEN_VALIDITY_DURATION,
     });
-    res.status(200).json({ token });
+    res.status(200).json({ token, username });
   });
 };
 
