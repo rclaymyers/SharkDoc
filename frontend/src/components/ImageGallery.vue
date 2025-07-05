@@ -3,10 +3,10 @@ import { ref } from "vue";
 import { Gallery } from "../../../sharedModels/Gallery";
 import { UtilitiesService } from "../services/utils";
 import type { GalleriaResponsiveOptions } from "primevue";
+import LightboxWrapper from "./LightboxWrapper.vue";
 
 const props = defineProps<{ gallery: Gallery }>();
 const showGalleria = ref<boolean>(false);
-const responsiveOptions: GalleriaResponsiveOptions[] = [];
 let activeIndex = 1;
 
 const openGalleria = (index: number): void => {
@@ -25,33 +25,11 @@ const openGalleria = (index: number): void => {
       />
     </div>
   </div>
-
-  <Galleria
-    v-model:visible="showGalleria"
-    v-model:active-index="activeIndex"
-    :value="props.gallery.imagePaths"
-    :responsiveOptions="responsiveOptions"
-    :numVisible="9"
-    containerStyle="max-width: 50%"
-    :circular="true"
-    :fullScreen="true"
-    :showItemNavigators="true"
-  >
-    <template #item="slotProps">
-      <img
-        :src="UtilitiesService.prependApiDomain(slotProps.item)"
-        style="width: 100%; display: block"
-        class="galleria-image"
-      />
-    </template>
-    <template #thumbnail="slotProps">
-      <img
-        :src="UtilitiesService.prependApiDomain(slotProps.item)"
-        style="display: block"
-        class="galleria-thumbnail"
-      />
-    </template>
-  </Galleria>
+  <LightboxWrapper
+    :initialActiveIndex="activeIndex"
+    :gallery="props.gallery"
+    v-if="showGalleria"
+  ></LightboxWrapper>
 </template>
 
 <style>

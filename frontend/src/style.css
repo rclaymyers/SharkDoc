@@ -155,6 +155,9 @@ button:focus-visible {
   min-width: 50vw;
   min-height: 50vh;
 }
+.p-galleria {
+  max-width: 90% !important;
+}
 
 /* CodeMirror Overrides */
 .cm-editor {

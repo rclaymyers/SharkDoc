@@ -17,6 +17,7 @@ import {
   PencilIcon,
   XMarkIcon,
 } from "@heroicons/vue/24/outline";
+import LightboxWrapper from "./LightboxWrapper.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -137,13 +138,22 @@ const showGalleryPrompt = () => {
 };
 
 const selectedGallery = ref<Gallery | null>(null);
+const showMobileLightbox = ref<boolean>(false);
+
 const showGallery = (galleryName: string) => {
   const gallery = activeMarkdownDocument.value?.galleries.find(
     (gallery: Gallery) => gallery.name === galleryName
   );
-  if (gallery) {
-    selectedGallery.value = gallery;
+  if (!gallery) {
+    console.warn("Tried to open a gallery that doesn't exist");
+    //todo show error
+    return;
   }
+
+  selectedGallery.value = gallery;
+  showMobileLightbox.value = window.innerWidth <= 768;
+  console.log("Selected gallery set to:", selectedGallery.value);
+  console.log("Show mobile lightbox set to:", showMobileLightbox);
 };
 const hideGallery = () => (selectedGallery.value = null);
 
@@ -166,6 +176,10 @@ const onReturnToDocumentsClicked = () => {
 };
 const onSignOutClicked = () => {};
 const onEditTitleClicked = () => {};
+const onMobileLightboxDismissed = () => {
+  selectedGallery.value = null;
+  showMobileLightbox.value = false;
+};
 </script>
 
 <template>
@@ -212,7 +226,7 @@ const onEditTitleClicked = () => {};
             v-for="(page, index) in activeMarkdownDocument.pages"
           >
             <div
-              class="pane half-pane m-1 mx-8 mb-4 document-editor-pane"
+              class="pane half-pane m-1 mx-1 md:mx-8 mb-4 document-editor-pane"
               v-if="showEditor"
             >
               <MarkdownEditor
@@ -224,7 +238,7 @@ const onEditTitleClicked = () => {};
             <div
               :class="[
                 showEditor ? 'w-1/2 mobile-hidden' : '',
-                'drop-shadow-xl mx-8 mb-4 mt-1 p-3 document-page',
+                'drop-shadow-xl mx-1 md:mx-8 mb-4 mt-1 p-3 document-page',
               ]"
             >
               <MarkdownDisplay
@@ -248,7 +262,10 @@ const onEditTitleClicked = () => {};
             <div v-if="!showEditor" class="mobile-hidden"></div>
           </div>
         </div>
-        <div class="pane max-width-one-third" v-if="selectedGallery">
+        <div
+          class="pane max-width-one-third"
+          v-if="selectedGallery && !showMobileLightbox"
+        >
           <XMarkIcon
             class="close-icon"
             @click="selectedGallery = null"
@@ -265,6 +282,12 @@ const onEditTitleClicked = () => {};
       @gallery-deleted="loadDocument"
       @gallery-updated="loadDocument"
     ></GalleryEditor>
+    <LightboxWrapper
+      :initialActiveIndex="0"
+      :gallery="selectedGallery"
+      v-if="selectedGallery && showMobileLightbox"
+      @gallery-closed="onMobileLightboxDismissed"
+    ></LightboxWrapper>
   </div>
   <Drawer
     v-model:visible="mobileDrawerVisible"
