@@ -194,13 +194,6 @@ const saveGallery = () => {
           />
         </div>
       </div>
-      <div class="flex justify-end gap-2">
-        <Button
-          type="button"
-          label="Add Gallery"
-          @click="addGallery()"
-        ></Button>
-      </div>
     </template>
     <template
       v-if="
@@ -246,7 +239,25 @@ const saveGallery = () => {
           style="display: none"
         />
       </div>
-      <div class="flex justify-end gap-2">
+    </template>
+    <template #footer
+      ><div
+        v-if="formState === FormStateEnum.GALLERY_LIST"
+        class="flex justify-end gap-2"
+      >
+        <Button
+          type="button"
+          label="Add Gallery"
+          @click="addGallery()"
+        ></Button>
+      </div>
+      <div
+        v-if="
+          formState === FormStateEnum.EDIT_GALLERY ||
+          formState === FormStateEnum.ADD_GALLERY
+        "
+        class="flex justify-end gap-2"
+      >
         <Button
           type="button"
           label="Cancel"

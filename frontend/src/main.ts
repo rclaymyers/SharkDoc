@@ -11,7 +11,7 @@ import Aura from "@primeuix/themes/aura";
 //import "primevue/resources/primevue.min.css";
 import "primeicons/primeicons.css";
 import "primeflex/primeflex.css";
-import { Dialog, InputText } from "primevue";
+import { Dialog, InputText, Drawer } from "primevue";
 
 const app = createApp(App);
 app.use(router);
@@ -19,4 +19,5 @@ app.use(PrimeVue, { theme: { preset: Aura } });
 app.component("Galleria", Galleria);
 app.component("Dialog", Dialog);
 app.component("InputText", InputText);
+app.component("Drawer", Drawer);
 app.mount("#app");

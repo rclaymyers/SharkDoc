@@ -5,29 +5,28 @@ import MarkdownEditor from "./MarkdownEditor.vue";
 import ImageGallery from "./ImageGallery.vue";
 import { MarkdownDocument } from "../../../sharedModels/MarkdownDocument";
 import GalleryEditor from "./GalleryEditor.vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { ApiService } from "../services/apiService";
 import { UtilitiesService } from "../services/utils";
 import type { Gallery } from "../../../sharedModels/Gallery";
 import {
-  ChevronRightIcon,
-  CodeBracketSquareIcon,
+  Bars3Icon,
   DocumentIcon,
   DocumentPlusIcon,
   EyeIcon,
   PencilIcon,
-  PencilSquareIcon,
-  PhotoIcon,
   XMarkIcon,
 } from "@heroicons/vue/24/outline";
 
 const route = useRoute();
+const router = useRouter();
 const documentId = Number(route.params.id);
 
 const activeMarkdownDocument: Ref<MarkdownDocument | null> =
   ref<MarkdownDocument | null>(null);
 const editingTitle = ref<boolean>(false);
 const newTitle = ref<string>("");
+const mobileDrawerVisible = ref(false);
 
 const loadDocument = () => {
   console.log("Load document called");
@@ -161,6 +160,12 @@ const deletePage = (pageId: number) => {
     activeMarkdownDocument.value = updatedDocument;
   });
 };
+
+const onReturnToDocumentsClicked = () => {
+  router.push("/");
+};
+const onSignOutClicked = () => {};
+const onEditTitleClicked = () => {};
 </script>
 
 <template>
@@ -218,7 +223,7 @@ const deletePage = (pageId: number) => {
             </div>
             <div
               :class="[
-                showEditor ? 'w-1/2' : '',
+                showEditor ? 'w-1/2 mobile-hidden' : '',
                 'drop-shadow-xl mx-8 mb-4 mt-1 p-3 document-page',
               ]"
             >
@@ -234,13 +239,13 @@ const deletePage = (pageId: number) => {
           </div>
           <div class="w-full flex justify-around">
             <!-- spacer -->
-            <div></div>
+            <div class="mobile-hidden"></div>
             <DocumentPlusIcon
               class="size-[2rem] clickable"
               @click="addPage"
             ></DocumentPlusIcon>
             <!-- spacer -->
-            <div v-if="!showEditor"></div>
+            <div v-if="!showEditor" class="mobile-hidden"></div>
           </div>
         </div>
         <div class="pane max-width-one-third" v-if="selectedGallery">
@@ -260,6 +265,44 @@ const deletePage = (pageId: number) => {
       @gallery-deleted="loadDocument"
       @gallery-updated="loadDocument"
     ></GalleryEditor>
+  </div>
+  <Drawer
+    v-model:visible="mobileDrawerVisible"
+    :header="activeMarkdownDocument?.title ?? 'Menu'"
+    position="right"
+  >
+    <div class="flex flex-column space-y-4">
+      <button @click="onEditTitleClicked">Rename Document</button>
+      <button @click="galleryAddEditPromptShowing = true">
+        Manage Galleries
+      </button>
+      <button @click="onReturnToDocumentsClicked">
+        Return to Document List
+      </button>
+      <button @click="onSignOutClicked">Sign Out</button>
+    </div>
+  </Drawer>
+  <div
+    class="mobile-hamburger-button md:hidden"
+    @click="mobileDrawerVisible = true"
+  >
+    <Bars3Icon class="hamburger-icon"></Bars3Icon>
+  </div>
+  <div class="mobile-edit-view-toolbar md:hidden">
+    <div
+      class="mobile-edit-view-button-container"
+      :class="{ active: !showEditor }"
+      @click="showEditor = false"
+    >
+      <EyeIcon class="mobile-edit-view-button"></EyeIcon>
+    </div>
+    <div
+      class="mobile-edit-view-button-container"
+      :class="{ active: showEditor }"
+      @click="showEditor = true"
+    >
+      <PencilIcon class="mobile-edit-view-button"></PencilIcon>
+    </div>
   </div>
 </template>
 
@@ -304,6 +347,11 @@ const deletePage = (pageId: number) => {
   flex-grow: 1;
   min-height: 20rem;
   background-color: var(--document-page-color);
+}
+@media screen and (max-width: 768px) {
+  .mobile-hidden {
+    display: none;
+  }
 }
 .editor-tool-icon {
   width: var(--toolbar-element-size);
@@ -354,6 +402,46 @@ const deletePage = (pageId: number) => {
   width: 3rem;
   height: 3rem;
   cursor: pointer;
+}
+.mobile-hamburger-button {
+  height: var(--global-header-height);
+  width: var(--global-header-height);
+  position: fixed;
+  top: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  background-color: var(--primary-background-color);
+  cursor: pointer;
+}
+.hamburger-icon {
+  width: 100%;
+  height: 100%;
+}
+.mobile-edit-view-toolbar {
+  height: 4rem;
+  width: 100vw;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  display: flex;
+}
+.mobile-edit-view-button-container {
+  width: 50%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--primary-background-color);
+}
+.mobile-edit-view-button {
+  width: 4rem;
+  height: 4rem;
+}
+.mobile-edit-view-button-container.active {
+  color: var(--accent-text-color);
+  background-color: var(--accent-color);
 }
 li {
   list-style-position: inside;

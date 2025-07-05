@@ -151,6 +151,10 @@ button:focus-visible {
 :root {
   --p-button-primary-background: var(--accent-color) !important;
 }
+.p-dialog-content {
+  min-width: 50vw;
+  min-height: 50vh;
+}
 
 /* CodeMirror Overrides */
 .cm-editor {
