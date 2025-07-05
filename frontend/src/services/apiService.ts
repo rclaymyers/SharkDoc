@@ -11,6 +11,7 @@ import {
   type MarkdownDocumentCreationRequest,
 } from "../../../sharedModels/MarkdownDocument";
 import { LocalStorageService } from "./localStorageService";
+import { ToastService } from "./toastService";
 import { UtilitiesService } from "./utils";
 
 type HttpMethod = "POST" | "GET";
@@ -68,6 +69,7 @@ class ApiRequest<T> {
           console.error(e);
         }
         console.error("API call failed:", this, error);
+        ToastService.showError("Error", error?.message ?? "Unknown error");
         return null;
       }
       //todo validate type
@@ -183,10 +185,17 @@ export const ApiService = {
   fetchMarkdownDocument: async (
     markdownDocumentId: number
   ): Promise<MarkdownDocument | null> => {
+    const token = LocalStorageService.getJwt();
+    if (!token) {
+      ToastService.showError("Error", "Credentials invalid");
+      return null;
+    }
     return new ApiRequest<MarkdownDocument>(
       "GET",
       `${UtilitiesService.prependApiDomain(ApiEndpoints.GET.Document)}?id=${markdownDocumentId}`
-    ).execute();
+    )
+      .withAuthToken(token)
+      .execute();
   },
   fetchAllMarkdownDocuments: async (): Promise<MarkdownDocument[] | null> => {
     const token = LocalStorageService.getJwt();

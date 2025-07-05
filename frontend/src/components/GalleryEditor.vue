@@ -14,6 +14,7 @@ import {
 import { UtilitiesService } from "../services/utils";
 import { XMarkIcon } from "@heroicons/vue/24/outline";
 import { InputText, Button } from "primevue";
+import { ToastService } from "../services/toastService";
 
 const FormStateEnum = {
   GALLERY_LIST: 0,
@@ -95,6 +96,7 @@ const onFileSelected = (event: Event) => {
       if (result) {
         emit("gallery-updated", result);
         gallerySelectedForEdit.value = result;
+        ToastService.showSuccess("Success", "Image uploaded!");
       }
     });
 };
@@ -109,6 +111,7 @@ const deleteGallery = (galleryId: number) => {
   ApiService.deleteGallery(galleryId).then((_) => {
     emit("gallery-deleted");
     console.log("Emitted gallery deleted event");
+    ToastService.showSuccess("Success", "Gallery deleted!");
   });
 };
 const saveGallery = () => {
@@ -164,7 +167,10 @@ const saveGallery = () => {
       }
     })
     .then((_) => {
-      if (updatedGallery) emit("gallery-updated", updatedGallery);
+      if (updatedGallery) {
+        emit("gallery-updated", updatedGallery);
+        ToastService.showSuccess("Success", "Gallery saved!");
+      }
     });
 };
 </script>
