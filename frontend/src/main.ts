@@ -11,13 +11,16 @@ import Aura from "@primeuix/themes/aura";
 //import "primevue/resources/primevue.min.css";
 import "primeicons/primeicons.css";
 import "primeflex/primeflex.css";
-import { Dialog, InputText, Drawer } from "primevue";
+import { Dialog, InputText, Drawer, DynamicDialog } from "primevue";
+import DialogService from "primevue/dialogservice";
 
 const app = createApp(App);
 app.use(router);
+app.use(DialogService);
 app.use(PrimeVue, { theme: { preset: Aura } });
 app.component("Galleria", Galleria);
 app.component("Dialog", Dialog);
+app.component("DynamicDialog", DynamicDialog);
 app.component("InputText", InputText);
 app.component("Drawer", Drawer);
 app.mount("#app");

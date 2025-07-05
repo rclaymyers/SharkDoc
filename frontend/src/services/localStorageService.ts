@@ -9,4 +9,7 @@ export const LocalStorageService = {
   setJwt: (token: string): void => {
     localStorage.setItem(LocalStorageKeys.JWT, token);
   },
+  clearJwt: (): void => {
+    localStorage.removeItem(LocalStorageKeys.JWT);
+  },
 };
