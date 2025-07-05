@@ -3,6 +3,7 @@ import { useRouter } from "vue-router";
 import { ApiService } from "../../services/apiService";
 import { LocalStorageService } from "../../services/localStorageService";
 import { inject } from "vue";
+import { ToastService } from "../../services/toastService";
 
 const router = useRouter();
 const dialogRef: any = inject("dialogRef");
@@ -12,6 +13,7 @@ const onConfirm = () => {
   LocalStorageService.clearUsername();
   dialogRef.value.close();
   router.push("/signin");
+  ToastService.showSuccess("Success", "Successfully signed out!");
 };
 const onCancel = () => {
   dialogRef.value.close();

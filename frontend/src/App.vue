@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import Header from "./components/Header.vue";
-import { DynamicDialog } from "primevue";
+import { DynamicDialog, Toast, useToast } from "primevue";
+import { ToastService } from "./services/toastService";
+
+const toast = useToast();
+ToastService.setToastInstance(toast);
 </script>
 
 <template>
@@ -9,6 +13,7 @@ import { DynamicDialog } from "primevue";
     <RouterView />
   </div>
   <DynamicDialog />
+  <Toast />
 </template>
 
 <style>

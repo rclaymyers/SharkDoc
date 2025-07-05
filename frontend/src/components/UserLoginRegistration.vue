@@ -8,6 +8,7 @@ import {
 } from "../../../sharedModels/ApiConstants";
 import { useRouter } from "vue-router";
 import { LocalStorageService } from "../services/localStorageService";
+import { ToastService } from "../services/toastService";
 
 const router = useRouter();
 
@@ -21,10 +22,13 @@ const attemptRegistration = () => {
   ApiService.registerUser(username.value, password.value).then(
     (response: ApiResponse | null) => {
       if (!response) {
-        //todo show registration error
         return;
       }
-      //todo prompt for sign in
+      ToastService.showSuccess(
+        "Success",
+        "Registration sucessful! You may now sign in.",
+        6000
+      );
     }
   );
 };

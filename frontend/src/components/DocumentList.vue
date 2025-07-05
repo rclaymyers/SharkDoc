@@ -12,6 +12,7 @@ import {
   PlusIcon,
   TrashIcon,
 } from "@heroicons/vue/24/outline";
+import { ToastService } from "../services/toastService";
 
 const router = useRouter();
 
@@ -51,6 +52,7 @@ const saveNewDocument = (): void => {
       return;
     }
     markdownDocuments.value = [...markdownDocuments.value, result];
+    ToastService.showSuccess("Success", "New document created!");
   });
 };
 const deleteDocument = (documentId: number): void => {
@@ -59,7 +61,11 @@ const deleteDocument = (documentId: number): void => {
       return ApiService.fetchAllMarkdownDocuments();
     })
     .then((documents: MarkdownDocument[] | null) => {
-      if (documents) markdownDocuments.value = documents;
+      if (!documents) {
+        return;
+      }
+      markdownDocuments.value = documents;
+      ToastService.showSuccess("Success", "Document deleted!");
     });
 };
 </script>

@@ -83,7 +83,9 @@ export const MarkdownDocumentQueries = {
   WHERE ${ColumnNames.markdownDocuments.ownerId} = ?
   `,
   SelectMarkdownDocumentById: `
-    SELECT ${ColumnNames.markdownDocuments.id}, ${ColumnNames.markdownDocuments.title} 
+    SELECT ${ColumnNames.markdownDocuments.id}, 
+      ${ColumnNames.markdownDocuments.title}, 
+      ${ColumnNames.markdownDocuments.ownerId} 
     FROM ${TableNames.markdownDocuments} 
     WHERE ${ColumnNames.markdownDocuments.id} = ?`,
 };

@@ -20,6 +20,7 @@ import {
 import LightboxWrapper from "./LightboxWrapper.vue";
 import { useDialog } from "primevue";
 import { AuthService } from "../services/authService";
+import { ToastService } from "../services/toastService";
 
 const route = useRoute();
 const router = useRouter();
@@ -77,6 +78,7 @@ const saveDocumentTitle = () => {
         //todo show error
       } else {
         activeMarkdownDocument.value = updatedDocument;
+        ToastService.showSuccess("Success", "Document renamed!");
       }
       editingTitle.value = false;
       showDocumentRenameDialog.value = false;
@@ -136,6 +138,7 @@ const addPage = () => {
     if (updatedDocument) {
       activeMarkdownDocument.value = updatedDocument;
       nextTick().then((_) => window.scrollTo(0, document.body.scrollHeight));
+      ToastService.showSuccess("Success", "Page added!");
     }
   });
 };
@@ -168,10 +171,10 @@ const deletePage = (pageId: number) => {
   }
   ApiService.deletePage(documentId, pageId).then((updatedDocument) => {
     if (!updatedDocument) {
-      //todo show error
       return;
     }
     activeMarkdownDocument.value = updatedDocument;
+    ToastService.showSuccess("Success", "Page deleted!");
   });
 };
 
