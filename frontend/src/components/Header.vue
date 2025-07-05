@@ -1,9 +1,24 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useDialog } from "primevue";
+import SignOut from "./dynamicDialogs/SignOut.vue";
+
+const dialog = useDialog();
+
+const onSignOutClicked = () => {
+  dialog.open(SignOut, {
+    props: {
+      header: "Sign Out",
+      modal: true,
+      dismissableMask: true,
+    },
+  });
+};
+</script>
 
 <template>
   <div class="global-header">
     <p>Paged Markdown with Galleries</p>
-    <p>C</p>
+    <p @click="onSignOutClicked">C</p>
   </div>
 </template>
 

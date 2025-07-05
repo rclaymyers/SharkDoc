@@ -48,6 +48,8 @@ const attemptSignIn = () => {
     v-model:visible="dialogShowing"
     class="max-height-20vh"
     header="Sign In"
+    :dismissable-mask="false"
+    :closable="false"
   >
     <div class="flex flex-col space-y-4">
       <InputText

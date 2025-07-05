@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Header from "./components/Header.vue";
-import UserLoginRegistration from "./components/UserLoginRegistration.vue";
+import { DynamicDialog } from "primevue";
 </script>
 
 <template>
@@ -8,6 +8,7 @@ import UserLoginRegistration from "./components/UserLoginRegistration.vue";
   <div class="content">
     <RouterView />
   </div>
+  <DynamicDialog />
 </template>
 
 <style>
