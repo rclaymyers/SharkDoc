@@ -9,6 +9,7 @@ const dialogRef: any = inject("dialogRef");
 
 const onConfirm = () => {
   LocalStorageService.clearJwt();
+  LocalStorageService.clearUsername();
   dialogRef.value.close();
   router.push("/signin");
 };
