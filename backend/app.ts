@@ -208,13 +208,21 @@ app.get(ApiEndpoints.GET.AllDocuments, (req: Request, res: Response) => {
 });
 
 app.get(ApiEndpoints.GET.Document, (req: Request, res: Response) => {
+  const token = getTokenFromAuthHeader(req, JWT_SECRET);
+  if (!token?.userId) {
+    res.status(401).json(CREDENTIAL_VALIDATION_ERROR);
+    return;
+  }
   if (!req.query?.id) {
     res.status(400).json({ error: "Invalid or missing ID" });
     return;
   }
   const markdownDocument: MarkdownDocument =
     retrieveMarkdownDocumentWithPagesAndGalleries(+req.query.id);
-  console.log("returning document:", markdownDocument);
+  if (markdownDocument.ownerId !== +token.userId) {
+    res.status(401).json(CREDENTIAL_VALIDATION_ERROR);
+    return;
+  }
   res.status(200).json(markdownDocument);
 });
 
