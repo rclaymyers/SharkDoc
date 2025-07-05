@@ -44,8 +44,12 @@ const attemptSignIn = () => {
 </script>
 
 <template>
-  <Dialog v-model:visible="dialogShowing">
-    <div class="flex flex-col">
+  <Dialog
+    v-model:visible="dialogShowing"
+    class="max-height-20vh"
+    header="Sign In"
+  >
+    <div class="flex flex-col space-y-4">
       <InputText
         v-model:model-value="username"
         placeholder="Username"
@@ -56,9 +60,13 @@ const attemptSignIn = () => {
         placeholder="Password"
         type="password"
       ></InputText>
-      <Button @click="attemptSignIn">Sign In</Button>
-      <Button @click="attemptRegistration">Register</Button>
     </div>
+    <template #footer>
+      <div class="flex flex-column w-full space-y-4">
+        <Button @click="attemptSignIn">Sign In</Button>
+        <Button @click="attemptRegistration">Register</Button>
+      </div>
+    </template>
   </Dialog>
 </template>
 

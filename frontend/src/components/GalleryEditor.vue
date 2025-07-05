@@ -175,7 +175,6 @@ const saveGallery = () => {
     modal
     dismissable-mask
     :header="`Galleries for ${props.markdownDocument.title}`"
-    :style="{ maxWidth: '70vw' }"
     @hide="emit('gallery-close-requested')"
   >
     <template v-if="formState === FormStateEnum.GALLERY_LIST">

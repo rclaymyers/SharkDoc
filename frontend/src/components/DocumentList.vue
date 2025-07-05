@@ -88,17 +88,23 @@ const deleteDocument = (documentId: number): void => {
       modal
       dismissable-mask
       :header="'Add Document'"
-      :style="{ maxWidth: '70vw' }"
+      class="max-height-20vh"
     >
-      <label for="name">Name</label>
-      <InputText
-        v-model:model-value="newDocumentName"
-        id="name"
-        class="flex-auto"
-        autocomplete="off"
-        @keydown.enter.stop.prevent="saveNewDocument"
-      ></InputText>
-      <Button type="button" label="Save" @click="saveNewDocument"></Button>
+      <div class="flex w-full justify-center">
+        <InputText
+          v-model:model-value="newDocumentName"
+          id="name"
+          class="flex-auto"
+          autocomplete="off"
+          @keydown.enter.stop.prevent="saveNewDocument"
+          placeholder="Name"
+        ></InputText>
+      </div>
+      <template #footer>
+        <div class="flex w-full justify-center">
+          <Button type="button" label="Save" @click="saveNewDocument"></Button>
+        </div>
+      </template>
     </Dialog>
   </div>
 </template>
