@@ -150,6 +150,7 @@ button:focus-visible {
 /* PrimeUI overrides */
 :root {
   --p-button-primary-background: var(--accent-color) !important;
+  --p-button-primary-color: var(--accent-text-color) !important;
 }
 .p-dialog-content {
   min-width: 50vw;

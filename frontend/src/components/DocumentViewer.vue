@@ -28,6 +28,11 @@ const activeMarkdownDocument: Ref<MarkdownDocument | null> =
 const editingTitle = ref<boolean>(false);
 const newTitle = ref<string>("");
 const mobileDrawerVisible = ref(false);
+const showEditor = ref(false);
+const galleryAddEditPromptShowing = ref(false);
+const selectedGallery = ref<Gallery | null>(null);
+const showMobileLightbox = ref<boolean>(false);
+const showDocumentRenameDialog = ref<boolean>(false);
 
 const loadDocument = () => {
   console.log("Load document called");
@@ -71,6 +76,7 @@ const saveDocumentTitle = () => {
         activeMarkdownDocument.value = updatedDocument;
       }
       editingTitle.value = false;
+      showDocumentRenameDialog.value = false;
     }
   );
 };
@@ -113,7 +119,6 @@ const onMarkdownTextChanged = (payload: {
   debouncedUpdateFn(payload);
 };
 
-const showEditor = ref(false);
 const toggleEditor = (newValue: boolean) => {
   showEditor.value = newValue;
 };
@@ -132,13 +137,9 @@ const addPage = () => {
   });
 };
 
-const galleryAddEditPromptShowing = ref(false);
 const showGalleryPrompt = () => {
   galleryAddEditPromptShowing.value = true;
 };
-
-const selectedGallery = ref<Gallery | null>(null);
-const showMobileLightbox = ref<boolean>(false);
 
 const showGallery = (galleryName: string) => {
   const gallery = activeMarkdownDocument.value?.galleries.find(
@@ -175,7 +176,10 @@ const onReturnToDocumentsClicked = () => {
   router.push("/");
 };
 const onSignOutClicked = () => {};
-const onEditTitleClicked = () => {};
+const onEditTitleClicked = () => {
+  newTitle.value = activeMarkdownDocument.value?.title ?? "";
+  showDocumentRenameDialog.value = true;
+};
 const onMobileLightboxDismissed = () => {
   selectedGallery.value = null;
   showMobileLightbox.value = false;
@@ -327,6 +331,22 @@ const onMobileLightboxDismissed = () => {
       <PencilIcon class="mobile-edit-view-button"></PencilIcon>
     </div>
   </div>
+  <Dialog
+    v-model:visible="showDocumentRenameDialog"
+    class="max-height-20vh"
+    header="Rename Document"
+    modal
+    dismissable-mask
+  >
+    <div class="flex w-full justify-center">
+      <InputText placeholder="Title" v-model="newTitle"></InputText>
+    </div>
+    <template #footer>
+      <div class="flex w-full justify-center">
+        <button @click="saveDocumentTitle">Save Title</button>
+      </div>
+    </template>
+  </Dialog>
 </template>
 
 <style>
