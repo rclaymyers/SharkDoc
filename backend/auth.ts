@@ -3,7 +3,21 @@ import { ApiEndpoints } from "../sharedModels/ApiConstants";
 import bcrypt from "bcryptjs";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { SuccessResponse } from "./constants/responseTemplates";
-import { createUser, selectUser } from "./dbQueryExecutor";
+import {
+  createImageInGallery,
+  createOrUpdateDocument,
+  createOrUpdateGallery,
+  createPage,
+  createUser,
+  selectUser,
+  updatePage,
+} from "./dbQueryExecutor";
+import { MarkdownDocumentCreationRequest } from "../sharedModels/MarkdownDocument";
+import {
+  WelcomeDocumentPage1,
+  WelcomeDocumentPage2,
+} from "./constants/welcomeDocument";
+import { GalleryCreationRequest } from "../sharedModels/Gallery";
 
 export interface User {
   id: number;
@@ -29,6 +43,41 @@ export const setupAuthEndpoints = (app: Express, JWT_SECRET: string): void => {
       const { username, unhashedPass } = req.body;
       const hashedPass: string = await bcrypt.hash(unhashedPass, 10);
       createUser(username, hashedPass);
+      const user = selectUser(username);
+      if (!user?.id) {
+        res.status(201).json(SuccessResponse);
+        return;
+      }
+      const newDocument = createOrUpdateDocument(
+        new MarkdownDocumentCreationRequest("Your First Sharkdown Document"),
+        user.id,
+        false
+      );
+      if (!newDocument) {
+        res.status(201).json(SuccessResponse);
+        return;
+      }
+      const page1 = createPage(newDocument.id);
+      const page2 = createPage(newDocument.id);
+      if (!page1 || !page2) {
+        return;
+      }
+      page1.content = WelcomeDocumentPage1;
+      updatePage(page1);
+      page2.content = WelcomeDocumentPage2;
+      updatePage(page2);
+      const newGallery = createOrUpdateGallery(
+        new GalleryCreationRequest("dogsAndCats", newDocument.id)
+      );
+      if (!newGallery?.id) {
+        res.status(201).json(SuccessResponse);
+      }
+      createImageInGallery("/welcomeImages/testImage1.jpg", newGallery.id);
+      createImageInGallery("/welcomeImages/testImage2.jpg", newGallery.id);
+      createImageInGallery("/welcomeImages/testImage3.jpg", newGallery.id);
+      createImageInGallery("/welcomeImages/testImage4.jpg", newGallery.id);
+      createImageInGallery("/welcomeImages/testImage5.jpg", newGallery.id);
+
       res.status(201).json(SuccessResponse);
     }
   );

@@ -50,6 +50,7 @@ const tokenVerificationMiddleware =
   buildTokenVerificationMiddleware(JWT_SECRET);
 
 const uploadDir = path.join(__dirname, "uploads");
+const welcomeImageDir = path.join(__dirname, "welcomeImages");
 
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir);
@@ -115,7 +116,8 @@ app.post(ApiEndpoints.POST.Document, (req: Request, res: Response) => {
   }
   const updatedDocument: MarkdownDocument = createOrUpdateDocument(
     req.body,
-    +token.userId
+    +token.userId,
+    true
   );
   res.status(200).json(updatedDocument);
 });
@@ -227,6 +229,7 @@ app.get(ApiEndpoints.GET.Document, (req: Request, res: Response) => {
 });
 
 app.use("/images", express.static(uploadDir));
+app.use("/welcomeImages", express.static(welcomeImageDir));
 
 initDatabase();
 

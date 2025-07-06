@@ -67,7 +67,8 @@ export const deleteGallery = (galleryId: number): void => {
 
 export const createOrUpdateDocument = (
   documentRequest: MarkdownDocument | MarkdownDocumentCreationRequest,
-  ownerId: number
+  ownerId: number,
+  shouldCreatePage: boolean
 ): MarkdownDocument => {
   let documentId: number | null = null;
   if (MarkdownDocument.IsMarkdownDocument(documentRequest)) {
@@ -81,7 +82,9 @@ export const createOrUpdateDocument = (
       .prepare(MarkdownDocumentQueries.CreateMarkdownDocument)
       .run(documentRequest.title, ownerId);
     documentId = result.lastInsertRowid as number;
-    createPage(documentId);
+    if (shouldCreatePage) {
+      createPage(documentId);
+    }
   }
   return retrieveMarkdownDocumentWithPagesAndGalleries(documentId);
 };

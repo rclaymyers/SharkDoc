@@ -29,7 +29,7 @@ LocalStorageService.subscribeToKeyChange(
 
 <template>
   <div class="global-header">
-    <p>Paged Markdown with Galleries</p>
+    <p>Sharkdown</p>
     <p class="clickable" @click="onSignOutClicked">{{ firstInitial }}</p>
   </div>
 </template>
