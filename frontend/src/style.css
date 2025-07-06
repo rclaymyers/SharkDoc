@@ -16,7 +16,7 @@
 
   /* Global style variables */
   --global-header-height: 3rem;
-  --subheader-height: 4.5rem;
+  --subheader-height: 2.5rem;
   --accent-color: #007a39;
   --secondary-accent-color: #0f3325;
   --accent-color-light: #008b41;
@@ -76,7 +76,7 @@ h6 {
   background-color: var(--primary-background-color);
   color: var(--primary-text-color);
   padding-left: var(--header-padding-and-margins);
-  font-size: 3.2rem;
+  font-size: 2rem;
   display: flex;
   align-items: center;
 }
@@ -105,11 +105,6 @@ body {
   display: flex;
   min-width: 320px;
   min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
 }
 
 button {
@@ -208,7 +203,7 @@ button:focus-visible {
 
 /* CodeMirror Overrides */
 .cm-editor {
-  font-size: 1.2rem;
+  font-size: 0.8rem;
 }
 /* Highlighted syntax elements */
 .ͼ5 {

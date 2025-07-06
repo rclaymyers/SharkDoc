@@ -369,11 +369,11 @@ const onMobileLightboxDismissed = () => {
   width: 100%;
   background-color: var(--secondary-background-color);
 
-  --toolbar-element-size: 2.75rem;
+  --toolbar-element-size: 2rem;
 }
 .document-viewer p,
 .document-viewer a {
-  font-size: 1.5rem;
+  font-size: 1.5em;
 }
 .document-page-container {
   position: relative;
@@ -459,11 +459,11 @@ const onMobileLightboxDismissed = () => {
   margin-right: var(--header-padding-and-margins);
 }
 .toolbar h1 {
-  font-size: 3.5rem;
+  font-size: 1rem;
 }
 .interactive-toolbar-element {
   height: var(--toolbar-element-size);
-  font-size: 1rem;
+  font-size: 0.75rem;
 }
 .close-icon {
   width: 2rem;
