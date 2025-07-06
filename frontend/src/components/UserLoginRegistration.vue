@@ -61,11 +61,13 @@ const attemptSignIn = () => {
         v-model:model-value="username"
         placeholder="Username"
         type="username"
+        @keydown.enter="attemptSignIn"
       ></InputText>
       <InputText
         v-model:model-value="password"
         placeholder="Password"
         type="password"
+        @keydown.enter="attemptSignIn"
       ></InputText>
     </div>
     <template #footer>
