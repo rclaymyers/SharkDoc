@@ -67,7 +67,7 @@ export const setupAuthEndpoints = (app: Express, JWT_SECRET: string): void => {
       page2.content = WelcomeDocumentPage2;
       updatePage(page2);
       const newGallery = createOrUpdateGallery(
-        new GalleryCreationRequest("dogsAndCats", newDocument.id)
+        new GalleryCreationRequest("Dogs and Cats", newDocument.id)
       );
       if (!newGallery?.id) {
         res.status(201).json(SuccessResponse);
