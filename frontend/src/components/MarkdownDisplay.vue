@@ -27,7 +27,8 @@ const emit = defineEmits<{
   (event: "galleryClicked", value: string): void;
   (event: "page-deletion-requested", value: number): void;
 }>();
-const galleryRegex = /gallery\(([\w-]+)\)/g;
+
+const galleryRegex = /gallery\(\s*([\w\s-]+?)\s*\)/g;
 const markdownContainer = ref<HTMLElement | null>(null);
 
 const compiledMarkdown = computed(() => {

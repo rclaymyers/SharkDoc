@@ -14,7 +14,7 @@ On mobile, the button is in the hamburger menu at the top right.
 
 After adding a gallery, you can insert it into the document like so:
 
-gallery(dogsAndCats)
+gallery(Dogs and Cats)
 <br><br>
 Click the highlighted gallery name to view the gallery.
 `;
