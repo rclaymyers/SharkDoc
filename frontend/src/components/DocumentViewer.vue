@@ -15,12 +15,20 @@ import {
   DocumentPlusIcon,
   EyeIcon,
   PencilIcon,
+  ViewColumnsIcon,
   XMarkIcon,
 } from "@heroicons/vue/24/outline";
 import LightboxWrapper from "./LightboxWrapper.vue";
 import { useDialog } from "primevue";
 import { AuthService } from "../services/authService";
 import { ToastService } from "../services/toastService";
+import { EditorView } from "codemirror";
+
+const EditorViewEnum = {
+  DOCUMENT_ONLY: 0,
+  SPLIT_PANES: 1,
+  EDITOR_ONLY: 2,
+};
 
 const route = useRoute();
 const router = useRouter();
@@ -32,7 +40,7 @@ const activeMarkdownDocument: Ref<MarkdownDocument | null> =
 const editingTitle = ref<boolean>(false);
 const newTitle = ref<string>("");
 const mobileDrawerVisible = ref(false);
-const showEditor = ref(false);
+const editorViewState = ref(EditorViewEnum.DOCUMENT_ONLY);
 const galleryAddEditPromptShowing = ref(false);
 const selectedGallery = ref<Gallery | null>(null);
 const showMobileLightbox = ref<boolean>(false);
@@ -124,8 +132,8 @@ const onMarkdownTextChanged = (payload: {
   debouncedUpdateFn(payload);
 };
 
-const toggleEditor = (newValue: boolean) => {
-  showEditor.value = newValue;
+const changeEditorView = (newValue: number) => {
+  editorViewState.value = newValue;
 };
 
 const addPage = () => {
@@ -217,13 +225,18 @@ const onMobileLightboxDismissed = () => {
       <div class="editor-toggle-buttons interactive-toolbar-element">
         <EyeIcon
           class="editor-tool-icon"
-          :class="{ active: !showEditor }"
-          @click="toggleEditor(false)"
+          :class="{ active: editorViewState === EditorViewEnum.DOCUMENT_ONLY }"
+          @click="changeEditorView(EditorViewEnum.DOCUMENT_ONLY)"
         ></EyeIcon>
+        <ViewColumnsIcon
+          class="editor-tool-icon"
+          :class="{ active: editorViewState === EditorViewEnum.SPLIT_PANES }"
+          @click="changeEditorView(EditorViewEnum.SPLIT_PANES)"
+        ></ViewColumnsIcon>
         <PencilIcon
           class="editor-tool-icon"
-          :class="{ active: showEditor }"
-          @click="toggleEditor(true)"
+          :class="{ active: editorViewState === EditorViewEnum.EDITOR_ONLY }"
+          @click="changeEditorView(EditorViewEnum.EDITOR_ONLY)"
         ></PencilIcon>
       </div>
       <button class="interactive-toolbar-element" @click="showGalleryPrompt">
@@ -241,8 +254,14 @@ const onMobileLightboxDismissed = () => {
             v-for="(page, index) in activeMarkdownDocument.pages"
           >
             <div
-              class="pane half-pane m-1 mx-1 mb-4 document-editor-pane"
-              v-if="showEditor"
+              class="pane m-1 mx-1 mb-4 document-editor-pane"
+              :class="{
+                'half-pane': editorViewState === EditorViewEnum.SPLIT_PANES,
+              }"
+              v-if="
+                editorViewState === EditorViewEnum.SPLIT_PANES ||
+                editorViewState === EditorViewEnum.EDITOR_ONLY
+              "
             >
               <MarkdownEditor
                 :markdown-document="activeMarkdownDocument"
@@ -251,10 +270,12 @@ const onMobileLightboxDismissed = () => {
               ></MarkdownEditor>
             </div>
             <div
-              :class="[
-                showEditor ? 'half-pane mobile-hidden' : '',
-                'drop-shadow-xl mx-1 mb-4 mt-1 p-3 document-page',
-              ]"
+              class="drop-shadow-xl mx-1 mb-4 mt-1 p-3 document-page"
+              :class="{
+                'half-pane mobile-hidden':
+                  editorViewState === EditorViewEnum.SPLIT_PANES,
+                hidden: editorViewState === EditorViewEnum.EDITOR_ONLY,
+              }"
             >
               <MarkdownDisplay
                 :markdown-document="activeMarkdownDocument"
@@ -268,13 +289,23 @@ const onMobileLightboxDismissed = () => {
           </div>
           <div class="w-full flex justify-around pb-4 md:pb-0">
             <!-- spacer -->
-            <div class="mobile-hidden"></div>
+            <div
+              :class="{
+                'mobile-hidden': editorViewState === EditorViewEnum.SPLIT_PANES,
+                hidden: editorViewState === EditorViewEnum.EDITOR_ONLY,
+              }"
+            ></div>
             <DocumentPlusIcon
               class="size-[2rem] clickable"
               @click="addPage"
             ></DocumentPlusIcon>
             <!-- spacer -->
-            <div v-if="!showEditor" class="mobile-hidden"></div>
+            <div
+              :class="{
+                'mobile-hidden': editorViewState === EditorViewEnum.SPLIT_PANES,
+                hidden: editorViewState === EditorViewEnum.EDITOR_ONLY,
+              }"
+            ></div>
           </div>
         </div>
         <div
@@ -332,15 +363,19 @@ const onMobileLightboxDismissed = () => {
   <div class="mobile-edit-view-toolbar md:hidden">
     <div
       class="mobile-edit-view-button-container"
-      :class="{ active: !showEditor }"
-      @click="showEditor = false"
+      :class="{ active: editorViewState === EditorViewEnum.DOCUMENT_ONLY }"
+      @click="editorViewState = EditorViewEnum.DOCUMENT_ONLY"
     >
       <EyeIcon class="mobile-edit-view-button"></EyeIcon>
     </div>
     <div
       class="mobile-edit-view-button-container"
-      :class="{ active: showEditor }"
-      @click="showEditor = true"
+      :class="{
+        active:
+          editorViewState === EditorViewEnum.EDITOR_ONLY ||
+          editorViewState === EditorViewEnum.SPLIT_PANES,
+      }"
+      @click="editorViewState = EditorViewEnum.EDITOR_ONLY"
     >
       <PencilIcon class="mobile-edit-view-button"></PencilIcon>
     </div>
@@ -429,17 +464,17 @@ const onMobileLightboxDismissed = () => {
   cursor: pointer;
   padding: 0.5rem;
   border: inherit;
-  border-radius: inherit;
+  border-radius: 0;
 }
 .editor-tool-icon:first-child {
   border-right: none;
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
+  border-top-left-radius: inherit;
+  border-bottom-left-radius: inherit;
 }
 .editor-tool-icon:last-child {
   border-left: none;
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
+  border-top-right-radius: inherit;
+  border-bottom-right-radius: inherit;
 }
 .editor-tool-icon.active {
   background-color: var(--accent-color);
