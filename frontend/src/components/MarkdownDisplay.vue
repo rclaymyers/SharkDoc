@@ -90,6 +90,7 @@ p.missing-gallery {
 }
 .markdown-page {
   position: relative;
+  word-break: break-word;
 }
 .delete-page-icon {
   position: absolute;
