@@ -9,8 +9,8 @@ Sharkdown extends the markdown spec with 2 new features:
 
 This repository contains both the Vue.js frontend and Express.js backend for the application.
 
-![Alt text](readmeImages/galleryView.png)
 ![Alt text](readmeImages/splitView.png)
+![Alt text](readmeImages/galleryView.png)
 ![Alt text](readmeImages/mobileView.png)
 
 ## Frontend
