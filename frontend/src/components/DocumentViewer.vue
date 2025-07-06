@@ -285,6 +285,9 @@ const onMobileLightboxDismissed = () => {
             class="close-icon"
             @click="selectedGallery = null"
           ></XMarkIcon>
+          <div class="flex w-full justify-center py-2">
+            <p>{{ selectedGallery.name }}</p>
+          </div>
           <ImageGallery :gallery="selectedGallery" />
         </div>
       </div>
