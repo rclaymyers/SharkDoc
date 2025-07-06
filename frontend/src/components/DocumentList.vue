@@ -72,7 +72,7 @@ const deleteDocument = (documentId: number): void => {
 
 <template>
   <div class="document-list-container">
-    <h1 class="subheader">Your Documents</h1>
+    <h3 class="subheader">Your Documents</h3>
     <div class="document-card-list content-under-subheader">
       <div
         @click="openDocument(document.id)"
@@ -139,8 +139,9 @@ const deleteDocument = (documentId: number): void => {
 
   width: 20rem;
   height: 10rem;
-  font-size: 2rem;
+  font-size: 1.5rem;
   cursor: pointer;
+  text-align: center;
 }
 .document-card:hover {
   background-color: var(--highlight-color);
