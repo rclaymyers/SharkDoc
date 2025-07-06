@@ -238,7 +238,7 @@ const onMobileLightboxDismissed = () => {
             v-for="(page, index) in activeMarkdownDocument.pages"
           >
             <div
-              class="pane half-pane m-1 mx-1 md:mx-8 mb-4 document-editor-pane"
+              class="pane half-pane m-1 mx-1 mb-4 document-editor-pane"
               v-if="showEditor"
             >
               <MarkdownEditor
@@ -249,8 +249,8 @@ const onMobileLightboxDismissed = () => {
             </div>
             <div
               :class="[
-                showEditor ? 'w-1/2 mobile-hidden' : '',
-                'drop-shadow-xl mx-1 md:mx-8 mb-4 mt-1 p-3 document-page',
+                showEditor ? 'half-pane mobile-hidden' : '',
+                'drop-shadow-xl mx-1 mb-4 mt-1 p-3 document-page',
               ]"
             >
               <MarkdownDisplay
@@ -369,20 +369,25 @@ const onMobileLightboxDismissed = () => {
 .document-viewer a {
   font-size: 1.5rem;
 }
-.panes {
-  display: flex;
-}
 .document-page-container {
   position: relative;
 }
-.half-pane {
-  width: 50%;
+.panes {
+  display: flex;
+  justify-content: space-evenly;
+  max-width: 100%;
 }
 .pane {
   flex-grow: 1;
   border: 1px solid gray;
   padding: 1rem;
   border-radius: 0.5rem;
+  max-width: 100%;
+}
+@media screen and (min-width: 769px) {
+  .half-pane {
+    max-width: 45%;
+  }
 }
 .pane.no-border {
   border: none;
