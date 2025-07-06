@@ -266,7 +266,7 @@ const onMobileLightboxDismissed = () => {
               ></MarkdownDisplay>
             </div>
           </div>
-          <div class="w-full flex justify-around">
+          <div class="w-full flex justify-around pb-4 md:pb-0">
             <!-- spacer -->
             <div class="mobile-hidden"></div>
             <DocumentPlusIcon
@@ -374,6 +374,9 @@ const onMobileLightboxDismissed = () => {
 .document-viewer p,
 .document-viewer a {
   font-size: 1.5em;
+}
+.document-viewer p a {
+  font-size: 1em;
 }
 .document-page-container {
   position: relative;

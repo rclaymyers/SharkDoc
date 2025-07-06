@@ -180,7 +180,7 @@ const saveGallery = () => {
     v-model:visible="dialogVisible"
     modal
     dismissable-mask
-    :header="`Galleries for ${props.markdownDocument.title}`"
+    :header="`Galleries for '${props.markdownDocument.title}'`"
     @hide="emit('gallery-close-requested')"
     class="min-height-50vh"
   >
@@ -189,13 +189,13 @@ const saveGallery = () => {
         <div
           v-for="gallery in markdownDocument?.galleries"
           @click="openGalleryDetails(gallery)"
-          class="mb-2 relative"
+          class="gallery-list-entry"
         >
           <p>
             {{ gallery.name }}
           </p>
           <TrashIcon
-            class="delete-icon"
+            class="gallery-list-entry-delete-icon"
             @click.stop="deleteGallery(gallery.id)"
           />
         </div>
@@ -208,12 +208,13 @@ const saveGallery = () => {
       "
     >
       <div class="flex items-center gap-4 mb-4">
-        <label for="name" class="font-semibold w-24">Name</label>
         <InputText
           v-model:model-value="newGalleryName"
           id="name"
           class="flex-auto"
           autocomplete="off"
+          placeholder="Name"
+          @keydown.enter="saveGallery"
         />
       </div>
       <div
@@ -235,7 +236,7 @@ const saveGallery = () => {
         </div>
 
         <div class="gallery-item-contents">
-          <p @click="addImage">Add Image</p>
+          <button @click="addImage">Add Image</button>
         </div>
         <input
           type="file"
@@ -296,7 +297,22 @@ div.gallery-item-contents {
   align-items: center;
   background-color: #fff;
 }
-
+.gallery-list-entry {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  background-color: var(--secondary-background-color);
+  border-radius: 5px;
+  cursor: pointer;
+}
+.gallery-list-entry-delete-icon {
+  width: 1rem;
+  height: 1rem;
+  color: red;
+}
 .close-icon {
   width: 5vh;
   height: 5vh;
