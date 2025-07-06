@@ -170,6 +170,9 @@ button:focus-visible {
     width: 80vw;
     max-width: 80vw;
   }
+  .p-toast {
+    max-width: 90vw;
+  }
 }
 .p-galleria {
   max-width: 90% !important;
