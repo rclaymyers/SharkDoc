@@ -278,7 +278,7 @@ const onMobileLightboxDismissed = () => {
           </div>
         </div>
         <div
-          class="pane max-width-one-third"
+          class="pane max-width-one-third hidden md:block"
           v-if="selectedGallery && !showMobileLightbox"
         >
           <XMarkIcon
