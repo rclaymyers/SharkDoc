@@ -1,8 +1,8 @@
-# SharkDoc
+# Sharkdown
 
-SharkDoc is a responsive editor for markdown documents in the cloud.
+Sharkdown is a responsive editor for markdown documents in the cloud.
 
-SharkDoc extends the markdown spec with 2 new features:
+Sharkdown extends the markdown spec with 2 new features:
 
 1. Multi-page support
 2. Image gallery support
