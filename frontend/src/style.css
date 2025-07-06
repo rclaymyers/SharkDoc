@@ -200,8 +200,10 @@ button:focus-visible {
     max-width: 90vw;
   }
 }
-.p-galleria {
-  max-width: 90% !important;
+@media screen and (max-width: 768px) {
+  .p-galleria {
+    max-width: 90% !important;
+  }
 }
 
 /* CodeMirror Overrides */

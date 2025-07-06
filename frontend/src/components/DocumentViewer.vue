@@ -232,7 +232,10 @@ const onMobileLightboxDismissed = () => {
     </div>
     <div class="document-page-container content-under-subheader">
       <div class="panes">
-        <div class="pane no-border">
+        <div
+          class="pane no-border"
+          :class="{ 'share-space-with-gallery': !!selectedGallery }"
+        >
           <div
             class="panes"
             v-for="(page, index) in activeMarkdownDocument.pages"
@@ -391,6 +394,11 @@ const onMobileLightboxDismissed = () => {
 }
 .pane.no-border {
   border: none;
+}
+@media screen and (min-width: 769px) {
+  .share-space-with-gallery {
+    max-width: 66vw;
+  }
 }
 .document-link {
   height: var(--toolbar-element-size);
