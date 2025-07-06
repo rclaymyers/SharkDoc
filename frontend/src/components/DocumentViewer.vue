@@ -278,7 +278,7 @@ const onMobileLightboxDismissed = () => {
           </div>
         </div>
         <div
-          class="pane max-width-one-third hidden md:block"
+          class="pane max-width-one-third hidden md:block relative"
           v-if="selectedGallery && !showMobileLightbox"
         >
           <XMarkIcon
@@ -463,9 +463,13 @@ const onMobileLightboxDismissed = () => {
   font-size: 1rem;
 }
 .close-icon {
-  width: 3rem;
-  height: 3rem;
+  width: 2rem;
+  height: 2rem;
   cursor: pointer;
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 1;
 }
 .mobile-hamburger-button {
   height: var(--global-header-height);
