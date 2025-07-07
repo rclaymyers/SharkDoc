@@ -31,11 +31,17 @@ npm run build
 
 ## Backend
 
-To run the backend, install the required packages, and run the serve command:
+To run the backend, first install the required packages and generate the environment file (for the JWT secret):
 
 ```
 cd backend
+echo "JWT_SECRET=$(openssl rand -hex 32)" > .env
 npm i
+```
+
+Once complete, run the serve script:
+
+```
 npm run serve
 ```
 
