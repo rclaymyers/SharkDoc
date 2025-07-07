@@ -17,7 +17,7 @@ const router = createRouter({
 });
 
 const publicPaths = ["/signin"];
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _, next) => {
   const token = LocalStorageService.getJwt();
   if (!tokenValid(token) && !publicPaths.includes(to.path)) {
     next("/signin");

@@ -1,18 +1,16 @@
 <script setup lang="ts">
-import { onMounted, ref, toRaw } from "vue";
+import { ref } from "vue";
 import {
   GalleryCreationRequest,
   type Gallery,
 } from "../../../sharedModels/Gallery";
-import { TrashIcon, XCircleIcon } from "@heroicons/vue/20/solid";
-import { LocalStorageService } from "../services/localStorageService";
+import { TrashIcon } from "@heroicons/vue/20/solid";
 import { ApiService } from "../services/apiService";
 import {
   MarkdownDocument,
   MarkdownDocumentPage,
 } from "../../../sharedModels/MarkdownDocument";
 import { UtilitiesService } from "../services/utils";
-import { XMarkIcon } from "@heroicons/vue/24/outline";
 import { InputText, Button } from "primevue";
 import { ToastService } from "../services/toastService";
 

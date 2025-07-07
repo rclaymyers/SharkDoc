@@ -2,7 +2,6 @@
 import { ref } from "vue";
 import { Gallery } from "../../../sharedModels/Gallery";
 import { UtilitiesService } from "../services/utils";
-import type { GalleriaResponsiveOptions } from "primevue";
 import LightboxWrapper from "./LightboxWrapper.vue";
 
 const props = defineProps<{ gallery: Gallery }>();

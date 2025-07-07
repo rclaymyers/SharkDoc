@@ -43,7 +43,4 @@ export const LocalStorageService = {
     callbacksForKey.push(callback);
     subscribers.set(key, callbacksForKey);
   },
-  clearJwt: (): void => {
-    localStorage.removeItem(LocalStorageKeys.JWT);
-  },
 };

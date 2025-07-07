@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
-import { ApiService } from "../../services/apiService";
 import { LocalStorageService } from "../../services/localStorageService";
 import { inject } from "vue";
 import { ToastService } from "../../services/toastService";

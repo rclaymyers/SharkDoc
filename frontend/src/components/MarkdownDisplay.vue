@@ -13,7 +13,6 @@ import { marked } from "marked";
 import { computed, onMounted, ref } from "vue";
 import type { Gallery } from "../../../sharedModels/Gallery";
 import { XCircleIcon } from "@heroicons/vue/24/outline";
-import { ApiService } from "../services/apiService";
 import type { MarkdownDocument } from "../../../sharedModels/MarkdownDocument";
 
 const MISSING_GALLERY_MESSAGE = "Invalid gallery name";
