@@ -7,11 +7,7 @@ import {
 import { ApiService } from "../services/apiService";
 import { useRouter } from "vue-router";
 import { Dialog, InputText, Button } from "primevue";
-import {
-  DocumentPlusIcon,
-  PlusIcon,
-  TrashIcon,
-} from "@heroicons/vue/24/outline";
+import { DocumentPlusIcon, TrashIcon } from "@heroicons/vue/24/outline";
 import { ToastService } from "../services/toastService";
 
 const router = useRouter();

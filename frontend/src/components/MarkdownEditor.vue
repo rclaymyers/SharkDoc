@@ -7,12 +7,10 @@ import { markdown } from "@codemirror/lang-markdown";
 import { EditorState } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
 import { basicSetup } from "codemirror";
-import { onMounted, ref, type Ref } from "vue";
+import { onMounted, ref } from "vue";
 import type { MarkdownDocument } from "../../../sharedModels/MarkdownDocument";
-import { LocalStorageService } from "../services/localStorageService";
 
 const editorContainer = ref(null);
-let editorView: EditorView | null = null;
 
 const props = defineProps<{
   markdownDocument: MarkdownDocument;
@@ -46,7 +44,7 @@ onMounted(() => {
 
   const editorContainerElement = editorContainer.value;
   if (editorContainerElement) {
-    editorView = new EditorView({
+    new EditorView({
       state: editorState,
       parent: editorContainerElement,
     });

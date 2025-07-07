@@ -22,7 +22,6 @@ import LightboxWrapper from "./LightboxWrapper.vue";
 import { useDialog } from "primevue";
 import { AuthService } from "../services/authService";
 import { ToastService } from "../services/toastService";
-import { EditorView } from "codemirror";
 
 const EditorViewEnum = {
   DOCUMENT_ONLY: 0,
@@ -170,7 +169,6 @@ const showGallery = (galleryName: string) => {
   console.log("Selected gallery set to:", selectedGallery.value);
   console.log("Show mobile lightbox set to:", showMobileLightbox);
 };
-const hideGallery = () => (selectedGallery.value = null);
 
 const deletePage = (pageId: number) => {
   const documentId = activeMarkdownDocument.value?.id;
