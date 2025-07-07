@@ -1,6 +1,6 @@
 export const WelcomeDocumentPage1 = `
 # Welcome to Sharkdown!
-This is a markdown document. Try clicking the pencil icon above \nto open the editor.
+This is a markdown document. Try clicking the pencil icon \nto open the editor.
 
 Unlike most markdown editors, Sharkdown supports \ndocuments with multiple pages and image galleries.
 `;
