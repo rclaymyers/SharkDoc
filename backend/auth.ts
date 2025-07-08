@@ -1,5 +1,8 @@
 import { Express, NextFunction, Request, Response } from "express";
-import { ApiEndpoints } from "../sharedModels/ApiConstants";
+import {
+  ApiEndpoints,
+  INVALID_CREDENTIALS_MESSAGE,
+} from "../sharedModels/ApiConstants";
 import bcrypt from "bcryptjs";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { SuccessResponse } from "./constants/responseTemplates";
@@ -30,7 +33,7 @@ interface AuthenticatedRequest extends Request {
 }
 
 export const CREDENTIAL_VALIDATION_ERROR = {
-  message: "Credentials invalid",
+  message: INVALID_CREDENTIALS_MESSAGE,
 } as const;
 const TOKEN_VALIDITY_DURATION = "24h";
 

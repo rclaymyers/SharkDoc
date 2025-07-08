@@ -19,6 +19,8 @@ export const ApiEndpoints = {
   },
 };
 
+export const INVALID_CREDENTIALS_MESSAGE = "Credentials invalid";
+
 export class ApiResponse {
   message: string;
   constructor(message: string) {

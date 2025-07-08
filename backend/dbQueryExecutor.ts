@@ -15,8 +15,13 @@ import {
 } from "./constants/queries";
 import { User } from "./auth";
 
+const isTest = process.env.NODE_ENV === "test";
+if (isTest) {
+  console.log("======         Test Mode         ======");
+  console.log("======     Using in-memory DB    ======");
+}
 const dbPath = path.resolve(__dirname, "data.sqlite");
-const db = new Database(dbPath);
+const db = new Database(isTest ? ":memory:" : dbPath);
 
 export const initDatabase = () => {
   db.prepare(UserQueries.CreateUsersTableIfNotExists).run();
