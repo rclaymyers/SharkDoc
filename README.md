@@ -46,3 +46,14 @@ npm run serve
 ```
 
 This will run the API server's 'app.ts' file directly via tsx.
+
+## Tests
+
+To run the tests, ensure the frontend and backend dependencies have been installed. Then, in the project's root, run the following commands:
+
+```
+npm i
+npm run e2e:all
+```
+
+This will start the frontend app, start the backend app with an in-memory database, and execute the Cypress tests.
