@@ -80,7 +80,7 @@ describe("documentEditor", () => {
     cy.contains(newDocumentText);
   });
 
-  it("create a new page when the button is clicked", () => {
+  it("creates a new page when the button is clicked", () => {
     cy.intercept("POST", `${ApiEndpoints.POST.CreatePage}*`).as(
       "pageCreationRequest"
     );
