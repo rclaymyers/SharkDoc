@@ -426,6 +426,12 @@ const onMobileLightboxDismissed = () => {
   background-color: var(--secondary-background-color);
 
   --toolbar-element-size: 2rem;
+  --toolbar-bottom-border-color: #eee;
+}
+@media (prefers-color-scheme: dark) {
+  .document-viewer {
+    --toolbar-bottom-border-color: #555;
+  }
 }
 .document-viewer p,
 .document-viewer a {
@@ -513,6 +519,7 @@ const onMobileLightboxDismissed = () => {
 }
 .toolbar {
   padding-left: var(--header-padding-and-margins);
+  border-bottom: 1px solid var(--toolbar-bottom-border-color);
 }
 .toolbar > * {
   margin-right: var(--header-padding-and-margins);
