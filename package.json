@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "dev:frontend": "npm run dev --prefix frontend",
+    "dev:backend": "npm run dev --prefix backend",
+    "e2e": "npx cypress run --project frontend",
+    "e2e:all": "concurrently -k -s first -n FRONTEND,BACKEND,E2E \"npm run dev:frontend\" \"npm run dev:backend\" \"npm run e2e\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.0"
+  }
+}
