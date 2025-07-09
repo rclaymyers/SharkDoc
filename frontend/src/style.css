@@ -173,6 +173,10 @@ button:focus-visible {
   --p-button-primary-background: var(--accent-color) !important;
   --p-button-primary-color: var(--accent-text-color) !important;
 }
+.p-button-secondary:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
 .p-dialog-content {
   min-width: 30vw;
   width: auto;
@@ -187,12 +191,20 @@ button:focus-visible {
   max-height: 20vh !important;
 }
 @media screen and (max-width: 768px) {
-  .p-dialog-content {
+  .p-dialog {
     width: 80vw;
     max-width: 80vw;
   }
+  .p-dialog-content {
+    width: 100%;
+    max-width: 100%;
+  }
   .p-toast {
     max-width: 90vw;
+  }
+  .p-drawer-title {
+    font-size: 1.2rem !important;
+    width: 80%;
   }
 }
 @media screen and (max-width: 768px) {

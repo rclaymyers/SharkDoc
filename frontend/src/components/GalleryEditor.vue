@@ -317,7 +317,6 @@ div.gallery-item-contents {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #fff;
 }
 .gallery-list-entry {
   display: flex;
