@@ -1,6 +1,7 @@
 /// <reference types="cypress" />
 
 import { ApiEndpoints } from "../../../sharedModels/ApiConstants";
+import { ToastErrorMessages } from "../../../sharedModels/ToastMessages";
 import {
   CommandArguments,
   CypressCommandNames,
@@ -32,8 +33,6 @@ const uploadSharkImage = () => {
     { force: true }
   );
 };
-
-const insertGalleryFunctionIntoMarkdown = () => {};
 
 describe("galleryManager", () => {
   it("shows the gallery modal when 'Manage Galleries' is clicked", () => {
@@ -81,6 +80,19 @@ describe("galleryManager", () => {
       .its("response.statusCode")
       .should("eq", 200);
     cy.contains(Selectors.GalleryManager.galleryNameEditor).should("not.exist");
+  });
+
+  it("validates the gallery name", () => {
+    cy.intercept("POST", `${ApiEndpoints.POST.Gallery}`).as(
+      "galleryRenameRequest"
+    );
+    cy.get(Selectors.GalleryManager.manageGalleriesButton).click();
+    cy.get(Selectors.GalleryManager.anyGalleryInstanceInList).first().click();
+    cy.get(Selectors.GalleryManager.galleryNameEditor).clear();
+    cy.get(Selectors.GalleryManager.saveGalleryButton).click();
+
+    cy.contains(ToastErrorMessages.GalleryNameRequired);
+    cy.get("@galleryRenameRequest.all").should("have.length", 0);
   });
 
   it("shows the gallery image list when the gallery name is clicked", () => {

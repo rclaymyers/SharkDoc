@@ -6,7 +6,10 @@ import {
   UserSignInResponse,
   type ApiResponse,
 } from "../../../sharedModels/ApiConstants";
-import { ToastSuccessMessages } from "../../../sharedModels/ToastMessages";
+import {
+  ToastErrorMessages,
+  ToastSuccessMessages,
+} from "../../../sharedModels/ToastMessages";
 import { useRouter } from "vue-router";
 import { LocalStorageService } from "../services/localStorageService";
 import { ToastService } from "../services/toastService";
@@ -20,6 +23,13 @@ const password = ref<string>("");
 dialogShowing.value = true;
 
 const attemptRegistration = () => {
+  if (!username.value || !password.value) {
+    ToastService.showError(
+      "Error",
+      ToastErrorMessages.UsernamePasswordRequired
+    );
+    return;
+  }
   ApiService.registerUser(username.value, password.value).then(
     (response: ApiResponse | null) => {
       if (!response) {
@@ -34,6 +44,13 @@ const attemptRegistration = () => {
   );
 };
 const attemptSignIn = () => {
+  if (!username.value || !password.value) {
+    ToastService.showError(
+      "Error",
+      ToastErrorMessages.UsernamePasswordRequired
+    );
+    return;
+  }
   ApiService.signInUser(username.value, password.value).then(
     (signInResponse: UserSignInResponse | null) => {
       if (!signInResponse?.token || !signInResponse?.username) {

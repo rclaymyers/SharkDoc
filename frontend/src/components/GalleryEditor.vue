@@ -13,6 +13,7 @@ import {
 import { UtilitiesService } from "../services/utils";
 import { InputText, Button } from "primevue";
 import { ToastService } from "../services/toastService";
+import { ToastErrorMessages } from "../../../sharedModels/ToastMessages";
 
 const FormStateEnum = {
   GALLERY_LIST: 0,
@@ -113,6 +114,10 @@ const deleteGallery = (galleryId: number) => {
   });
 };
 const saveGallery = () => {
+  if (!newGalleryName.value) {
+    ToastService.showError("Error", ToastErrorMessages.GalleryNameRequired);
+    return;
+  }
   console.log("Save gallery called:", gallerySelectedForEdit.value);
   const oldGalleryNameToUpdate = gallerySelectedForEdit.value?.name;
   if (gallerySelectedForEdit.value) {

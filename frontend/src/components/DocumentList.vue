@@ -9,6 +9,7 @@ import { useRouter } from "vue-router";
 import { Dialog, InputText, Button } from "primevue";
 import { DocumentPlusIcon, TrashIcon } from "@heroicons/vue/24/outline";
 import { ToastService } from "../services/toastService";
+import { ToastErrorMessages } from "../../../sharedModels/ToastMessages";
 
 const router = useRouter();
 
@@ -34,6 +35,10 @@ const addDocument = (): void => {
 };
 const saveNewDocument = (): void => {
   const documentName = newDocumentName.value;
+  if (!documentName) {
+    ToastService.showError("Error", ToastErrorMessages.DocumentNameRequired);
+    return;
+  }
   console.log("Save new document called with name:", documentName);
   newDocumentName.value = "";
   dialogVisible.value = false;

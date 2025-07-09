@@ -5,7 +5,10 @@ import {
   INVALID_CREDENTIALS_MESSAGE,
 } from "../../../sharedModels/ApiConstants";
 
-import { ToastSuccessMessages } from "../../../sharedModels/ToastMessages";
+import {
+  ToastErrorMessages,
+  ToastSuccessMessages,
+} from "../../../sharedModels/ToastMessages";
 import {
   CommandArguments,
   CypressCommandNames,
@@ -18,6 +21,44 @@ describe("Home Page", () => {
     cy.visit("/");
     cy.location("pathname").should("eq", "/signin");
     cy.get("[data-cy=login-dialog]").should("be.visible");
+  });
+
+  it("validates the form inputs for registration", () => {
+    cy.intercept("POST", ApiEndpoints.POST.RegisterUser).as(
+      "registrationRequest"
+    );
+    cy.visit("/");
+    //check no inputs
+    cy.get(Selectors.Home.registerButton).click();
+    //check password missing
+    cy.get(Selectors.Home.usernameInput).type(CommandArguments.cypressUsername);
+    cy.get(Selectors.Home.registerButton).click();
+    //check username missing
+    cy.get(Selectors.Home.usernameInput).clear();
+    cy.get(Selectors.Home.passwordInput).type(CommandArguments.cypressPassword);
+    cy.get(Selectors.Home.registerButton).click();
+
+    cy.contains(ToastErrorMessages.UsernamePasswordRequired);
+    cy.wait(200);
+    cy.get("@registrationRequest.all").should("have.length", 0);
+  });
+
+  it("validates the form inputs for login", () => {
+    cy.intercept("POST", ApiEndpoints.POST.LoginUser).as("loginRequest");
+    cy.visit("/");
+    //check no inputs
+    cy.get(Selectors.Home.signInButton).click();
+    //check password missing
+    cy.get(Selectors.Home.usernameInput).type(CommandArguments.cypressUsername);
+    cy.get(Selectors.Home.signInButton).click();
+    //check username missing
+    cy.get(Selectors.Home.usernameInput).clear();
+    cy.get(Selectors.Home.passwordInput).type(CommandArguments.cypressPassword);
+    cy.get(Selectors.Home.signInButton).click();
+
+    cy.contains(ToastErrorMessages.UsernamePasswordRequired);
+    cy.wait(200);
+    cy.get("@loginRequest.all").should("have.length", 0);
   });
 
   it("rejects invalid credentials", () => {
@@ -45,8 +86,17 @@ describe("Home Page", () => {
     cy.intercept("POST", ApiEndpoints.POST.RegisterUser).as(
       "registrationRequest"
     );
+    const username = getRandomCypressUsername();
     cy[CypressCommandNames.registerUser](
-      CommandArguments.cypressUsername,
+      username,
+      CommandArguments.cypressPassword
+    );
+    cy.wait("@registrationRequest")
+      .its("response.statusCode")
+      .should("eq", 201);
+    cy.reload();
+    cy[CypressCommandNames.registerUser](
+      username,
       CommandArguments.cypressPassword
     );
     cy.wait("@registrationRequest")

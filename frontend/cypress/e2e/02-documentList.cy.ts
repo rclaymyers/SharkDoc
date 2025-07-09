@@ -1,6 +1,7 @@
 /// <reference types="cypress" />
 
 import { ApiEndpoints } from "../../../sharedModels/ApiConstants";
+import { ToastErrorMessages } from "../../../sharedModels/ToastMessages";
 import {
   CommandArguments,
   CypressCommandNames,
@@ -31,6 +32,16 @@ describe("documentList", () => {
   it("navigates to the document on click", () => {
     cy.get(Selectors.DocumentList.allDocumentCards).first().click();
     cy.url().should("include", "/document/");
+  });
+
+  it("validates the document name input", () => {
+    cy.intercept("POST", ApiEndpoints.POST.Document).as(
+      "documentCreationRequest"
+    );
+    cy.get(Selectors.DocumentList.beginAddDocumentButton).click();
+    cy.get(Selectors.DocumentList.documentSaveButton).click();
+    cy.contains(ToastErrorMessages.DocumentNameRequired);
+    cy.get("@documentCreationRequest.all").should("have.length", 0);
   });
 
   it("creates documents", () => {
