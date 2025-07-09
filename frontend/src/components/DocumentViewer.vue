@@ -210,6 +210,7 @@ const onMobileLightboxDismissed = () => {
         class="cursor-pointer"
         v-if="!editingTitle"
         @click="beginEditingTitle()"
+        data-cy="document-title"
       >
         {{ activeMarkdownDocument.title }}
       </h1>
@@ -219,25 +220,39 @@ const onMobileLightboxDismissed = () => {
         v-model="newTitle"
         @keydown.enter="saveDocumentTitle()"
         @keydown.esc="editingTitle = false"
+        data-cy="document-title-editor"
       />
       <div class="editor-toggle-buttons interactive-toolbar-element">
-        <EyeIcon
+        <div
           class="editor-tool-icon"
           :class="{ active: editorViewState === EditorViewEnum.DOCUMENT_ONLY }"
           @click="changeEditorView(EditorViewEnum.DOCUMENT_ONLY)"
-        ></EyeIcon>
-        <ViewColumnsIcon
+          data-cy="compiled-markdown-only-view-button"
+        >
+          <EyeIcon></EyeIcon>
+        </div>
+        <div
           class="editor-tool-icon"
           :class="{ active: editorViewState === EditorViewEnum.SPLIT_PANES }"
           @click="changeEditorView(EditorViewEnum.SPLIT_PANES)"
-        ></ViewColumnsIcon>
-        <PencilIcon
+          data-cy="split-pane-view-button"
+        >
+          <ViewColumnsIcon></ViewColumnsIcon>
+        </div>
+        <div
           class="editor-tool-icon"
           :class="{ active: editorViewState === EditorViewEnum.EDITOR_ONLY }"
           @click="changeEditorView(EditorViewEnum.EDITOR_ONLY)"
-        ></PencilIcon>
+          data-cy="editor-only-view-button"
+        >
+          <PencilIcon></PencilIcon>
+        </div>
       </div>
-      <button class="interactive-toolbar-element" @click="showGalleryPrompt">
+      <button
+        class="interactive-toolbar-element"
+        @click="showGalleryPrompt"
+        data-cy="manage-galleries-button-desktop"
+      >
         Manage Galleries
       </button>
     </div>
@@ -265,6 +280,7 @@ const onMobileLightboxDismissed = () => {
                 :markdown-document="activeMarkdownDocument"
                 :page-number="index"
                 @update:markdownText="onMarkdownTextChanged"
+                data-cy="markdown-editor-instance"
               ></MarkdownEditor>
             </div>
             <div
@@ -282,6 +298,7 @@ const onMobileLightboxDismissed = () => {
                 :page-id="page.id"
                 @galleryClicked="showGallery"
                 @page-deletion-requested="deletePage"
+                data-cy="markdown-display-instance"
               ></MarkdownDisplay>
             </div>
           </div>
@@ -293,10 +310,13 @@ const onMobileLightboxDismissed = () => {
                 hidden: editorViewState === EditorViewEnum.EDITOR_ONLY,
               }"
             ></div>
-            <DocumentPlusIcon
+            <div
               class="size-[2rem] clickable"
               @click="addPage"
-            ></DocumentPlusIcon>
+              data-cy="add-page-button"
+            >
+              <DocumentPlusIcon></DocumentPlusIcon>
+            </div>
             <!-- spacer -->
             <div
               :class="{
@@ -313,6 +333,7 @@ const onMobileLightboxDismissed = () => {
           <XMarkIcon
             class="close-icon"
             @click="selectedGallery = null"
+            data-cy="close-gallery-button"
           ></XMarkIcon>
           <div class="flex w-full justify-center py-2">
             <p>{{ selectedGallery.name }}</p>
@@ -334,6 +355,7 @@ const onMobileLightboxDismissed = () => {
       :gallery="selectedGallery"
       v-if="selectedGallery && showMobileLightbox"
       @gallery-closed="onMobileLightboxDismissed"
+      data-cy="lightbox-wrapper"
     ></LightboxWrapper>
   </div>
   <Drawer

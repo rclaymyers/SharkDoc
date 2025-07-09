@@ -40,6 +40,7 @@ const onVisibilityChanged = async (newValue: boolean) => {
         :src="UtilitiesService.prependApiDomain(slotProps.item)"
         style="width: 100%; display: block"
         class="galleria-image"
+        data-cy="prime-galleria-image"
       />
     </template>
     <template #thumbnail="slotProps">

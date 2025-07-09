@@ -6,6 +6,7 @@ import {
   UserSignInResponse,
   type ApiResponse,
 } from "../../../sharedModels/ApiConstants";
+import { ToastSuccessMessages } from "../../../sharedModels/ToastMessages";
 import { useRouter } from "vue-router";
 import { LocalStorageService } from "../services/localStorageService";
 import { ToastService } from "../services/toastService";
@@ -26,7 +27,7 @@ const attemptRegistration = () => {
       }
       ToastService.showSuccess(
         "Success",
-        "Registration sucessful! You may now sign in.",
+        ToastSuccessMessages.RegistrationSuccessful,
         6000
       );
     }
@@ -50,6 +51,7 @@ const attemptSignIn = () => {
 
 <template>
   <Dialog
+    data-cy="login-dialog"
     v-model:visible="dialogShowing"
     class="max-height-20vh"
     header="Sign In"
@@ -58,12 +60,14 @@ const attemptSignIn = () => {
   >
     <div class="flex flex-col space-y-4">
       <InputText
+        data-cy="login-username"
         v-model:model-value="username"
         placeholder="Username"
         type="username"
         @keydown.enter="attemptSignIn"
       ></InputText>
       <InputText
+        data-cy="login-password"
         v-model:model-value="password"
         placeholder="Password"
         type="password"
@@ -72,8 +76,10 @@ const attemptSignIn = () => {
     </div>
     <template #footer>
       <div class="flex flex-column w-full space-y-4">
-        <Button @click="attemptSignIn">Sign In</Button>
-        <Button @click="attemptRegistration">Register</Button>
+        <Button data-cy="sign-in-button" @click="attemptSignIn">Sign In</Button>
+        <Button data-cy="register-button" @click="attemptRegistration"
+          >Register</Button
+        >
       </div>
     </template>
   </Dialog>

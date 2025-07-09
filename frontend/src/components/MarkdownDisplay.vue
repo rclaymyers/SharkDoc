@@ -1,10 +1,13 @@
 <template>
   <div class="markdown-page">
     <div ref="markdownContainer" v-html="compiledMarkdown"></div>
-    <XCircleIcon
+    <div
       class="delete-page-icon"
       @click="emit('page-deletion-requested', props.pageId)"
-    />
+      data-cy="delete-page-button"
+    >
+      <XCircleIcon />
+    </div>
   </div>
 </template>
 
@@ -53,7 +56,7 @@ const compiledMarkdown = computed(() => {
     );
     return gallery
       ? `<a class="gallery-anchor" data-name="${name}">${name}</a>`
-      : `<p title="${MISSING_GALLERY_MESSAGE}" class="missing-gallery" title=>${name}</p>`;
+      : `<p title="${MISSING_GALLERY_MESSAGE}" class="missing-gallery" data-cy="missing-gallery-error">${name}</p>`;
   });
   return marked.parse(processedText);
 });

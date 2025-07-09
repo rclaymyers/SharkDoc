@@ -181,6 +181,7 @@ const saveGallery = () => {
     :header="`Galleries for '${props.markdownDocument.title}'`"
     @hide="emit('gallery-close-requested')"
     class="min-height-50vh"
+    data-cy="gallery-manager-modal"
   >
     <template v-if="formState === FormStateEnum.GALLERY_LIST">
       <div class="gap-4 mb-4">
@@ -188,14 +189,18 @@ const saveGallery = () => {
           v-for="gallery in markdownDocument?.galleries"
           @click="openGalleryDetails(gallery)"
           class="gallery-list-entry"
+          data-cy="gallery-instance"
         >
           <p>
             {{ gallery.name }}
           </p>
-          <TrashIcon
+          <div
             class="gallery-list-entry-delete-icon"
             @click.stop="deleteGallery(gallery.id)"
-          />
+            data-cy="delete-gallery-button"
+          >
+            <TrashIcon />
+          </div>
         </div>
       </div>
     </template>
@@ -213,6 +218,7 @@ const saveGallery = () => {
           autocomplete="off"
           placeholder="Name"
           @keydown.enter="saveGallery"
+          data-cy="gallery-name-editor"
         />
       </div>
       <div
@@ -222,19 +228,25 @@ const saveGallery = () => {
         <div
           class="gallery-image"
           v-for="imagePath in gallerySelectedForEdit?.imagePaths"
+          data-cy="gallery-image-in-editor"
         >
           <img
             class="gallery-item-contents"
             :src="UtilitiesService.prependApiDomain(imagePath)"
           />
-          <TrashIcon
+          <div
             class="delete-icon"
             @click="removeGalleryImage(imagePath)"
-          />
+            data-cy="image-delete-button"
+          >
+            <TrashIcon />
+          </div>
         </div>
 
         <div class="gallery-item-contents">
-          <button @click="addImage">Add Image</button>
+          <button @click="addImage" data-cy="add-image-button">
+            Add Image
+          </button>
         </div>
         <input
           type="file"
@@ -242,6 +254,7 @@ const saveGallery = () => {
           @change="onFileSelected"
           accept="image/*"
           style="display: none"
+          data-cy="image-file-input"
         />
       </div>
     </template>
@@ -254,6 +267,7 @@ const saveGallery = () => {
           type="button"
           label="Add Gallery"
           @click="addGallery()"
+          data-cy="add-gallery-button"
         ></Button>
       </div>
       <div
@@ -269,7 +283,12 @@ const saveGallery = () => {
           severity="secondary"
           @click="formState = FormStateEnum.GALLERY_LIST"
         ></Button>
-        <Button type="button" label="Save" @click="saveGallery()"></Button>
+        <Button
+          type="button"
+          label="Save"
+          @click="saveGallery()"
+          data-cy="save-gallery-button"
+        ></Button>
       </div>
     </template>
   </Dialog>

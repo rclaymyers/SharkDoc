@@ -15,12 +15,13 @@ const openGalleria = (index: number): void => {
 </script>
 
 <template>
-  <div class="gallery-image-list">
+  <div class="gallery-image-list" data-cy="document-image-gallery">
     <div class="gallery-image" v-for="(imagePath, index) in gallery.imagePaths">
       <img
         :src="UtilitiesService.prependApiDomain(imagePath)"
         class="gallery-item-contents clickable"
         @click="openGalleria(index)"
+        data-cy="lightbox-trigger"
       />
     </div>
   </div>
