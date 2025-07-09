@@ -1,6 +1,7 @@
 /// <reference types="cypress" />
 
 import { ApiEndpoints } from "../../../sharedModels/ApiConstants";
+import { ToastErrorMessages } from "../../../sharedModels/ToastMessages";
 import {
   CommandArguments,
   CypressCommandNames,
@@ -33,6 +34,18 @@ describe("documentEditor", () => {
       .should("exist")
       .contains(newDocumentName);
   });
+
+  it("validates the document name", () => {
+    cy.intercept("POST", ApiEndpoints.POST.Document).as("updateDocument");
+    cy.get(Selectors.DocumentViewer.documentTitle).click();
+    cy.get(Selectors.DocumentViewer.documentTitleInputText)
+      .clear()
+      .click()
+      .type("{enter}");
+    cy.contains(ToastErrorMessages.DocumentNameRequired);
+    cy.get("@updateDocument.all").should("have.length", 0);
+  });
+
   it("only shows the compiled markdown by default", () => {
     cy.get(Selectors.DocumentViewer.markdownEditorInstance).should("not.exist");
     cy.get(Selectors.DocumentViewer.markdownDisplayInstance).should("exist");

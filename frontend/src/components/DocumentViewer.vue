@@ -22,6 +22,7 @@ import LightboxWrapper from "./LightboxWrapper.vue";
 import { useDialog } from "primevue";
 import { AuthService } from "../services/authService";
 import { ToastService } from "../services/toastService";
+import { ToastErrorMessages } from "../../../sharedModels/ToastMessages";
 
 const EditorViewEnum = {
   DOCUMENT_ONLY: 0,
@@ -67,7 +68,7 @@ const beginEditingTitle = () => {
 
 const saveDocumentTitle = () => {
   if (!activeMarkdownDocument.value || !newTitle.value) {
-    //todo show error
+    ToastService.showError("Error", ToastErrorMessages.DocumentNameRequired);
     return;
   }
 
