@@ -23,6 +23,9 @@ dist-ssr
 *.sln
 *.sw?
 
+# test output
+/frontend/cypress/screenshots/*
+
 # backend persistent data
 backend/uploads/*
 backend/data.sqlite

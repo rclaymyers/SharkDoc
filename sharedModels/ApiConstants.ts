@@ -20,6 +20,7 @@ export const ApiEndpoints = {
 };
 
 export const INVALID_CREDENTIALS_MESSAGE = "Credentials invalid";
+export const USERNAME_TAKEN_MESSAGE = "Username taken";
 
 export class ApiResponse {
   message: string;

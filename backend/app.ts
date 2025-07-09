@@ -119,7 +119,11 @@ app.post(ApiEndpoints.POST.Document, (req: Request, res: Response) => {
     +token.userId,
     true
   );
-  res.status(200).json(updatedDocument);
+  if (!req.body.id) {
+    res.status(201).json(updatedDocument);
+  } else {
+    res.status(200).json(updatedDocument);
+  }
 });
 
 app.post(ApiEndpoints.POST.DeleteDocument, (req: Request, res: Response) => {

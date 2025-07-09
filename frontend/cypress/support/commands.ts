@@ -35,3 +35,30 @@
 //     }
 //   }
 // }
+
+import { CommandArguments } from "./commands.enum";
+import { Selectors } from "./selectors";
+
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      registerUser(username: string, password: string): Chainable<any>;
+      loginUser(username: string, password: string): Chainable<any>;
+      loginAsCypress(): Chainable<any>;
+    }
+  }
+}
+
+Cypress.Commands.add("registerUser", (username, password) => {
+  cy.visit("/");
+  cy.get(Selectors.Home.usernameInput).type(username);
+  cy.get(Selectors.Home.passwordInput).type(password);
+  cy.get(Selectors.Home.registerButton).click();
+});
+
+Cypress.Commands.add("loginUser", (username, password) => {
+  cy.visit("/");
+  cy.get(Selectors.Home.usernameInput).type(username);
+  cy.get(Selectors.Home.passwordInput).type(password);
+  cy.get(Selectors.Home.signInButton).click();
+});

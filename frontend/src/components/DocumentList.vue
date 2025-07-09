@@ -69,11 +69,16 @@ const deleteDocument = (documentId: number): void => {
 <template>
   <div class="document-list-container">
     <h3 class="subheader">Your Documents</h3>
-    <div class="document-card-list content-under-subheader">
+    <div
+      class="document-card-list content-under-subheader"
+      data-cy="document-list"
+    >
       <div
         @click="openDocument(document.id)"
         class="document-card"
         v-for="document in markdownDocuments"
+        :key="document.id"
+        :data-cy="'document-card-' + document.id"
       >
         <p>{{ document.title }}</p>
         <TrashIcon
@@ -81,7 +86,11 @@ const deleteDocument = (documentId: number): void => {
           @click.stop="deleteDocument(document.id)"
         />
       </div>
-      <div class="document-card" @click="addDocument">
+      <div
+        class="document-card"
+        @click="addDocument"
+        data-cy="begin-add-document"
+      >
         <DocumentPlusIcon class="document-card-icon"></DocumentPlusIcon>
       </div>
     </div>
@@ -91,6 +100,7 @@ const deleteDocument = (documentId: number): void => {
       dismissable-mask
       :header="'Add Document'"
       class="max-height-20vh"
+      data-cy="document-creation-dialog"
     >
       <div class="flex w-full justify-center">
         <InputText
@@ -100,11 +110,17 @@ const deleteDocument = (documentId: number): void => {
           autocomplete="off"
           @keydown.enter.stop.prevent="saveNewDocument"
           placeholder="Name"
+          data-cy="document-name-input"
         ></InputText>
       </div>
       <template #footer>
         <div class="flex w-full justify-center">
-          <Button type="button" label="Save" @click="saveNewDocument"></Button>
+          <Button
+            data-cy="save-document-button"
+            type="button"
+            label="Save"
+            @click="saveNewDocument"
+          ></Button>
         </div>
       </template>
     </Dialog>

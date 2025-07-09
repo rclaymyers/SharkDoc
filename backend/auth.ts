@@ -2,6 +2,7 @@ import { Express, NextFunction, Request, Response } from "express";
 import {
   ApiEndpoints,
   INVALID_CREDENTIALS_MESSAGE,
+  USERNAME_TAKEN_MESSAGE,
 } from "../sharedModels/ApiConstants";
 import bcrypt from "bcryptjs";
 import jwt, { JwtPayload } from "jsonwebtoken";
@@ -35,6 +36,9 @@ interface AuthenticatedRequest extends Request {
 export const CREDENTIAL_VALIDATION_ERROR = {
   message: INVALID_CREDENTIALS_MESSAGE,
 } as const;
+export const USERNAME_TAKEN_ERROR = {
+  message: USERNAME_TAKEN_MESSAGE,
+} as const;
 const TOKEN_VALIDITY_DURATION = "24h";
 
 export const setupAuthEndpoints = (app: Express, JWT_SECRET: string): void => {
@@ -45,6 +49,11 @@ export const setupAuthEndpoints = (app: Express, JWT_SECRET: string): void => {
       //todo validate request body
       const { username, unhashedPass } = req.body;
       const hashedPass: string = await bcrypt.hash(unhashedPass, 10);
+      const existingUser = selectUser(username);
+      if (existingUser) {
+        res.status(409).json(USERNAME_TAKEN_ERROR);
+        return;
+      }
       createUser(username, hashedPass);
       const user = selectUser(username);
       if (!user?.id) {
