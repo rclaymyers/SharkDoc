@@ -594,7 +594,7 @@ ol li {
   flex-grow: 0;
   padding: 0;
   width: 0px !important;
-  transition: width 0.5s ease;
+  transition: width 0.25s ease;
 }
 
 .show-gallery {

@@ -51,8 +51,10 @@ declare global {
 
 Cypress.Commands.add("registerUser", (username, password) => {
   cy.visit("/");
+  cy.get(Selectors.Home.enterRegistrationModeButton).click();
   cy.get(Selectors.Home.usernameInput).type(username);
   cy.get(Selectors.Home.passwordInput).type(password);
+  cy.get(Selectors.Home.passwordConfirmationInput).type(password);
   cy.get(Selectors.Home.registerButton).click();
 });
 

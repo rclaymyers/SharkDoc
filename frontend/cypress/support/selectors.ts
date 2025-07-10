@@ -3,8 +3,10 @@ export const Selectors = {
     loginDialog: "[data-cy=login-dialog]",
     usernameInput: "[data-cy=login-username]",
     passwordInput: "[data-cy=login-password]",
+    passwordConfirmationInput: "[data-cy=password-confirmation]",
     signInButton: "[data-cy=sign-in-button]",
     registerButton: "[data-cy=register-button]",
+    enterRegistrationModeButton: "[data-cy=enter-registration-mode]",
   },
   DocumentList: {
     documentListDiv: "[data-cy=document-list]",
