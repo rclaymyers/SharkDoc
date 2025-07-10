@@ -29,6 +29,7 @@ const openGalleria = (index: number): void => {
     :initialActiveIndex="activeIndex"
     :gallery="props.gallery"
     v-if="showGalleria"
+    @gallery-closed="showGalleria = false"
   ></LightboxWrapper>
 </template>
 
