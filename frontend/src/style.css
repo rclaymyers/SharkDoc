@@ -21,6 +21,7 @@
   --secondary-accent-color: #193c57;
   --accent-color-light: #0093c0;
   --accent-text-color: white;
+  --secondary-accent-text-color: #ccc;
   --header-padding-and-margins: 1rem;
   --mobile-responsive-breakpoint: 768px;
 
@@ -71,6 +72,13 @@ h6 {
   font-weight: bold;
 }
 
+/* Color helpers */
+.background-secondary-accent {
+  background-color: var(--secondary-accent-color);
+  color: #ccc;
+}
+/* Color helpers end */
+
 .subheader {
   height: var(--subheader-height);
   background-color: var(--primary-background-color);
@@ -91,7 +99,7 @@ h6 {
   height: calc(
     calc(100vh - (var(--global-header-height)) - var(--subheader-height))
   );
-  overflow: scroll;
+  overflow: hidden;
 }
 
 a {
@@ -142,6 +150,7 @@ button:focus-visible {
   justify-content: space-around;
   flex-wrap: wrap;
   gap: 10px;
+  padding: 1rem;
 }
 .gallery-image {
   position: relative;
@@ -217,7 +226,6 @@ button:focus-visible {
 .cm-editor {
   font-size: 0.8rem;
 }
-/* Highlighted syntax elements */
 .ͼ5 {
   color: var(--accent-color-light) !important;
 }

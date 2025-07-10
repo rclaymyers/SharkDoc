@@ -28,7 +28,7 @@ LocalStorageService.subscribeToKeyChange(
 </script>
 
 <template>
-  <div class="global-header">
+  <div class="global-header background-secondary-accent">
     <p>Sharkdown</p>
     <p class="clickable" @click="onSignOutClicked">{{ firstInitial }}</p>
   </div>
@@ -40,8 +40,6 @@ LocalStorageService.subscribeToKeyChange(
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: var(--secondary-accent-color);
-  color: #ccc;
   font-size: 2rem;
   padding: 0 var(--header-padding-and-margins);
   height: var(--global-header-height);
