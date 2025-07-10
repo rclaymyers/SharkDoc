@@ -77,6 +77,9 @@ h6 {
   background-color: var(--secondary-accent-color);
   color: #ccc;
 }
+.color-accent-color-light {
+  color: var(--accent-color-light);
+}
 /* Color helpers end */
 
 .subheader {

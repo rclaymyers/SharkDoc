@@ -28,6 +28,7 @@ describe("Home Page", () => {
       "registrationRequest"
     );
     cy.visit("/");
+    cy.get(Selectors.Home.enterRegistrationModeButton).click();
     //check no inputs
     cy.get(Selectors.Home.registerButton).click();
     //check password missing
@@ -37,6 +38,24 @@ describe("Home Page", () => {
     cy.get(Selectors.Home.usernameInput).clear();
     cy.get(Selectors.Home.passwordInput).type(CommandArguments.cypressPassword);
     cy.get(Selectors.Home.registerButton).click();
+    //check password confirmation missing
+    cy.get(Selectors.Home.usernameInput)
+      .clear()
+      .type(CommandArguments.cypressUsername);
+    cy.get(Selectors.Home.passwordInput)
+      .clear()
+      .type(CommandArguments.cypressPassword);
+    cy.get(Selectors.Home.registerButton).click();
+    //check password confirmation incorrect
+    cy.get(Selectors.Home.usernameInput)
+      .clear()
+      .type(CommandArguments.cypressUsername);
+    cy.get(Selectors.Home.passwordInput)
+      .clear()
+      .type(CommandArguments.cypressPassword);
+    cy.get(Selectors.Home.passwordConfirmationInput)
+      .clear()
+      .type(`${Date.now()}`);
 
     cy.contains(ToastErrorMessages.UsernamePasswordRequired);
     cy.wait(200);
@@ -106,11 +125,15 @@ describe("Home Page", () => {
 
   it("signs users in", () => {
     cy.intercept("POST", ApiEndpoints.POST.LoginUser).as("loginRequest");
+    const username = getRandomCypressUsername();
     cy[CypressCommandNames.registerUser](
-      getRandomCypressUsername(),
+      username,
       CommandArguments.cypressPassword
     );
-    cy.get(Selectors.Home.signInButton).click();
+    cy[CypressCommandNames.loginUser](
+      username,
+      CommandArguments.cypressPassword
+    );
     cy.wait("@loginRequest").its("response.statusCode").should("eq", 200);
   });
 });
