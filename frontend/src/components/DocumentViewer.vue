@@ -43,6 +43,7 @@ const mobileDrawerVisible = ref(false);
 const editorViewState = ref(EditorViewEnum.DOCUMENT_ONLY);
 const galleryAddEditPromptShowing = ref(false);
 const selectedGallery = ref<Gallery | null>(null);
+const showDesktopGallery = ref<boolean>(false);
 const showMobileLightbox = ref<boolean>(false);
 const showDocumentRenameDialog = ref<boolean>(false);
 
@@ -166,6 +167,7 @@ const showGallery = (galleryName: string) => {
   }
 
   selectedGallery.value = gallery;
+  showDesktopGallery.value = window.innerWidth > 768;
   showMobileLightbox.value = window.innerWidth <= 768;
   console.log("Selected gallery set to:", selectedGallery.value);
   console.log("Show mobile lightbox set to:", showMobileLightbox);
@@ -258,9 +260,9 @@ const onMobileLightboxDismissed = () => {
       </button>
     </div>
     <div class="document-page-container content-under-subheader">
-      <div class="panes">
+      <div class="panes max-h-full">
         <div
-          class="pane no-border"
+          class="pane overflow-scroll no-border"
           :class="{ 'share-space-with-gallery': !!selectedGallery }"
         >
           <div
@@ -328,18 +330,21 @@ const onMobileLightboxDismissed = () => {
           </div>
         </div>
         <div
-          class="pane max-width-one-third hidden md:block relative"
-          v-if="selectedGallery && !showMobileLightbox"
+          class="background-secondary-accent pane animate-width relative"
+          :class="{
+            'show-gallery':
+              selectedGallery && !showMobileLightbox && showDesktopGallery,
+          }"
         >
           <XMarkIcon
             class="close-icon"
-            @click="selectedGallery = null"
+            @click="showDesktopGallery = false"
             data-cy="close-gallery-button"
           ></XMarkIcon>
           <div class="flex w-full justify-center py-2">
-            <p>{{ selectedGallery.name }}</p>
+            <p class="overflow-hidden">{{ selectedGallery?.name }}</p>
           </div>
-          <ImageGallery :gallery="selectedGallery" />
+          <ImageGallery :gallery="selectedGallery" v-if="selectedGallery" />
         </div>
       </div>
     </div>
@@ -463,11 +468,6 @@ const onMobileLightboxDismissed = () => {
 .pane.no-border {
   border: none;
 }
-@media screen and (min-width: 769px) {
-  .share-space-with-gallery {
-    max-width: 66vw;
-  }
-}
 .document-link {
   height: var(--toolbar-element-size);
   width: var(--toolbar-element-size);
@@ -534,6 +534,7 @@ const onMobileLightboxDismissed = () => {
 .close-icon {
   width: 2rem;
   height: 2rem;
+  max-width: 100%;
   cursor: pointer;
   position: absolute;
   left: 0;
@@ -588,5 +589,15 @@ ul li {
 }
 ol li {
   list-style-type: decimal;
+}
+.animate-width {
+  flex-grow: 0;
+  padding: 0;
+  width: 0px !important;
+  transition: width 0.5s ease;
+}
+
+.show-gallery {
+  width: 66% !important;
 }
 </style>
