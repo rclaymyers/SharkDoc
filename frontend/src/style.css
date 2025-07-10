@@ -17,9 +17,9 @@
   /* Global style variables */
   --global-header-height: 3rem;
   --subheader-height: 2.5rem;
-  --accent-color: #007a39;
-  --secondary-accent-color: #0f3325;
-  --accent-color-light: #008b41;
+  --accent-color: #417780;
+  --secondary-accent-color: #193c57;
+  --accent-color-light: #0093c0;
   --accent-text-color: white;
   --header-padding-and-margins: 1rem;
   --mobile-responsive-breakpoint: 768px;
@@ -232,5 +232,8 @@ button:focus-visible {
   }
   .ͼ4 .cm-line {
     caret-color: white !important;
+  }
+  .ͼi {
+    color: var(--accent-color-light);
   }
 }
