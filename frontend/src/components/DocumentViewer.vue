@@ -558,7 +558,8 @@ const onMobileLightboxDismissed = () => {
   height: 100%;
 }
 .mobile-edit-view-toolbar {
-  height: 4rem;
+  --mobile-toolbar-height: 3rem;
+  height: var(--mobile-toolbar-height);
   width: 100vw;
   position: fixed;
   bottom: 0;
@@ -574,8 +575,8 @@ const onMobileLightboxDismissed = () => {
   background-color: var(--primary-background-color);
 }
 .mobile-edit-view-button {
-  width: 4rem;
-  height: 4rem;
+  width: var(--mobile-toolbar-height);
+  height: var(--mobile-toolbar-height);
 }
 .mobile-edit-view-button-container.active {
   color: var(--accent-text-color);
