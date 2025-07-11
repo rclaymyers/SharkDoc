@@ -62,6 +62,7 @@ const attemptRegistration = () => {
       username.value = "";
       password.value = "";
       passwordConfirmation.value = "";
+      usernameTextInput.value?.$el?.focus?.();
     }
   );
 };
