@@ -60,6 +60,10 @@ class ApiRequest<T> {
       body: this.body,
       headers,
     }).then(async (response: Response) => {
+      if (response.status === 413) {
+        ToastService.showError("Error", "Image is too large");
+        return;
+      }
       if (!response.ok) {
         let error;
         try {
@@ -69,7 +73,10 @@ class ApiRequest<T> {
           console.error(e);
         }
         console.error("API call failed:", this, error);
-        ToastService.showError("Error", error?.message ?? "Unknown error");
+        ToastService.showError(
+          "Error",
+          response?.statusText ?? error?.message ?? "Unknown error"
+        );
         return null;
       }
       //todo validate type
