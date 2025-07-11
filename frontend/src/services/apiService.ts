@@ -10,6 +10,7 @@ import {
   MarkdownDocumentPage,
   type MarkdownDocumentCreationRequest,
 } from "../../../sharedModels/MarkdownDocument";
+import { LoadingModalService } from "./loadingModalService";
 import { LocalStorageService } from "./localStorageService";
 import { ToastService } from "./toastService";
 import { UtilitiesService } from "./utils";
@@ -59,31 +60,35 @@ class ApiRequest<T> {
       method: this.method,
       body: this.body,
       headers,
-    }).then(async (response: Response) => {
-      if (response.status === 413) {
-        ToastService.showError("Error", "Image is too large");
-        return;
-      }
-      if (!response.ok) {
-        let error;
-        try {
-          error = await response.json();
-        } catch (e) {
-          console.warn("Unable to parse error from failed API call");
-          console.error(e);
+    })
+      .then(async (response: Response) => {
+        if (response.status === 413) {
+          ToastService.showError("Error", "Image is too large");
+          return;
         }
-        console.error("API call failed:", this, error);
-        ToastService.showError(
-          "Error",
-          error?.message ?? response?.statusText ?? "Unknown error"
-        );
-        return null;
-      }
-      //todo validate type
-      console.log("Returning response:", response);
-      console.log("Unparsed body:", response.body);
-      return await response.json();
-    });
+        if (!response.ok) {
+          let error;
+          try {
+            error = await response.json();
+          } catch (e) {
+            console.warn("Unable to parse error from failed API call");
+            console.error(e);
+          }
+          console.error("API call failed:", this, error);
+          ToastService.showError(
+            "Error",
+            error?.message ?? response?.statusText ?? "Unknown error"
+          );
+          return null;
+        }
+        //todo validate type
+        console.log("Returning response:", response);
+        console.log("Unparsed body:", response.body);
+        return await response.json();
+      })
+      .catch((_) =>
+        LoadingModalService.updateLoadingModal({ showModal: false })
+      );
   }
 }
 

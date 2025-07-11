@@ -14,6 +14,7 @@ import { UtilitiesService } from "../services/utils";
 import { InputText, Button } from "primevue";
 import { ToastService } from "../services/toastService";
 import { ToastErrorMessages } from "../../../sharedModels/ToastMessages";
+import { LoadingModalService } from "../services/loadingModalService";
 
 const FormStateEnum = {
   GALLERY_LIST: 0,
@@ -80,8 +81,24 @@ const onFileSelected = (event: Event) => {
     );
     return;
   }
+  LoadingModalService.updateLoadingModal({
+    loadingMessage: "Uploading image...",
+    showModal: true,
+  });
+
+  //modal should show for at least 1 second,
+  //because small file uploads will result in a confusing
+  //"flash" where the modal shows and immediately disappears
+  let oneSecondFromModalStart: number = Date.now() + 1000 + 1000;
+
   ApiService.uploadImageFile(file, galleryId)
-    .then((res) => {
+    .then(async (res) => {
+      if (Date.now() < oneSecondFromModalStart) {
+        await new Promise((resolve) =>
+          setTimeout(resolve, oneSecondFromModalStart - Date.now())
+        );
+      }
+      LoadingModalService.updateLoadingModal({ showModal: false });
       if (!res) {
         console.warn(
           "Gallery editor tried to upload image, but response is invalid:",
