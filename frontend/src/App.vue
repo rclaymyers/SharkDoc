@@ -2,6 +2,7 @@
 import Header from "./components/Header.vue";
 import { DynamicDialog, Toast, useToast } from "primevue";
 import { ToastService } from "./services/toastService";
+import LoadingModal from "./components/dynamicDialogs/LoadingModal.vue";
 
 const toast = useToast();
 ToastService.setToastInstance(toast);
@@ -14,6 +15,7 @@ ToastService.setToastInstance(toast);
   </div>
   <DynamicDialog />
   <Toast />
+  <LoadingModal></LoadingModal>
 </template>
 
 <style>

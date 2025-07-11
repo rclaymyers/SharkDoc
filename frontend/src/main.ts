@@ -19,6 +19,7 @@ import {
   Toast,
   DialogService,
   ToastService,
+  ProgressSpinner,
 } from "primevue";
 
 const app = createApp(App);
@@ -32,4 +33,5 @@ app.component("DynamicDialog", DynamicDialog);
 app.component("InputText", InputText);
 app.component("Drawer", Drawer);
 app.component("Toast", Toast);
+app.component("ProgressSpinner", ProgressSpinner);
 app.mount("#app");
