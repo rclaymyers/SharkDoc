@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { nextTick, ref } from "vue";
 import {
   MarkdownDocument,
   MarkdownDocumentCreationRequest,
@@ -15,6 +15,7 @@ import { ConfirmationModalService } from "../services/confirmationModalService";
 const router = useRouter();
 
 const markdownDocuments = ref<MarkdownDocument[]>([]);
+const newDocumentNameInput = ref();
 const dialogVisible = ref<boolean>(false);
 const newDocumentName = ref<string>("");
 
@@ -33,6 +34,9 @@ const openDocument = (markdownDocumentId: number): void => {
 const addDocument = (): void => {
   dialogVisible.value = true;
   newDocumentName.value = "";
+  nextTick().then(() => {
+    newDocumentNameInput.value?.$el?.focus?.();
+  });
 };
 const saveNewDocument = (): void => {
   const documentName = newDocumentName.value;
@@ -109,6 +113,7 @@ const deleteDocument = (documentId: number): void => {
       :header="'Add Document'"
       class="max-height-20vh"
       data-cy="document-creation-dialog"
+      :closable="false"
     >
       <div class="flex w-full justify-center">
         <InputText
@@ -119,10 +124,18 @@ const deleteDocument = (documentId: number): void => {
           @keydown.enter.stop.prevent="saveNewDocument"
           placeholder="Name"
           data-cy="document-name-input"
+          ref="newDocumentNameInput"
         ></InputText>
       </div>
       <template #footer>
-        <div class="flex w-full justify-center">
+        <div class="flex w-full justify-evenly">
+          <Button
+            data-cy="cancel-add-button"
+            type="button"
+            label="Cancel"
+            severity="secondary"
+            @click="dialogVisible = false"
+          ></Button>
           <Button
             data-cy="save-document-button"
             type="button"

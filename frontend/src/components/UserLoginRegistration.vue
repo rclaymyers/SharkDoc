@@ -26,6 +26,7 @@ const dialogShowing = ref(false);
 const username = ref<string>("");
 const password = ref<string>("");
 const passwordConfirmation = ref<string>("");
+const usernameTextInput = ref();
 
 dialogShowing.value = true;
 
@@ -92,6 +93,10 @@ const onFormEnter = () => {
     attemptRegistration();
   }
 };
+const switchFormMode = (newFormMode: number): void => {
+  formState.value = newFormMode;
+  usernameTextInput.value?.$el?.focus?.();
+};
 </script>
 
 <template>
@@ -111,6 +116,8 @@ const onFormEnter = () => {
         placeholder="Username"
         type="username"
         @keydown.enter="onFormEnter"
+        ref="usernameTextInput"
+        autofocus
       ></InputText>
       <InputText
         data-cy="login-password"
@@ -136,7 +143,7 @@ const onFormEnter = () => {
           >
           <div
             class="flex justify-center clickable"
-            @click="formState = LoginRegistrationModeEnum.REGISTRATION"
+            @click="switchFormMode(LoginRegistrationModeEnum.REGISTRATION)"
           >
             <p
               class="color-accent-color-light text-center"
@@ -152,7 +159,7 @@ const onFormEnter = () => {
           >
           <div
             class="flex justify-center clickable"
-            @click="formState = LoginRegistrationModeEnum.LOGIN"
+            @click="switchFormMode(LoginRegistrationModeEnum.LOGIN)"
           >
             <p class="color-accent-color-light">Return to sign in</p>
           </div>

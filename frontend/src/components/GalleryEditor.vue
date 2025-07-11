@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { nextTick, ref } from "vue";
 import {
   GalleryCreationRequest,
   type Gallery,
@@ -35,6 +35,7 @@ const emit = defineEmits<{
 
 const fileInput = ref<HTMLInputElement | null>(null);
 const dialogVisible = ref<boolean>(true);
+const galleryNameInput = ref();
 
 let formState = ref<number>(FormStateEnum.GALLERY_LIST);
 
@@ -124,6 +125,9 @@ const newGalleryName = ref<string>("");
 const addGallery = () => {
   gallerySelectedForEdit.value = null;
   formState.value = FormStateEnum.ADD_GALLERY;
+  nextTick().then(() => {
+    galleryNameInput.value?.$el?.focus?.();
+  });
 };
 const deleteGallery = (galleryId: number) => {
   console.log("delete gallery called");
@@ -246,6 +250,7 @@ const saveGallery = () => {
           placeholder="Name"
           @keydown.enter="saveGallery"
           data-cy="gallery-name-editor"
+          ref="galleryNameInput"
         />
       </div>
       <div
