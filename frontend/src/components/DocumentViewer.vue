@@ -23,6 +23,7 @@ import { useDialog } from "primevue";
 import { AuthService } from "../services/authService";
 import { ToastService } from "../services/toastService";
 import { ToastErrorMessages } from "../../../sharedModels/ToastMessages";
+import { ConfirmationModalService } from "../services/confirmationModalService";
 
 const EditorViewEnum = {
   DOCUMENT_ONLY: 0,
@@ -32,6 +33,7 @@ const EditorViewEnum = {
 
 const route = useRoute();
 const router = useRouter();
+
 const documentId = Number(route.params.id);
 const dialog = useDialog();
 
@@ -178,12 +180,14 @@ const deletePage = (pageId: number) => {
   if (!documentId) {
     return;
   }
-  ApiService.deletePage(documentId, pageId).then((updatedDocument) => {
-    if (!updatedDocument) {
-      return;
-    }
-    activeMarkdownDocument.value = updatedDocument;
-    ToastService.showSuccess("Success", "Page deleted!");
+  ConfirmationModalService.showDeletionDialog("page", () => {
+    ApiService.deletePage(documentId, pageId).then((updatedDocument) => {
+      if (!updatedDocument) {
+        return;
+      }
+      activeMarkdownDocument.value = updatedDocument;
+      ToastService.showSuccess("Success", "Page deleted!");
+    });
   });
 };
 

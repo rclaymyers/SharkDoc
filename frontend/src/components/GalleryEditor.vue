@@ -11,10 +11,11 @@ import {
   MarkdownDocumentPage,
 } from "../../../sharedModels/MarkdownDocument";
 import { UtilitiesService } from "../services/utils";
-import { InputText, Button } from "primevue";
+import { InputText, Button, useConfirm } from "primevue";
 import { ToastService } from "../services/toastService";
 import { ToastErrorMessages } from "../../../sharedModels/ToastMessages";
 import { LoadingModalService } from "../services/loadingModalService";
+import { ConfirmationModalService } from "../services/confirmationModalService";
 
 const FormStateEnum = {
   GALLERY_LIST: 0,
@@ -54,12 +55,14 @@ const removeGalleryImage = (imagePathToRemove: string) => {
     );
     return;
   }
-  gallery.imagePaths = gallery.imagePaths.filter(
-    (imagePath: string) => imagePath !== imagePathToRemove
-  );
-  ApiService.deleteImage(imagePathToRemove).then((_) => {
-    console.log("Deleted image");
-    emit("gallery-updated", gallery);
+  ConfirmationModalService.showDeletionDialog("image", () => {
+    gallery.imagePaths = gallery.imagePaths.filter(
+      (imagePath: string) => imagePath !== imagePathToRemove
+    );
+    ApiService.deleteImage(imagePathToRemove).then((_) => {
+      console.log("Deleted image");
+      emit("gallery-updated", gallery);
+    });
   });
 };
 
@@ -124,10 +127,12 @@ const addGallery = () => {
 };
 const deleteGallery = (galleryId: number) => {
   console.log("delete gallery called");
-  ApiService.deleteGallery(galleryId).then((_) => {
-    emit("gallery-deleted");
-    console.log("Emitted gallery deleted event");
-    ToastService.showSuccess("Success", "Gallery deleted!");
+  ConfirmationModalService.showDeletionDialog("gallery", () => {
+    ApiService.deleteGallery(galleryId).then((_) => {
+      emit("gallery-deleted");
+      console.log("Emitted gallery deleted event");
+      ToastService.showSuccess("Success", "Gallery deleted!");
+    });
   });
 };
 const saveGallery = () => {

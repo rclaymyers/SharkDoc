@@ -10,6 +10,7 @@ import { Dialog, InputText, Button } from "primevue";
 import { DocumentPlusIcon, TrashIcon } from "@heroicons/vue/24/outline";
 import { ToastService } from "../services/toastService";
 import { ToastErrorMessages } from "../../../sharedModels/ToastMessages";
+import { ConfirmationModalService } from "../services/confirmationModalService";
 
 const router = useRouter();
 
@@ -57,17 +58,19 @@ const saveNewDocument = (): void => {
   });
 };
 const deleteDocument = (documentId: number): void => {
-  ApiService.deleteDocument(documentId)
-    .then((_) => {
-      return ApiService.fetchAllMarkdownDocuments();
-    })
-    .then((documents: MarkdownDocument[] | null) => {
-      if (!documents) {
-        return;
-      }
-      markdownDocuments.value = documents;
-      ToastService.showSuccess("Success", "Document deleted!");
-    });
+  ConfirmationModalService.showDeletionDialog("document", () => {
+    ApiService.deleteDocument(documentId)
+      .then((_) => {
+        return ApiService.fetchAllMarkdownDocuments();
+      })
+      .then((documents: MarkdownDocument[] | null) => {
+        if (!documents) {
+          return;
+        }
+        markdownDocuments.value = documents;
+        ToastService.showSuccess("Success", "Document deleted!");
+      });
+  });
 };
 </script>
 

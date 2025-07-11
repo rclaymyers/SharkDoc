@@ -57,6 +57,7 @@ describe("galleryManager", () => {
     );
     cy.get(Selectors.GalleryManager.manageGalleriesButton).click();
     cy.get(Selectors.GalleryManager.anyDeleteGalleryButton).first().click();
+    cy.get(Selectors.ConfirmationModal.deleteButton).click();
     cy.wait("@galleryDeletionRequest")
       .its("response.statusCode")
       .should("eq", 200);
@@ -127,6 +128,7 @@ describe("galleryManager", () => {
     //delete the image and confirm the image was removed
     cy.contains("Cypress Test Gallery").click();
     cy.get(Selectors.GalleryManager.anyDeleteImageButton).first().click();
+    cy.get(Selectors.ConfirmationModal.deleteButton).click();
     cy.wait("@imageDeletionRequest")
       .its("response.statusCode")
       .should("eq", 200);

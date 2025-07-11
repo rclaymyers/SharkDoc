@@ -78,6 +78,8 @@ describe("documentList", () => {
       .find(".delete-icon") // Find the TrashIcon within the container
       .click();
 
+    cy.get(Selectors.ConfirmationModal.deleteButton).click();
+
     cy.wait("@documentDeletionRequest")
       .its("response.statusCode")
       .should("eq", 200);
