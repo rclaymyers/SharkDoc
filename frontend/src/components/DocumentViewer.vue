@@ -305,7 +305,7 @@ const onMobileLightboxDismissed = () => {
               ></MarkdownDisplay>
             </div>
           </div>
-          <div class="w-full flex justify-around pb-4 md:pb-0">
+          <div class="w-full flex justify-around mb-8 md:pb-0">
             <!-- spacer -->
             <div
               :class="{
