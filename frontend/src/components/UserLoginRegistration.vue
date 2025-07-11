@@ -139,7 +139,7 @@ const onFormEnter = () => {
             @click="formState = LoginRegistrationModeEnum.REGISTRATION"
           >
             <p
-              class="color-accent-color-light"
+              class="color-accent-color-light text-center"
               data-cy="enter-registration-mode"
             >
               Need an account? Click here to register

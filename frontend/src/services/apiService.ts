@@ -75,7 +75,7 @@ class ApiRequest<T> {
         console.error("API call failed:", this, error);
         ToastService.showError(
           "Error",
-          response?.statusText ?? error?.message ?? "Unknown error"
+          error?.message ?? response?.statusText ?? "Unknown error"
         );
         return null;
       }
