@@ -41,6 +41,7 @@ const activeMarkdownDocument: Ref<MarkdownDocument | null> =
   ref<MarkdownDocument | null>(null);
 const editingTitle = ref<boolean>(false);
 const newTitle = ref<string>("");
+const newTitleInputText = ref();
 const mobileDrawerVisible = ref(false);
 const editorViewState = ref(EditorViewEnum.DOCUMENT_ONLY);
 const galleryAddEditPromptShowing = ref(false);
@@ -67,6 +68,10 @@ loadDocument();
 const beginEditingTitle = () => {
   editingTitle.value = true;
   newTitle.value = activeMarkdownDocument.value?.title ?? "";
+  nextTick().then(() => {
+    newTitleInputText.value?.$el?.focus?.();
+    newTitleInputText.value?.$el?.select?.();
+  });
 };
 
 const saveDocumentTitle = () => {
@@ -225,9 +230,11 @@ const onMobileLightboxDismissed = () => {
         autofocus
         v-if="editingTitle"
         v-model="newTitle"
+        :style="{ minWidth: '30ch' }"
         @keydown.enter="saveDocumentTitle()"
         @keydown.esc="editingTitle = false"
         data-cy="document-title-editor"
+        ref="newTitleInputText"
       />
       <div class="editor-toggle-buttons interactive-toolbar-element">
         <div
@@ -522,11 +529,14 @@ const onMobileLightboxDismissed = () => {
   border-radius: 5px;
 }
 .toolbar {
-  padding-left: var(--header-padding-and-margins);
   border-bottom: 1px solid var(--toolbar-bottom-border-color);
 }
 .toolbar > * {
   margin-right: var(--header-padding-and-margins);
+}
+.toolbar > :first-child {
+  margin-left: calc(var(--header-padding-and-margins) - 8px);
+  margin-right: calc(var(--header-padding-and-margins) - 8px);
 }
 .toolbar h1 {
   font-size: 1rem;

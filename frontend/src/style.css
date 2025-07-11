@@ -86,7 +86,6 @@ h6 {
   height: var(--subheader-height);
   background-color: var(--primary-background-color);
   color: var(--primary-text-color);
-  padding-left: var(--header-padding-and-margins);
   font-size: 2rem;
   display: flex;
   align-items: center;
