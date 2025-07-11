@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import Header from "./components/Header.vue";
-import { DynamicDialog, Toast, useToast } from "primevue";
+import { DynamicDialog, Toast, useConfirm, useToast } from "primevue";
 import { ToastService } from "./services/toastService";
 import LoadingModal from "./components/dynamicDialogs/LoadingModal.vue";
+import { ConfirmationModalService } from "./services/confirmationModalService";
 
 const toast = useToast();
 ToastService.setToastInstance(toast);
+
+const confirm = useConfirm();
+ConfirmationModalService.setConfirmInstance(confirm);
 </script>
 
 <template>
@@ -14,6 +18,7 @@ ToastService.setToastInstance(toast);
     <RouterView />
   </div>
   <DynamicDialog />
+  <ConfirmDialog />
   <Toast />
   <LoadingModal></LoadingModal>
 </template>

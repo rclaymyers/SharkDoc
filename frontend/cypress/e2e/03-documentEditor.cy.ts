@@ -97,6 +97,7 @@ describe("documentEditor", () => {
       "pageDeletionRequest"
     );
     cy.get(Selectors.DocumentViewer.deletePageButton).first().click();
+    cy.get(Selectors.ConfirmationModal.deleteButton).click();
     cy.wait("@pageDeletionRequest")
       .its("response.statusCode")
       .should("eq", 200);

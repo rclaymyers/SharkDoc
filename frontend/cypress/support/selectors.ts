@@ -49,4 +49,7 @@ export const Selectors = {
     saveGalleryButton: "[data-cy=save-gallery-button]",
     anyGalleryImageInEditor: `[data-cy*="gallery-image-in-editor"`,
   },
+  ConfirmationModal: {
+    deleteButton: "[data-cy=confirmation-modal-delete-button]",
+  },
 };
