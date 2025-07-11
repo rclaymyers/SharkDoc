@@ -11,7 +11,7 @@ import {
   MarkdownDocumentPage,
 } from "../../../sharedModels/MarkdownDocument";
 import { UtilitiesService } from "../services/utils";
-import { InputText, Button, useConfirm } from "primevue";
+import { InputText, Button } from "primevue";
 import { ToastService } from "../services/toastService";
 import { ToastErrorMessages } from "../../../sharedModels/ToastMessages";
 import { LoadingModalService } from "../services/loadingModalService";
