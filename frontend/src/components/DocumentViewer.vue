@@ -215,9 +215,6 @@ const onMobileLightboxDismissed = () => {
 <template>
   <div class="document-viewer" v-if="activeMarkdownDocument">
     <div class="toolbar align-items-center subheader hidden md:flex">
-      <router-link to="/">
-        <DocumentIcon class="document-link" />
-      </router-link>
       <h1
         class="cursor-pointer"
         v-if="!editingTitle"
@@ -532,11 +529,10 @@ const onMobileLightboxDismissed = () => {
   border-bottom: 1px solid var(--toolbar-bottom-border-color);
 }
 .toolbar > * {
-  margin-right: var(--header-padding-and-margins);
+  margin-right: calc(var(--header-padding-and-margins) + 4px);
 }
 .toolbar > :first-child {
-  margin-left: calc(var(--header-padding-and-margins) - 8px);
-  margin-right: calc(var(--header-padding-and-margins) - 8px);
+  margin-left: calc(var(--header-padding-and-margins) + 4px);
 }
 .toolbar h1 {
   font-size: 1rem;
