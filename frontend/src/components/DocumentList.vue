@@ -190,6 +190,6 @@ const deleteDocument = (documentId: number): void => {
   background-color: var(--secondary-background-color);
 }
 .document-list-container > .subheader {
-  padding-left: var(--header-padding-and-margins);
+  padding-left: calc(var(--header-padding-and-margins) + 3px);
 }
 </style>

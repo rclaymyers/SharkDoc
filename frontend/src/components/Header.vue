@@ -29,7 +29,12 @@ LocalStorageService.subscribeToKeyChange(
 
 <template>
   <div class="global-header background-secondary-accent">
-    <p>Sharkdown</p>
+    <router-link to="/">
+      <div class="flex align-center">
+        <img src="/sharkdownLogoInverted.png" alt="" class="logo" />
+        <p class="background-secondary-accent">Sharkdown</p>
+      </div>
+    </router-link>
     <p class="clickable" @click="onSignOutClicked">{{ firstInitial }}</p>
   </div>
 </template>
@@ -44,9 +49,10 @@ LocalStorageService.subscribeToKeyChange(
   padding: 0 var(--header-padding-and-margins);
   height: var(--global-header-height);
 }
-@media screen and (max-width: 768px) {
-  .global-header {
-    font-size: 1rem;
-  }
+.logo {
+  width: auto;
+  height: var(--global-header-height);
+  object-fit: contain;
+  margin-right: 1rem;
 }
 </style>

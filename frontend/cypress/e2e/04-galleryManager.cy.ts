@@ -29,7 +29,7 @@ const createGallery = () => {
 
 const uploadSharkImage = () => {
   cy.get(Selectors.GalleryManager.imageFileInput).selectFile(
-    "cypress/fixtures/shark.jpg",
+    "cypress/fixtures/sharkTestImage.jpg",
     { force: true }
   );
 };
@@ -108,7 +108,7 @@ describe("galleryManager", () => {
     cy.get(Selectors.GalleryManager.anyGalleryInstanceInList).first().click();
     uploadSharkImage();
     cy.wait("@imageUploadRequest").its("response.statusCode").should("eq", 200);
-    cy.get('img[src*="shark"]').should("exist");
+    cy.get('img[src*="sharkTestImage"]').should("exist");
   });
 
   it("deletes an image", () => {
@@ -122,7 +122,7 @@ describe("galleryManager", () => {
     createGallery();
     cy.contains("Cypress Test Gallery").click();
     uploadSharkImage();
-    cy.get('img[src*="shark"]').should("exist");
+    cy.get('img[src*="sharkTestImage"]').should("exist");
     cy.get(Selectors.GalleryManager.saveGalleryButton).click();
 
     //delete the image and confirm the image was removed
@@ -132,7 +132,7 @@ describe("galleryManager", () => {
     cy.wait("@imageDeletionRequest")
       .its("response.statusCode")
       .should("eq", 200);
-    cy.get('img[src*="shark"]').should("not.exist");
+    cy.get('img[src*="sharkTestImage"]').should("not.exist");
   });
 
   it("should show the gallery pane when the gallery name is clicked in the document", () => {

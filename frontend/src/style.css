@@ -22,7 +22,7 @@
   --accent-color-light: #0093c0;
   --accent-text-color: white;
   --secondary-accent-text-color: #ccc;
-  --header-padding-and-margins: 1rem;
+  --header-padding-and-margins: 1.4rem;
   --mobile-responsive-breakpoint: 768px;
 
   /* Light theme variables */
