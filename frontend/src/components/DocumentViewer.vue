@@ -446,10 +446,6 @@ const onMobileLightboxDismissed = () => {
     --toolbar-bottom-border-color: #555;
   }
 }
-.document-viewer p,
-.document-viewer a {
-  font-size: 1.5em;
-}
 .document-viewer p a {
   font-size: 1em;
 }
