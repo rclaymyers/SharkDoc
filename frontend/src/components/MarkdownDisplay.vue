@@ -96,6 +96,9 @@ p.missing-gallery {
   word-break: break-word;
   font-size: 1em;
 }
+.markdown-page > h1 {
+  padding: 0.5rem 0;
+}
 .delete-page-icon {
   position: absolute;
   cursor: pointer;
@@ -103,5 +106,24 @@ p.missing-gallery {
   right: 5px;
   width: 20px;
   height: 20px;
+}
+table {
+  table-layout: fixed;
+  border: 1px solid black;
+}
+th,
+td {
+  border: 1px solid black;
+  padding: 0.25rem 0.75rem;
+}
+th {
+  background-color: #f2f2f2; /* Light gray for even rows */
+}
+table tr:nth-child(even) {
+  background-color: #f2f2f2; /* Light gray for even rows */
+}
+
+table tr:nth-child(odd) {
+  background-color: #ffffff; /* White for odd rows */
 }
 </style>
