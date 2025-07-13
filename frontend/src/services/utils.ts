@@ -10,7 +10,6 @@ export const UtilitiesService = {
     return (args) => {
       clearTimeout(timeoutId);
       timeoutId = setTimeout(() => {
-        console.log("Calling callback with args:", args);
         callback(args);
       }, debounceTime);
     };

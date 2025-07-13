@@ -34,20 +34,6 @@ const galleryRegex = /gallery\(\s*([\w\s-]+?)\s*\)/g;
 const markdownContainer = ref<HTMLElement | null>(null);
 
 const compiledMarkdown = computed(() => {
-  console.log("Got props:", props);
-  if (!props.markdownDocument || !props.pageId) {
-    console.log(
-      "Markdown display: invalid props:",
-      props.markdownDocument,
-      props.pageId
-    );
-  }
-  console.log(
-    "Markdown document page:",
-    props.markdownDocument,
-    props.pageId,
-    props.markdownDocument.pages[props.pageId]
-  );
   const processedText = props.markdownDocument.pages[
     props.pageIndex
   ].content.replace(galleryRegex, (_, name) => {

@@ -9,7 +9,6 @@ import {
 const loadingModalShowing = ref<boolean>(false);
 const loadingMessage = ref<string>("");
 
-console.log("Loading modal subscribing to events forever");
 LoadingModalService.subscribeForever(
   (loadingModalParams: LoadingModalParams) => {
     loadingModalShowing.value = loadingModalParams.showModal;

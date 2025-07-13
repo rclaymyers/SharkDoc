@@ -45,7 +45,6 @@ export const setupAuthEndpoints = (app: Express, JWT_SECRET: string): void => {
   app.post(
     ApiEndpoints.POST.RegisterUser,
     async (req: Request, res: Response) => {
-      console.log("Register user request:", req.body);
       //todo validate request body
       const { username, unhashedPass } = req.body;
       const hashedPass: string = await bcrypt.hash(unhashedPass, 10);
@@ -96,9 +95,7 @@ export const setupAuthEndpoints = (app: Express, JWT_SECRET: string): void => {
   app.post(ApiEndpoints.POST.LoginUser, async (req: Request, res: Response) => {
     //todo validate request body
     const { username, unhashedPass } = req.body;
-    console.log("Logging in user with body:", req.body);
     const user = selectUser(username);
-    console.log("Got user from db:", user);
     if (!user || !(await bcrypt.compare(unhashedPass, user.hashedPassword))) {
       res.status(401).json(CREDENTIAL_VALIDATION_ERROR);
       return;
@@ -157,7 +154,7 @@ export const getTokenFromAuthHeader = (
       userId: string;
     };
   } catch (e) {
-    console.log(e);
+    console.warn(e);
     return null;
   }
 };

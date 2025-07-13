@@ -31,7 +31,7 @@ class ApiRequest<T> {
     try {
       this.body = JSON.stringify(objectToStringify);
     } catch (e) {
-      console.log("Unable to stringify object:", objectToStringify);
+      console.warn("Unable to stringify object:", objectToStringify);
       console.error(e);
     }
     return this;
@@ -48,7 +48,6 @@ class ApiRequest<T> {
   }
 
   execute(): Promise<T | null> {
-    console.log("Fetching with body:", this.body);
     const headers: HeadersInit =
       this.body instanceof FormData
         ? {}
@@ -82,8 +81,6 @@ class ApiRequest<T> {
           return null;
         }
         //todo validate type
-        console.log("Returning response:", response);
-        console.log("Unparsed body:", response.body);
         return await response.json();
       })
       .catch((_) =>
@@ -102,7 +99,6 @@ export const ApiService = {
     if (galleryId) {
       formData.append("galleryId", `${galleryId}`);
     }
-    console.log("Building api request with form data:", formData);
     return new ApiRequest<string>(
       "POST",
       UtilitiesService.prependApiDomain(ApiEndpoints.POST.Image)
@@ -119,7 +115,6 @@ export const ApiService = {
   saveGallery: async (
     gallery: Gallery | GalleryCreationRequest
   ): Promise<Gallery | null> => {
-    console.log("Body:", JSON.stringify(gallery));
     return new ApiRequest<Gallery>(
       "POST",
       UtilitiesService.prependApiDomain(ApiEndpoints.POST.Gallery)
@@ -135,7 +130,6 @@ export const ApiService = {
       //todo redirect to signin
       return null;
     }
-    console.log("refactored save document call");
     return new ApiRequest<MarkdownDocument>(
       "POST",
       UtilitiesService.prependApiDomain(ApiEndpoints.POST.Document)

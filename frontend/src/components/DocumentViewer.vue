@@ -51,14 +51,12 @@ const showMobileLightbox = ref<boolean>(false);
 const showDocumentRenameDialog = ref<boolean>(false);
 
 const loadDocument = () => {
-  console.log("Load document called");
   ApiService.fetchMarkdownDocument(documentId).then(
     (document: MarkdownDocument | null) => {
       if (!document) {
         console.warn("Got invalid document from API for id:", documentId, null);
         return;
       }
-      console.log("Document viewer set active document to:", document);
       activeMarkdownDocument.value = document;
     }
   );
@@ -109,7 +107,6 @@ const updateMarkdownText = (payload: { pageNumber: number; text: string }) => {
     );
     return;
   }
-  console.log("Update markdown text called with payload:", payload);
   activeMarkdownDocument.value.pages[payload.pageNumber].content = payload.text;
 };
 
@@ -118,12 +115,10 @@ const debouncedUpdateFn = UtilitiesService.buildDebouncedFn(
     if (!activeMarkdownDocument.value) {
       return;
     }
-    console.log("Updating page");
     ApiService.updatePageAndFetchUpdatedDocument(
       activeMarkdownDocument.value.pages[payload.pageNumber],
       activeMarkdownDocument.value.id
     ).then((document) => {
-      console.log("Got updated document:", document);
       if (document) {
         activeMarkdownDocument.value = document;
       }
@@ -176,8 +171,6 @@ const showGallery = (galleryName: string) => {
   selectedGallery.value = gallery;
   showDesktopGallery.value = window.innerWidth > 768;
   showMobileLightbox.value = window.innerWidth <= 768;
-  console.log("Selected gallery set to:", selectedGallery.value);
-  console.log("Show mobile lightbox set to:", showMobileLightbox);
 };
 
 const deletePage = (pageId: number) => {

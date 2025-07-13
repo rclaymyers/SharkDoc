@@ -80,7 +80,6 @@ const attemptSignIn = () => {
         //error toast will be shown by API service
         return;
       }
-      console.log("Got token:", signInResponse.token);
       LocalStorageService.setJwt(signInResponse.token);
       LocalStorageService.setUsername(signInResponse.username);
       router.push("/");

@@ -57,9 +57,7 @@ export const createOrUpdateGallery = (
     const result = db
       .prepare(GalleryQueries.CreateGallery)
       .run(galleryRequest.name, galleryRequest.markdownDocumentId);
-    console.log("Created new gallery");
     galleryId = result.lastInsertRowid as number;
-    console.log("Got id:", galleryId);
   }
 
   return retrieveGalleryWithImages(galleryId);
@@ -98,8 +96,6 @@ export const deleteDocument = (markdownDocumentId: number): void => {
   const result = db
     .prepare(MarkdownDocumentQueries.DeleteMarkdownDocument)
     .run(markdownDocumentId);
-  console.log("id:", markdownDocumentId);
-  console.log("Delete document records affected:", result.changes);
 };
 
 export const createPage = (
@@ -108,13 +104,6 @@ export const createPage = (
   const result = db
     .prepare(MarkdownDocumentPageQueries.CreatePage)
     .run("# New Page", markdownDocumentId);
-  console.log("Created page, result records:", result.changes);
-  console.log(
-    "Pages for this document:",
-    db
-      .prepare(MarkdownDocumentPageQueries.SelectPagesByMarkdownDocumentId)
-      .all(markdownDocumentId)
-  );
   return retrievePage(result.lastInsertRowid as number);
 };
 
@@ -200,7 +189,6 @@ export const retrieveMarkdownDocumentWithPagesAndGalleries = (
   const document = db
     .prepare(MarkdownDocumentQueries.SelectMarkdownDocumentById)
     .get(markdownDocumentId) as unknown as MarkdownDocument;
-  console.log("Got document using id:", document, markdownDocumentId);
   const galleries: Gallery[] =
     selectMarkdownDocumentGalleries(markdownDocumentId);
   galleries.forEach((gallery: Gallery) => {
@@ -210,8 +198,6 @@ export const retrieveMarkdownDocumentWithPagesAndGalleries = (
   });
   const pages: MarkdownDocumentPage[] =
     retrievePagesByDocumentId(markdownDocumentId);
-  console.log("Got galleries:", galleries);
-  console.log("Got pages:", pages);
   document.galleries = galleries;
   document.pages = pages;
   return document;
