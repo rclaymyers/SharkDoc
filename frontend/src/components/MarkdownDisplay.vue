@@ -94,7 +94,7 @@ p.missing-gallery {
 .markdown-page {
   position: relative;
   word-break: break-word;
-  font-size: 0.75em;
+  font-size: 1em;
 }
 .delete-page-icon {
   position: absolute;
