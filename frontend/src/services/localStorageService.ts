@@ -7,9 +7,7 @@ type LocalStorageUpdateCallback = (newValue: string | null) => void;
 
 const subscribers = new Map<string, LocalStorageUpdateCallback[]>();
 const emitChange = (key: string) => {
-  console.log("emit change called for key:", key);
   subscribers.get(key)?.forEach((callback: LocalStorageUpdateCallback) => {
-    console.log("Executing callback");
     callback(localStorage.getItem(key));
   });
 };

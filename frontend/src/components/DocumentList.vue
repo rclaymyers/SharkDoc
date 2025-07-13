@@ -28,7 +28,6 @@ ApiService.fetchAllMarkdownDocuments().then(
 );
 
 const openDocument = (markdownDocumentId: number): void => {
-  console.log("openDocument called with id:", markdownDocumentId);
   router.push(`document/${markdownDocumentId}`);
 };
 const addDocument = (): void => {
@@ -44,7 +43,6 @@ const saveNewDocument = (): void => {
     ToastService.showError("Error", ToastErrorMessages.DocumentNameRequired);
     return;
   }
-  console.log("Save new document called with name:", documentName);
   newDocumentName.value = "";
   dialogVisible.value = false;
   ApiService.saveDocument(

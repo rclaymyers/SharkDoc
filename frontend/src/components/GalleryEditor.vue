@@ -42,7 +42,6 @@ let formState = ref<number>(FormStateEnum.GALLERY_LIST);
 const gallerySelectedForEdit = ref<Gallery | null>(null);
 
 const openGalleryDetails = (gallery: Gallery) => {
-  console.log("open gallery details called:", gallery);
   gallerySelectedForEdit.value = gallery;
   newGalleryName.value = gallery.name;
   formState.value = FormStateEnum.EDIT_GALLERY;
@@ -61,7 +60,6 @@ const removeGalleryImage = (imagePathToRemove: string) => {
       (imagePath: string) => imagePath !== imagePathToRemove
     );
     ApiService.deleteImage(imagePathToRemove).then((_) => {
-      console.log("Deleted image");
       emit("gallery-updated", gallery);
     });
   });
@@ -130,11 +128,9 @@ const addGallery = () => {
   });
 };
 const deleteGallery = (galleryId: number) => {
-  console.log("delete gallery called");
   ConfirmationModalService.showDeletionDialog("gallery", () => {
     ApiService.deleteGallery(galleryId).then((_) => {
       emit("gallery-deleted");
-      console.log("Emitted gallery deleted event");
       ToastService.showSuccess("Success", "Gallery deleted!");
     });
   });
@@ -144,7 +140,6 @@ const saveGallery = () => {
     ToastService.showError("Error", ToastErrorMessages.GalleryNameRequired);
     return;
   }
-  console.log("Save gallery called:", gallerySelectedForEdit.value);
   const oldGalleryNameToUpdate = gallerySelectedForEdit.value?.name;
   if (gallerySelectedForEdit.value) {
     gallerySelectedForEdit.value.name = newGalleryName.value;
@@ -168,7 +163,6 @@ const saveGallery = () => {
   let updatedGallery: Gallery | null = null;
   ApiService.saveGallery(galleryApiPayload)
     .then((response: Gallery | null) => {
-      console.log("Got new/updated gallery from API:", response);
       if (response) {
         updatedGallery = response;
         props.markdownDocument.galleries = [

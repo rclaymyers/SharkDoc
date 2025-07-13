@@ -38,7 +38,9 @@ import {
 dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
-console.log("JWT secret set to:", JWT_SECRET);
+if (!JWT_SECRET) {
+  throw new Error("Unable to load JWT secret");
+}
 
 const app: Express = express();
 app.use(cors());
@@ -83,7 +85,6 @@ app.post(
   ApiEndpoints.POST.Image,
   upload.single("image"),
   (req: Request, res: Response) => {
-    console.log("Got image upload request");
     if (!req.file) {
       res.status(400).json({ error: "No file uploaded" });
       return;
@@ -108,7 +109,6 @@ app.post(ApiEndpoints.POST.DeleteImage, (req: Request, res: Response) => {
 
 app.post(ApiEndpoints.POST.Document, (req: Request, res: Response) => {
   const token = getTokenFromAuthHeader(req, JWT_SECRET);
-  console.log("request body, token:", req.body, token);
   if (!req.body?.title || !token?.userId) {
     console.warn("document POST request body invalid");
     res.status(400).json({ error: "Invalid request body" });
@@ -137,7 +137,7 @@ app.post(ApiEndpoints.POST.DeleteDocument, (req: Request, res: Response) => {
 
 app.post(ApiEndpoints.POST.Gallery, (req: Request, res: Response) => {
   if (!req.body) {
-    console.log("Request has no body");
+    console.warn("Request has no body");
     res.status(400).json({ error: "No request body" });
     return;
   }
@@ -160,7 +160,7 @@ app.post(ApiEndpoints.POST.DeleteGallery, (req: Request, res: Response) => {
 
 app.post(ApiEndpoints.POST.CreatePage, (req: Request, res: Response) => {
   if (!req.query?.markdownDocumentId) {
-    console.log("Page creation request is missing markdown document id");
+    console.warn("Page creation request is missing markdown document id");
     res.status(400);
     return;
   }
