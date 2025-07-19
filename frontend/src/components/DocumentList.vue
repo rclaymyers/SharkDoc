@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { nextTick, ref } from "vue";
 import {
-  MarkdownDocument,
-  MarkdownDocumentCreationRequest,
+  type MarkdownDocument,
+  type MarkdownDocumentCreationRequest,
 } from "../../../sharedModels/MarkdownDocument";
 import { ApiService } from "../services/apiService";
 import { useRouter } from "vue-router";
@@ -45,19 +45,22 @@ const saveNewDocument = (): void => {
   }
   newDocumentName.value = "";
   dialogVisible.value = false;
-  ApiService.saveDocument(
-    new MarkdownDocumentCreationRequest(documentName)
-  ).then((result: MarkdownDocument | null) => {
-    if (!result) {
-      console.warn(
-        "Received invalid document after attempting to create document:",
-        result
-      );
-      return;
+  const documentCreationRequest: MarkdownDocumentCreationRequest = {
+    title: documentName,
+  };
+  ApiService.saveDocument(documentCreationRequest).then(
+    (result: MarkdownDocument | null) => {
+      if (!result) {
+        console.warn(
+          "Received invalid document after attempting to create document:",
+          result
+        );
+        return;
+      }
+      markdownDocuments.value = [...markdownDocuments.value, result];
+      ToastService.showSuccess("Success", "New document created!");
     }
-    markdownDocuments.value = [...markdownDocuments.value, result];
-    ToastService.showSuccess("Success", "New document created!");
-  });
+  );
 };
 const deleteDocument = (documentId: number): void => {
   ConfirmationModalService.showDeletionDialog("document", () => {

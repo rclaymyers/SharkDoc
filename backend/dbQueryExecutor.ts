@@ -15,6 +15,19 @@ import {
 } from "./constants/queries";
 import { User } from "./auth";
 
+const markdownDocumentQueryResultToProper = (
+  result: MarkdownDocumentQueryResult
+): MarkdownDocument => ({
+  ...result,
+  pages: result.pages ?? [],
+  galleries: result.galleries ?? [],
+});
+const galleryQueryResultToProper = (result: GalleryQueryResult): Gallery => ({
+  ...result,
+  imagePaths: result?.imagePaths ?? [],
+  markdownDocumentId: result.markdown_document_id,
+});
+
 const isTest = process.env.NODE_ENV === "test";
 if (isTest) {
   console.log("======         Test Mode         ======");
@@ -47,7 +60,7 @@ export const createOrUpdateGallery = (
   galleryRequest: Gallery | GalleryCreationRequest
 ): Gallery => {
   let galleryId: number | null = null;
-  if (Gallery.IsGallery(galleryRequest)) {
+  if ("id" in galleryRequest) {
     db.prepare(GalleryQueries.UpdateGallery).run(
       galleryRequest.name,
       galleryRequest.id
@@ -74,7 +87,7 @@ export const createOrUpdateDocument = (
   shouldCreatePage: boolean
 ): MarkdownDocument => {
   let documentId: number | null = null;
-  if (MarkdownDocument.IsMarkdownDocument(documentRequest)) {
+  if ("id" in documentRequest) {
     db.prepare(MarkdownDocumentQueries.UpdateMarkdownDocument).run(
       documentRequest.title,
       documentRequest.id
@@ -151,8 +164,9 @@ export const retrieveGalleryWithImages = (galleryId: number): Gallery => {
 const selectGallery = (id: number): Gallery => {
   const result = db
     .prepare(GalleryQueries.SelectGalleryById)
-    .get(id) as unknown as Gallery;
-  return new Gallery(result.id, result.name, [], result.markdownDocumentId);
+    .get(id) as GalleryQueryResult;
+
+  return galleryQueryResultToProper(result);
 };
 
 export const createImageInGallery = (
@@ -166,21 +180,37 @@ export const deleteImage = (imagePath: string): void => {
   db.prepare(ImageQueries.DeleteImage).run(imagePath);
 };
 
+type GalleryQueryResult = {
+  id: number;
+  name: string;
+  imagePaths: string[];
+  markdown_document_id: number;
+};
 const selectMarkdownDocumentGalleries = (
   markdownDocumentId: number
 ): Gallery[] => {
   const result = db
     .prepare(GalleryQueries.SelectGalleriesByMarkdownDocumentId)
-    .all(markdownDocumentId) as Gallery[];
-  return result;
+    .all(markdownDocumentId) as GalleryQueryResult[];
+
+  return result.map(galleryQueryResultToProper);
 };
 
+type MarkdownDocumentQueryResult = {
+  id: number;
+  ownerId: number;
+  title: string;
+  pages: MarkdownDocumentPage[] | undefined;
+  galleries: Gallery[] | undefined;
+};
 export const retrieveAllMarkdownDocumentsForUser = (
   userId: number
 ): MarkdownDocument[] => {
-  return db
+  const queryResults = db
     .prepare(MarkdownDocumentQueries.SelectAllMarkdownDocumentsForUser)
-    .all(userId) as unknown as MarkdownDocument[];
+    .all(userId) as unknown as MarkdownDocumentQueryResult[];
+
+  return queryResults.map(markdownDocumentQueryResultToProper);
 };
 
 export const retrieveMarkdownDocumentWithPagesAndGalleries = (
@@ -198,8 +228,8 @@ export const retrieveMarkdownDocumentWithPagesAndGalleries = (
   });
   const pages: MarkdownDocumentPage[] =
     retrievePagesByDocumentId(markdownDocumentId);
-  document.galleries = galleries;
-  document.pages = pages;
+  document.galleries = galleries ?? [];
+  document.pages = pages ?? [];
   return document;
 };
 

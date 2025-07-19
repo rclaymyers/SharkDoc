@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { nextTick, ref } from "vue";
 import {
-  GalleryCreationRequest,
+  type GalleryCreationRequest,
   type Gallery,
 } from "../../../sharedModels/Gallery";
 import { TrashIcon } from "@heroicons/vue/20/solid";
 import { ApiService } from "../services/apiService";
 import {
-  MarkdownDocument,
-  MarkdownDocumentPage,
+  type MarkdownDocument,
+  type MarkdownDocumentPage,
 } from "../../../sharedModels/MarkdownDocument";
 import { UtilitiesService } from "../services/utils";
 import { InputText, Button } from "primevue";
@@ -146,10 +146,10 @@ const saveGallery = () => {
   }
   const galleryApiPayload: Gallery | GalleryCreationRequest | null =
     formState.value === FormStateEnum.ADD_GALLERY
-      ? new GalleryCreationRequest(
-          newGalleryName.value,
-          props.markdownDocument.id
-        )
+      ? {
+          name: newGalleryName.value,
+          markdownDocumentId: props.markdownDocument.id,
+        }
       : gallerySelectedForEdit.value;
   newGalleryName.value = "";
   formState.value = FormStateEnum.GALLERY_LIST;

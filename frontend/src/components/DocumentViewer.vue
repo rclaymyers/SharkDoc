@@ -3,7 +3,10 @@ import { nextTick, ref, type Ref } from "vue";
 import MarkdownDisplay from "./MarkdownDisplay.vue";
 import MarkdownEditor from "./MarkdownEditor.vue";
 import ImageGallery from "./ImageGallery.vue";
-import { MarkdownDocument } from "../../../sharedModels/MarkdownDocument";
+import {
+  CreateMarkdownDocument,
+  type MarkdownDocument,
+} from "../../../sharedModels/MarkdownDocument";
 import GalleryEditor from "./GalleryEditor.vue";
 import { useRoute, useRouter } from "vue-router";
 import { ApiService } from "../services/apiService";
@@ -78,7 +81,7 @@ const saveDocumentTitle = () => {
     return;
   }
 
-  const documentSavePayload = new MarkdownDocument(
+  const documentSavePayload: MarkdownDocument = CreateMarkdownDocument(
     activeMarkdownDocument.value.id,
     newTitle.value,
     [...activeMarkdownDocument.value.pages],
