@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { Gallery } from "../../../sharedModels/Gallery";
+import { type Gallery } from "../../../sharedModels/Gallery";
 import { UtilitiesService } from "../services/utils";
 import LightboxWrapper from "./LightboxWrapper.vue";
 

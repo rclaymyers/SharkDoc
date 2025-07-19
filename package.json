@@ -1,4 +1,6 @@
 {
+  "private": true,
+  "workspaces": ["frontend", "backend", "sharedModels"],
   "scripts": {
     "dev:frontend": "npm run dev --prefix frontend",
     "dev:backend": "npm run dev --prefix backend",

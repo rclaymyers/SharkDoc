@@ -1,43 +1,52 @@
-import type { Gallery } from "./Gallery";
+import { type Gallery, GallerySchema } from "./Gallery";
+import { z } from "zod";
 
-export class MarkdownDocument {
-  public id: number;
-  public title: string;
-  public pages: MarkdownDocumentPage[];
-  public galleries: Gallery[];
-  public ownerId: number;
+export const MarkdownDocumentPageSchema = z.object({
+  id: z.number(),
+  content: z.string(),
+});
 
-  constructor(
-    id: number,
-    title: string,
-    pages: MarkdownDocumentPage[],
-    galleries: Gallery[],
-    ownerId: number
-  ) {
-    this.id = id;
-    this.title = title;
-    this.pages = pages;
-    this.galleries = galleries;
-    this.ownerId = ownerId;
-  }
+export const MarkdownDocumentSchema = z.object({
+  id: z.number(),
+  title: z.string(),
+  pages: z.array(MarkdownDocumentPageSchema),
+  galleries: z.array(GallerySchema),
+  ownerId: z.number(),
+});
 
-  static IsMarkdownDocument(instance: any): instance is MarkdownDocument {
-    return Object.keys(instance).includes("id");
-  }
-}
+export const MarkdownDocumentCreationRequestSchema = z.object({
+  title: z.string(),
+});
 
-export class MarkdownDocumentCreationRequest {
-  public title: string;
-  constructor(title: string) {
-    this.title = title;
-  }
-}
+export const MarkdownDocumentArraySchema = z.array(MarkdownDocumentSchema);
 
-export class MarkdownDocumentPage {
-  public id: number;
-  public content: string;
-  constructor(id: number, content: string) {
-    this.id = id;
-    this.content = content;
-  }
-}
+export type MarkdownDocumentPage = z.infer<typeof MarkdownDocumentPageSchema>;
+export type MarkdownDocument = z.infer<typeof MarkdownDocumentSchema>;
+export type MarkdownDocumentCreationRequest = z.infer<
+  typeof MarkdownDocumentCreationRequestSchema
+>;
+
+export const CreateMarkdownPage = (
+  id: number,
+  content: string
+): MarkdownDocumentPage => {
+  return {
+    id,
+    content,
+  };
+};
+export const CreateMarkdownDocument = (
+  id: number,
+  title: string,
+  pages: MarkdownDocumentPage[],
+  galleries: Gallery[],
+  ownerId: number
+): MarkdownDocument => {
+  return {
+    id,
+    title,
+    pages,
+    galleries,
+    ownerId,
+  };
+};

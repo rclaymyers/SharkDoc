@@ -4,16 +4,23 @@ import {
   UserAuthRequest,
   UserSignInResponse,
 } from "../../../sharedModels/ApiConstants";
-import { Gallery, GalleryCreationRequest } from "../../../sharedModels/Gallery";
 import {
-  MarkdownDocument,
-  MarkdownDocumentPage,
+  GallerySchema,
+  type Gallery,
+  type GalleryCreationRequest,
+} from "../../../sharedModels/Gallery";
+import {
+  type MarkdownDocument,
+  type MarkdownDocumentPage,
   type MarkdownDocumentCreationRequest,
+  MarkdownDocumentSchema,
+  MarkdownDocumentArraySchema,
 } from "../../../sharedModels/MarkdownDocument";
 import { LoadingModalService } from "./loadingModalService";
 import { LocalStorageService } from "./localStorageService";
 import { ToastService } from "./toastService";
 import { UtilitiesService } from "./utils";
+import { type ZodSchema } from "zod";
 
 type HttpMethod = "POST" | "GET";
 
@@ -47,7 +54,7 @@ class ApiRequest<T> {
     return this;
   }
 
-  execute(): Promise<T | null> {
+  executeWithValidation(schema?: ZodSchema<T>): Promise<T | null> {
     const headers: HeadersInit =
       this.body instanceof FormData
         ? {}
@@ -80,12 +87,22 @@ class ApiRequest<T> {
           );
           return null;
         }
-        //todo validate type
-        return await response.json();
+        const data = await response.json();
+        if (schema) {
+          const result = schema.safeParse(data);
+          if (!result.success) {
+            console.warn("API response body wasn't the expected shape.");
+            console.warn(result.error);
+            return null;
+          }
+          return result.data;
+        }
+        return data;
       })
-      .catch((_) =>
-        LoadingModalService.updateLoadingModal({ showModal: false })
-      );
+      .catch((_) => {
+        LoadingModalService.updateLoadingModal({ showModal: false });
+        return null;
+      });
   }
 }
 
@@ -104,13 +121,13 @@ export const ApiService = {
       UtilitiesService.prependApiDomain(ApiEndpoints.POST.Image)
     )
       .withFormDataBody(formData)
-      .execute();
+      .executeWithValidation();
   },
   deleteImage: async (imagePath: string): Promise<ApiResponse | null> => {
     return new ApiRequest<ApiResponse>(
       "POST",
       `${UtilitiesService.prependApiDomain(ApiEndpoints.POST.DeleteImage)}?filename=${imagePath}`
-    ).execute();
+    ).executeWithValidation();
   },
   saveGallery: async (
     gallery: Gallery | GalleryCreationRequest
@@ -120,7 +137,7 @@ export const ApiService = {
       UtilitiesService.prependApiDomain(ApiEndpoints.POST.Gallery)
     )
       .withJsonBody(gallery)
-      .execute();
+      .executeWithValidation(GallerySchema);
   },
   saveDocument: async (
     document: MarkdownDocument | MarkdownDocumentCreationRequest
@@ -136,13 +153,13 @@ export const ApiService = {
     )
       .withJsonBody(document)
       .withAuthToken(token)
-      .execute();
+      .executeWithValidation(MarkdownDocumentSchema);
   },
   deleteDocument: async (markdownDocumentId: number) => {
     return new ApiRequest<ApiResponse>(
       "POST",
       `${UtilitiesService.prependApiDomain(ApiEndpoints.POST.DeleteDocument)}?markdownDocumentId=${markdownDocumentId}`
-    ).execute();
+    ).executeWithValidation();
   },
   createPageAndFetchUpdatedDocument: async (
     markdownDocumentId: number
@@ -150,7 +167,7 @@ export const ApiService = {
     await new ApiRequest<MarkdownDocument>(
       "POST",
       `${UtilitiesService.prependApiDomain(ApiEndpoints.POST.CreatePage)}?markdownDocumentId=${markdownDocumentId}`
-    ).execute();
+    ).executeWithValidation(MarkdownDocumentSchema);
     return ApiService.fetchMarkdownDocument(markdownDocumentId);
   },
   deletePage: async (
@@ -160,7 +177,7 @@ export const ApiService = {
     return new ApiRequest<MarkdownDocument>(
       "POST",
       `${UtilitiesService.prependApiDomain(ApiEndpoints.POST.DeletePage)}?markdownDocumentId=${markdownDocumentId}&markdownPageId=${pageId}`
-    ).execute();
+    ).executeWithValidation(MarkdownDocumentSchema);
   },
   updatePageAndFetchUpdatedDocument: async (
     markdownDocumentPage: MarkdownDocumentPage,
@@ -171,7 +188,7 @@ export const ApiService = {
       `${UtilitiesService.prependApiDomain(ApiEndpoints.POST.UpdatePage)}`
     )
       .withJsonBody(markdownDocumentPage)
-      .execute();
+      .executeWithValidation();
     const updatedDocument =
       await ApiService.fetchMarkdownDocument(markdownDocumentId);
     return updatedDocument;
@@ -180,13 +197,13 @@ export const ApiService = {
     return new ApiRequest<Gallery>(
       "GET",
       `${UtilitiesService.prependApiDomain(ApiEndpoints.GET.Gallery)}?galleryId=${galleryId}`
-    ).execute();
+    ).executeWithValidation(GallerySchema);
   },
   deleteGallery: async (galleryId: number): Promise<string | null> => {
     return new ApiRequest<string>(
       "POST",
       `${UtilitiesService.prependApiDomain(ApiEndpoints.POST.DeleteGallery)}?galleryId=${galleryId}`
-    ).execute();
+    ).executeWithValidation();
   },
   fetchMarkdownDocument: async (
     markdownDocumentId: number
@@ -201,7 +218,7 @@ export const ApiService = {
       `${UtilitiesService.prependApiDomain(ApiEndpoints.GET.Document)}?id=${markdownDocumentId}`
     )
       .withAuthToken(token)
-      .execute();
+      .executeWithValidation(MarkdownDocumentSchema);
   },
   fetchAllMarkdownDocuments: async (): Promise<MarkdownDocument[] | null> => {
     const token = LocalStorageService.getJwt();
@@ -214,7 +231,7 @@ export const ApiService = {
       `${UtilitiesService.prependApiDomain(ApiEndpoints.GET.AllDocuments)}`
     )
       .withAuthToken(token)
-      .execute();
+      .executeWithValidation(MarkdownDocumentArraySchema);
   },
   registerUser: async (
     username: string,
@@ -225,7 +242,7 @@ export const ApiService = {
       `${UtilitiesService.prependApiDomain(ApiEndpoints.POST.RegisterUser)}`
     )
       .withJsonBody(new UserAuthRequest(username, unhashedPass))
-      .execute();
+      .executeWithValidation();
   },
   signInUser: async (
     username: string,
@@ -236,6 +253,6 @@ export const ApiService = {
       `${UtilitiesService.prependApiDomain(ApiEndpoints.POST.LoginUser)}`
     )
       .withJsonBody(new UserAuthRequest(username, unhashedPass))
-      .execute();
+      .executeWithValidation();
   },
 };

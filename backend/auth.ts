@@ -59,8 +59,11 @@ export const setupAuthEndpoints = (app: Express, JWT_SECRET: string): void => {
         res.status(201).json(SuccessResponse);
         return;
       }
+      const documentCreationRequest: MarkdownDocumentCreationRequest = {
+        title: "Your First Sharkdown Document",
+      };
       const newDocument = createOrUpdateDocument(
-        new MarkdownDocumentCreationRequest("Your First Sharkdown Document"),
+        documentCreationRequest,
         user.id,
         false
       );
@@ -77,9 +80,11 @@ export const setupAuthEndpoints = (app: Express, JWT_SECRET: string): void => {
       updatePage(page1);
       page2.content = WelcomeDocumentPage2;
       updatePage(page2);
-      const newGallery = createOrUpdateGallery(
-        new GalleryCreationRequest("Dogs and Cats", newDocument.id)
-      );
+      const galleryCreationRequest: GalleryCreationRequest = {
+        name: "Dogs and Cats",
+        markdownDocumentId: newDocument.id,
+      };
+      const newGallery = createOrUpdateGallery(galleryCreationRequest);
       if (!newGallery?.id) {
         res.status(201).json(SuccessResponse);
       }

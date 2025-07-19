@@ -143,10 +143,12 @@ export const GalleryQueries = {
     SET ${ColumnNames.galleries.name} = ? 
     WHERE ${ColumnNames.galleries.id} = ?`,
   SelectGalleryById: `
-  SELECT ${ColumnNames.galleries.id}, ${ColumnNames.galleries.name} 
+  SELECT ${ColumnNames.galleries.id}, ${ColumnNames.galleries.name},
+  ${ColumnNames.galleries.markdownDocumentId} 
   FROM ${TableNames.galleries} WHERE ${ColumnNames.galleries.id} = ?`,
   SelectGalleriesByMarkdownDocumentId: `
-  SELECT ${ColumnNames.galleries.id}, ${ColumnNames.galleries.name} 
+  SELECT ${ColumnNames.galleries.id}, ${ColumnNames.galleries.name}, 
+  ${ColumnNames.galleries.markdownDocumentId}
   FROM ${TableNames.galleries} WHERE ${ColumnNames.galleries.markdownDocumentId} = ?`,
 };
 
